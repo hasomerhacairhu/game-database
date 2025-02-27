@@ -1,0 +1,45 @@
+/* Scout Games Plugin custom styles */
+#scout-games-app {
+    margin: 20px 0;
+}
+
+.tag {
+    display: inline-block;
+    background-color: #f3f3f3;
+    padding: 0.2em 0.5em;
+    margin: 0.1em;
+    border-radius: 3px;
+    font-size: 0.85em;
+}
+
+.game-name {
+    font-weight: bold;
+}
+
+.game-alt-name {
+    font-style: italic;
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* Loading spinner */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
