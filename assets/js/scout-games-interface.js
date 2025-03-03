@@ -88,22 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
       tools: row[4] || '',
       source: row[5] || '',
 
-      // Tér
-      ter_kulteri: row[6] === 'true',
-      ter_belteri: row[7] === 'true',
-
-      // Csoport
-      csp_alakulas: row[8] === 'true',
-      csp_viharzas: row[9] === 'true',
-      csp_normazas: row[10] === 'true',
-      csp_mukodes: row[11] === 'true',
-
-      // Korosztály
-      age_0_5: row[12] === 'true',
-      age_6_10: row[13] === 'true',
-      age_11_13: row[14] === 'true',
-      age_14_16: row[15] === 'true',
-      age_17plus: row[16] === 'true',
+      // Convert CSV boolean values to lowercase before comparing
+      ter_kulteri: (row[6] || '').trim().toLowerCase() === 'true',
+      ter_belteri:  (row[7] || '').trim().toLowerCase() === 'true',
+      csp_alakulas:  (row[8] || '').trim().toLowerCase() === 'true',
+      csp_viharzas:  (row[9] || '').trim().toLowerCase() === 'true',
+      csp_normazas:  (row[10] || '').trim().toLowerCase() === 'true',
+      csp_mukodes:   (row[11] || '').trim().toLowerCase() === 'true',
+      age_0_5:       (row[12] || '').trim().toLowerCase() === 'true',
+      age_6_10:      (row[13] || '').trim().toLowerCase() === 'true',
+      age_11_13:     (row[14] || '').trim().toLowerCase() === 'true',
+      age_14_16:     (row[15] || '').trim().toLowerCase() === 'true',
+      age_17plus:    (row[16] || '').trim().toLowerCase() === 'true',
 
       // Funkció
       func1: row[17] || '',
@@ -111,16 +107,16 @@ document.addEventListener('DOMContentLoaded', () => {
       func3: row[19] || '',
 
       // Létszám
-      lt_3_5: row[20] === 'true',
-      lt_6_15: row[21] === 'true',
-      lt_16_30: row[22] === 'true',
-      lt_30plus: row[23] === 'true',
+      lt_3_5:  (row[20] || '').trim().toLowerCase() === 'true',
+      lt_6_15: (row[21] || '').trim().toLowerCase() === 'true',
+      lt_16_30:(row[22] || '').trim().toLowerCase() === 'true',
+      lt_30plus:(row[23] || '').trim().toLowerCase() === 'true',
 
       // Időtartam
-      time_3_10: row[24] === 'true',
-      time_11_20: row[25] === 'true',
-      time_21_30: row[26] === 'true',
-      time_30plus: row[27] === 'true',
+      time_3_10: (row[24] || '').trim().toLowerCase() === 'true',
+      time_11_20:(row[25] || '').trim().toLowerCase() === 'true',
+      time_21_30:(row[26] || '').trim().toLowerCase() === 'true',
+      time_30plus:(row[27] || '').trim().toLowerCase() === 'true',
 
       raw: row
     };
