@@ -136,7 +136,7 @@ const scoutGamesAppTemplate = `
           { title: 'Létszám', key: 'letszam', width: '10%' },
           { title: 'Időtartam', key: 'time', width: '10%' }
         ]"
-        class="elevation-1"
+        class="elevation-3"
         hover
       >
         <template v-slot:item="{ item }">
@@ -189,17 +189,31 @@ const scoutGamesAppTemplate = `
             <div class="my-2" v-if="tableState.dialogItem.value.tools">
               <strong>Kellékek:</strong> {{ tableState.dialogItem.value.tools }}
             </div>
-            <v-chip-group class="mt-4">
-              <template v-for="tag in buildTagList(tableState.dialogItem.value, 'ter')">
-                <v-chip color="primary" size="small" class="mr-1">{{ tag }}</v-chip>
-              </template>
-              <template v-for="tag in buildTagList(tableState.dialogItem.value, 'csoport')">
-                <v-chip color="success" size="small" class="mr-1">{{ tag }}</v-chip>
-              </template>
-              <template v-for="tag in buildTagList(tableState.dialogItem.value, 'age')">
-                <v-chip color="warning" size="small" class="mr-1">{{ tag }}</v-chip>
-              </template>
-            </v-chip-group>
+            <!-- New layout for properties with labels -->
+            <v-row dense class="mt-4" v-if="buildTagList(tableState.dialogItem.value, 'ter').length">
+              <v-col cols="4"><strong>Tér:</strong></v-col>
+              <v-col cols="8">
+                <span v-for="tag in buildTagList(tableState.dialogItem.value, 'ter')" :key="tag" style="margin-right:4px;">
+                  <v-chip color="primary" text-color="white">{{ tag }}</v-chip>
+                </span>
+              </v-col>
+            </v-row>
+            <v-row dense class="mt-2" v-if="buildTagList(tableState.dialogItem.value, 'csoport').length">
+              <v-col cols="4"><strong>Csoport:</strong></v-col>
+              <v-col cols="8">
+                <span v-for="tag in buildTagList(tableState.dialogItem.value, 'csoport')" :key="tag" style="margin-right:4px;">
+                  <v-chip color="success" text-color="white">{{ tag }}</v-chip>
+                </span>
+              </v-col>
+            </v-row>
+            <v-row dense class="mt-2" v-if="buildTagList(tableState.dialogItem.value, 'age').length">
+              <v-col cols="4"><strong>Korosztály:</strong></v-col>
+              <v-col cols="8">
+                <span v-for="tag in buildTagList(tableState.dialogItem.value, 'age')" :key="tag" style="margin-right:4px;">
+                  <v-chip color="warning" text-color="white">{{ tag }}</v-chip>
+                </span>
+              </v-col>
+            </v-row>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
