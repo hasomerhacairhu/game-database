@@ -128,13 +128,13 @@ const scoutGamesAppTemplate = `
       <v-data-table
         :items="tableState.filteredRows.value"
         :headers="[
-          { title: 'Játék neve', key: 'name', width: '20%' },
-          { title: 'Cél', key: 'objective', width: '20%' },
-          { title: 'Tér', key: 'ter', width: '15%' },
-          { title: 'Csoport', key: 'csoport', width: '15%' },
+          { title: 'Játék neve', key: 'name', width: '15%' },
+          { title: 'Cél', key: 'objective', width: '30%' },
+          { title: 'Tér', key: 'ter', width: '10%' },
+          { title: 'Csoport', key: 'csoport', width: '10%' },
           { title: 'Korosztály', key: 'age', width: '15%' },
-          { title: 'Létszám', key: 'letszam', width: '7.5%' },
-          { title: 'Időtartam', key: 'time', width: '7.5%' }
+          { title: 'Létszám', key: 'letszam', width: '10%' },
+          { title: 'Időtartam', key: 'time', width: '10%' }
         ]"
         class="elevation-1"
         hover
@@ -144,29 +144,29 @@ const scoutGamesAppTemplate = `
             <td>{{ item.name }}</td>
             <td>{{ item.objective }}</td>
             <td>
-              <div v-for="tag in buildTagList(item, 'ter')" :key="tag" style="display:block; margin-bottom:2px;">
+              <span v-for="tag in buildTagList(item, 'ter')" :key="tag" style="display:inline;">
                 <v-chip color="primary" text-color="white" small>{{ tag }}</v-chip>
-              </div>
+              </span>
             </td>
             <td>
-              <div v-for="tag in buildTagList(item, 'csoport')" :key="tag" style="display:block; margin-bottom:2px;">
+              <span v-for="tag in buildTagList(item, 'csoport')" :key="tag" style="display:inline;">
                 <v-chip color="success" text-color="white" small>{{ tag }}</v-chip>
-              </div>
+              </span>
             </td>
             <td>
-              <div v-for="tag in buildTagList(item, 'age')" :key="tag" style="display:block; margin-bottom:2px;">
+              <span v-for="tag in buildTagList(item, 'age')" :key="tag" style="display:inline;">
                 <v-chip color="warning" text-color="white" small>{{ tag }}</v-chip>
-              </div>
+              </span>
             </td>
             <td>
-              <div v-for="tag in buildTagList(item, 'letszam')" :key="tag" style="display:block; margin-bottom:2px;">
+              <span v-for="tag in buildTagList(item, 'letszam')" :key="tag" style="display:inline;">
                 <v-chip color="info" text-color="white" small>{{ tag }}</v-chip>
-              </div>
+              </span>
             </td>
             <td>
-              <div v-for="tag in buildTagList(item, 'time')" :key="tag" style="display:block; margin-bottom:2px;">
+              <span v-for="tag in buildTagList(item, 'time')" :key="tag" style="display:inline;">
                 <v-chip color="error" text-color="white" small>{{ tag }}</v-chip>
-              </div>
+              </span>
             </td>
           </tr>
         </template>
