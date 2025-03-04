@@ -145,27 +145,27 @@ const scoutGamesAppTemplate = `
             <td>{{ item.objective }}</td>
             <td>
               <span v-for="tag in buildTagList(item, 'ter')" :key="tag" style="display:inline;">
-                <v-chip color="primary" text-color="white" small>{{ tag }}</v-chip>
+                <v-chip color="primary" text-color="white" size="x-small" >{{ tag }}</v-chip>
               </span>
             </td>
             <td>
               <span v-for="tag in buildTagList(item, 'csoport')" :key="tag" style="display:inline;">
-                <v-chip color="success" text-color="white" small>{{ tag }}</v-chip>
+                <v-chip color="success" text-color="white" size="x-small">{{ tag }}</v-chip>
               </span>
             </td>
             <td>
               <span v-for="tag in buildTagList(item, 'age')" :key="tag" style="display:inline;">
-                <v-chip color="warning" text-color="white" small>{{ tag }}</v-chip>
+                <v-chip color="warning" text-color="white" size="x-small">{{ tag }}</v-chip>
               </span>
             </td>
             <td>
               <span v-for="tag in buildTagList(item, 'letszam')" :key="tag" style="display:inline;">
-                <v-chip color="info" text-color="white" small>{{ tag }}</v-chip>
+                <v-chip color="info" text-color="white" size="x-small">{{ tag }}</v-chip>
               </span>
             </td>
             <td>
               <span v-for="tag in buildTagList(item, 'time')" :key="tag" style="display:inline;">
-                <v-chip color="error" text-color="white" small>{{ tag }}</v-chip>
+                <v-chip color="error" text-color="white" size="x-small">{{ tag }}</v-chip>
               </span>
             </td>
           </tr>
