@@ -91,7 +91,7 @@ const scoutGamesAppTemplate = `
         <v-col cols="2">
           <v-select
             v-model="filters.letszamSelect.value"
-            :items="['3-5', '6-15', '16-30', '30+']"
+            :items="['3-5 fő', '6-15 fő', '16-30 fő', '30+ fő']"
             label="Létszám"
             multiple
             clearable

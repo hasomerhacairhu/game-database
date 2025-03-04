@@ -59,7 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
         download: true,
         skipEmptyLines: true,
         complete: (results) => {
-          console.log('CSV data received!', results);
+          //console.log('CSV data received!', results);
+          //console.log('CSV data received!');
           // Slice first 3 rows (header info):
           const data = results.data.slice(3);
           allRowsRef.value = data.map(row => mapRow(row));
@@ -172,10 +173,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (filters.letszamSelect.value.length > 0) {
         for (const option of filters.letszamSelect.value) {
           if (
-            (option === '3-5' && !row.lt_3_5) ||
-            (option === '6-15' && !row.lt_6_15) ||
-            (option === '16-30' && !row.lt_16_30) ||
-            (option === '30+' && !row.lt_30plus)
+            (option === '3-5 fő' && !row.lt_3_5) ||
+            (option === '6-15 fő' && !row.lt_6_15) ||
+            (option === '16-30 fő' && !row.lt_16_30) ||
+            (option === '30+ fő' && !row.lt_30plus)
           ) {
             return false;
           }
