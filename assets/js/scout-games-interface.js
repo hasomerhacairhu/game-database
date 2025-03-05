@@ -231,9 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 7) Render row fields as small tags
   function buildTagList(row, type) {
-    // For example, for "age" we check row.age_0_5, row.age_6_10, etc.
-    // Return an array of short tags like ["0-5", "6-10"].
-    // We'll handle each group by type
     const results = [];
     if (type === 'age') {
       if (row.age_0_5) results.push('0-5');
@@ -250,15 +247,19 @@ document.addEventListener('DOMContentLoaded', () => {
       if (row.csp_normazas) results.push('Normázás');
       if (row.csp_mukodes) results.push('Működés');
     } else if (type === 'letszam') {
-      if (row.lt_3_5) results.push('3-5');
-      if (row.lt_6_15) results.push('6-15');
-      if (row.lt_16_30) results.push('16-30');
-      if (row.lt_30plus) results.push('30+');
+      if (row.lt_3_5) results.push('3-5 fő');
+      if (row.lt_6_15) results.push('6-15 fő');
+      if (row.lt_16_30) results.push('16-30 fő');
+      if (row.lt_30plus) results.push('30+ fő');
     } else if (type === 'time') {
       if (row.time_3_10) results.push('3-10p');
       if (row.time_11_20) results.push('11-20p');
       if (row.time_21_30) results.push('21-30p');
       if (row.time_30plus) results.push('30+p');
+    } else if (type === 'funkcio') {
+      // Combine all function fields if non-empty
+      const funcs = [row.func1, row.func2, row.func3].map(f => f.trim()).filter(f => f);
+      results.push(...funcs);
     }
     return results;
   }
