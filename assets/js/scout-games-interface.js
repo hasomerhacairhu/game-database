@@ -259,9 +259,19 @@ document.addEventListener('DOMContentLoaded', () => {
           const tableState = buildTable();
           const loading = ref(true);
 
+          // NEW: Pagination state
+          const page = ref(1);
+          const itemsPerPage = ref(25);
+          const paginatedRows = computed(() => {
+            const start = (page.value - 1) * itemsPerPage.value;
+            return tableState.filteredRows.value.slice(start, start + itemsPerPage.value);
+          });
+          const totalPages = computed(() => Math.ceil(tableState.filteredRows.value.length / itemsPerPage.value));
+
           function applyFilters() {
             console.log('applyFilters triggered');
             filterData(filters, tableState);
+            page.value = 1; // Reset page after filtering
           }
 
           onMounted(() => {
@@ -271,6 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
           return {
             filters, tableState, loading,
+            // NEW: expose pagination state
+            page, itemsPerPage, paginatedRows, totalPages,
             applyFilters,
             clearAllFilters: () => clearAllFilters(filters, applyFilters),
             buildTagList,

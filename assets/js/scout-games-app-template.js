@@ -124,9 +124,9 @@ const scoutGamesAppTemplate = `
         {{ tableState.filteredRows.value.length }} játék található
       </div>
       
-      <!-- Data table -->
+      <!-- Data table with external pagination in top slot -->
       <v-data-table
-        :items="tableState.filteredRows.value"
+        :items="paginatedRows"
         :headers="[
           { title: 'Játék neve', key: 'name', width: '15%' },
           { title: 'Cél', key: 'objective', width: '30%' },
@@ -138,7 +138,30 @@ const scoutGamesAppTemplate = `
         ]"
         class="elevation-3"
         hover
+        hide-default-footer
       >
+        <template v-slot:top>
+          <v-row align="center">
+            <v-col cols="6">
+              <v-pagination
+                v-model="page"
+                :length="totalPages"
+                total-visible="7"
+              ></v-pagination>
+            </v-col>
+            <v-col cols="6" class="text-right">
+              <v-select
+                v-model="itemsPerPage"
+                :items="[25, 50, 100]"
+                label="Sorok száma/lapon"
+                dense
+                hide-details
+                style="max-width: 150px;"
+                @change="page = 1"
+              ></v-select>
+            </v-col>
+          </v-row>
+        </template>
         <template v-slot:item="{ item }">
           <tr @click="openDialog(item)" style="cursor: pointer">
             <td>{{ item.name }}</td>
@@ -147,7 +170,7 @@ const scoutGamesAppTemplate = `
             </td>
             <td>
               <span v-for="tag in buildTagList(item, 'ter')" :key="tag" style="display:inline;">
-                <v-chip color="primary" text-color="white" size="x-small" >{{ tag }}</v-chip>
+                <v-chip color="primary" text-color="white" size="x-small">{{ tag }}</v-chip>
               </span>
             </td>
             <td>
