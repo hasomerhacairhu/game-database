@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const tableState = buildTable();
           const loading = ref(true);
 
-          // NEW: Pagination state
+          // NEW: Pagination state with default value 25
           const page = ref(1);
           const itemsPerPage = ref(25);
           const paginatedRows = computed(() => {
@@ -267,6 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return tableState.filteredRows.value.slice(start, start + itemsPerPage.value);
           });
           const totalPages = computed(() => Math.ceil(tableState.filteredRows.value.length / itemsPerPage.value));
+          // NEW: Expose total number of rows for external pagination
+          const serverItemsLength = computed(() => tableState.filteredRows.value.length);
 
           function applyFilters() {
             console.log('applyFilters triggered');
@@ -280,9 +282,15 @@ document.addEventListener('DOMContentLoaded', () => {
           });
 
           return {
-            filters, tableState, loading,
-            // NEW: expose pagination state
-            page, itemsPerPage, paginatedRows, totalPages,
+            filters,
+            tableState,
+            loading,
+            page,
+            itemsPerPage,
+            paginatedRows,
+            totalPages,
+            // NEW: expose serverItemsLength to bind in v-data-table if needed
+            serverItemsLength,
             applyFilters,
             clearAllFilters: () => clearAllFilters(filters, applyFilters),
             buildTagList,
