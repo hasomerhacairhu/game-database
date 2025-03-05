@@ -143,7 +143,7 @@ const scoutGamesAppTemplate = `
         :items-per-page="itemsPerPage"
       >
         <template v-slot:top>
-          <v-row align="center">
+          <v-row align="center" style="padding: 16px;">
             <v-col cols="6" class="text-left">
               <v-select
                 v-model="itemsPerPage"
