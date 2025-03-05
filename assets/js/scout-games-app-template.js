@@ -142,7 +142,9 @@ const scoutGamesAppTemplate = `
         <template v-slot:item="{ item }">
           <tr @click="openDialog(item)" style="cursor: pointer">
             <td>{{ item.name }}</td>
-            <td>{{ item.objective }}</td>
+            <td>
+              {{ item.objective && item.objective.length > 80 ? item.objective.substring(0,80) + '...' : item.objective }}
+            </td>
             <td>
               <span v-for="tag in buildTagList(item, 'ter')" :key="tag" style="display:inline;">
                 <v-chip color="primary" text-color="white" size="x-small" >{{ tag }}</v-chip>
