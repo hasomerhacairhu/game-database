@@ -132,72 +132,51 @@ document.addEventListener('DOMContentLoaded', () => {
       const merged = (row.name + ' ' + row.alternative + ' ' + row.objective + ' ' + row.rules).toLowerCase();
       if (text && !merged.includes(text)) return false;
 
-      // New multi-select filter: Tér
+      // Multi-select filter: Tér (at least one matching)
       if (filters.terSelect.value.length > 0) {
-        for (const option of filters.terSelect.value) {
-          if ((option === 'Kültéri' && !row.ter_kulteri) ||
-              (option === 'Beltéri' && !row.ter_belteri)) {
-            return false;
-          }
-        }
+        if (!( (filters.terSelect.value.includes('Kültéri') && row.ter_kulteri) ||
+               (filters.terSelect.value.includes('Beltéri') && row.ter_belteri) ))
+          return false;
       }
 
-      // New multi-select filter: Csoport
+      // Multi-select filter: Csoport
       if (filters.csoportSelect.value.length > 0) {
-        for (const option of filters.csoportSelect.value) {
-          if ((option === 'Alakulás' && !row.csp_alakulas) ||
-              (option === 'Viharzás' && !row.csp_viharzas) ||
-              (option === 'Normázás' && !row.csp_normazas) ||
-              (option === 'Működés' && !row.csp_mukodes)) {
-            return false;
-          }
-        }
+        if (!( (filters.csoportSelect.value.includes('Alakulás') && row.csp_alakulas) ||
+               (filters.csoportSelect.value.includes('Viharzás') && row.csp_viharzas) ||
+               (filters.csoportSelect.value.includes('Normázás') && row.csp_normazas) ||
+               (filters.csoportSelect.value.includes('Működés') && row.csp_mukodes) ))
+          return false;
       }
 
-      // New multi-select filter: Korosztály
+      // Multi-select filter: Korosztály
       if (filters.ageSelect.value.length > 0) {
-        for (const option of filters.ageSelect.value) {
-          if ((option === '0-5' && !row.age_0_5) ||
-              (option === '6-10' && !row.age_6_10) ||
-              (option === '11-13' && !row.age_11_13) ||
-              (option === '14-16' && !row.age_14_16) ||
-              (option === '17+' && !row.age_17plus)) {
-            return false;
-          }
-        }
+        if (!( (filters.ageSelect.value.includes('0-5') && row.age_0_5) ||
+               (filters.ageSelect.value.includes('6-10') && row.age_6_10) ||
+               (filters.ageSelect.value.includes('11-13') && row.age_11_13) ||
+               (filters.ageSelect.value.includes('14-16') && row.age_14_16) ||
+               (filters.ageSelect.value.includes('17+') && row.age_17plus) ))
+          return false;
       }
 
-      // New multi-select filters:
-
-      // Létszám: for each selected option, row must have the corresponding boolean true
+      // Multi-select filter: Létszám
       if (filters.letszamSelect.value.length > 0) {
-        for (const option of filters.letszamSelect.value) {
-          if (
-            (option === '3-5 fő' && !row.lt_3_5) ||
-            (option === '6-15 fő' && !row.lt_6_15) ||
-            (option === '16-30 fő' && !row.lt_16_30) ||
-            (option === '30+ fő' && !row.lt_30plus)
-          ) {
-            return false;
-          }
-        }
+        if (!( (filters.letszamSelect.value.includes('3-5 fő') && row.lt_3_5) ||
+               (filters.letszamSelect.value.includes('6-15 fő') && row.lt_6_15) ||
+               (filters.letszamSelect.value.includes('16-30 fő') && row.lt_16_30) ||
+               (filters.letszamSelect.value.includes('30+ fő') && row.lt_30plus) ))
+          return false;
       }
 
-      // Időtartam: check corresponding properties
+      // Multi-select filter: Időtartam
       if (filters.idoSelect.value.length > 0) {
-        for (const option of filters.idoSelect.value) {
-          if (
-            (option === '3-10p' && !row.time_3_10) ||
-            (option === '11-20p' && !row.time_11_20) ||
-            (option === '21-30p' && !row.time_21_30) ||
-            (option === '30+p' && !row.time_30plus)
-          ) {
-            return false;
-          }
-        }
+        if (!( (filters.idoSelect.value.includes('3-10p') && row.time_3_10) ||
+               (filters.idoSelect.value.includes('11-20p') && row.time_11_20) ||
+               (filters.idoSelect.value.includes('21-30p') && row.time_21_30) ||
+               (filters.idoSelect.value.includes('30+p') && row.time_30plus) ))
+          return false;
       }
 
-      // Funkciók: require each selected option to be present in the row's functions array
+      // Multi-select filter: Funkciók remains as checking each selected option in rowFunctions:
       if (filters.funkcioSelect.value.length > 0) {
         const rowFunctions = [row.func1, row.func2, row.func3].map(f => f.trim());
         for (const option of filters.funkcioSelect.value) {
@@ -281,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const loading = ref(true);
 
           function applyFilters() {
+            console.log('applyFilters triggered');
             filterData(filters, tableState);
           }
 

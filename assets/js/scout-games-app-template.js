@@ -45,7 +45,7 @@ const scoutGamesAppTemplate = `
             multiple
             clearable
             density="compact"
-            @change="applyFilters"
+            @update:modelValue="applyFilters"
             style="width: 100%;"
           ></v-select>
         </v-col>
@@ -60,7 +60,7 @@ const scoutGamesAppTemplate = `
             multiple
             clearable
             density="compact"
-            @change="applyFilters"
+            @update:modelValue="applyFilters"
             style="width: 100%;"
           ></v-select>
         </v-col>
@@ -72,7 +72,7 @@ const scoutGamesAppTemplate = `
             multiple
             clearable
             density="compact"
-            @change="applyFilters"
+            @update:modelValue="applyFilters"
             style="width: 100%;"
           ></v-select>
         </v-col>
@@ -84,7 +84,7 @@ const scoutGamesAppTemplate = `
             multiple
             clearable
             density="compact"
-            @change="applyFilters"
+            @update:modelValue="applyFilters"
             style="width: 100%;"
           ></v-select>
         </v-col>
@@ -96,7 +96,7 @@ const scoutGamesAppTemplate = `
             multiple
             clearable
             density="compact"
-            @change="applyFilters"
+            @update:modelValue="applyFilters"
             style="width: 100%;"
           ></v-select>
         </v-col>
@@ -108,7 +108,7 @@ const scoutGamesAppTemplate = `
             multiple
             clearable
             density="compact"
-            @change="applyFilters"
+            @update:modelValue="applyFilters"
             style="width: 100%;"
           ></v-select>
         </v-col>
