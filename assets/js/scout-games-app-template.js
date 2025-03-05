@@ -119,11 +119,6 @@ const scoutGamesAppTemplate = `
         </v-col>
       </v-row>
       
-      <!-- Results count -->
-      <div class="text-subtitle-1 my-2">
-        {{ paginatedRows.length }} játék megjelenítve (összes: {{ tableState.filteredRows.value.length }})
-      </div>
-      
       <!-- Data table with external pagination in top slot -->
       <v-data-table
         :items="paginatedRows"
@@ -144,7 +139,19 @@ const scoutGamesAppTemplate = `
       >
         <template v-slot:top>
           <v-row align="center" style="padding: 16px;">
-            <v-col cols="6" class="text-left">
+            <v-col cols="3" class="text-left">
+              <div class="text-subtitle-1">
+                {{ tableState.filteredRows.value.length }} játék található
+              </div>
+            </v-col>
+            <v-col cols="6" class="text-center">
+              <v-pagination
+                v-model="page"
+                :length="totalPages"
+                total-visible="7"
+              ></v-pagination>
+            </v-col>
+            <v-col cols="3" class="text-right">
               <v-select
                 v-model="itemsPerPage"
                 :items="[25, 50, 100]"
@@ -154,13 +161,6 @@ const scoutGamesAppTemplate = `
                 style="max-width: 150px;"
                 @change="page = 1"
               ></v-select>
-            </v-col>
-            <v-col cols="6" class="text-right">
-              <v-pagination
-                v-model="page"
-                :length="totalPages"
-                total-visible="7"
-              ></v-pagination>
             </v-col>
           </v-row>
         </template>
