@@ -223,7 +223,7 @@ const scoutGamesAppTemplate = `
               <v-col cols="4"><strong>Tér:</strong></v-col>
               <v-col cols="8">
                 <span v-for="tag in buildTagList(tableState.dialogItem.value, 'ter')" :key="tag" style="margin-right:4px;">
-                  <v-chip color="primary" text-color="white" size="x-small">{{ tag }}</v-chip>
+                  <v-chip color="primary" text-color="white" size="large">{{ tag }}</v-chip>
                 </span>
               </v-col>
             </v-row>
@@ -231,7 +231,7 @@ const scoutGamesAppTemplate = `
               <v-col cols="4"><strong>Csoport:</strong></v-col>
               <v-col cols="8">
                 <span v-for="tag in buildTagList(tableState.dialogItem.value, 'csoport')" :key="tag" style="margin-right:4px;">
-                  <v-chip color="success" text-color="white" size="x-small">{{ tag }}</v-chip>
+                  <v-chip color="success" text-color="white" size="large">{{ tag }}</v-chip>
                 </span>
               </v-col>
             </v-row>
@@ -239,7 +239,7 @@ const scoutGamesAppTemplate = `
               <v-col cols="4"><strong>Korosztály:</strong></v-col>
               <v-col cols="8">
                 <span v-for="tag in buildTagList(tableState.dialogItem.value, 'age')" :key="tag" style="margin-right:4px;">
-                  <v-chip color="warning" text-color="white" size="x-small">{{ tag }}</v-chip>
+                  <v-chip color="warning" text-color="white" size="large">{{ tag }}</v-chip>
                 </span>
               </v-col>
             </v-row>
@@ -248,7 +248,7 @@ const scoutGamesAppTemplate = `
               <v-col cols="4"><strong>Létszám:</strong></v-col>
               <v-col cols="8">
                 <span v-for="tag in buildTagList(tableState.dialogItem.value, 'letszam')" :key="tag" style="margin-right:4px;">
-                  <v-chip color="info" text-color="white" size="x-small">{{ tag }}</v-chip>
+                  <v-chip color="info" text-color="white" size="large">{{ tag }}</v-chip>
                 </span>
               </v-col>
             </v-row>
@@ -256,7 +256,7 @@ const scoutGamesAppTemplate = `
               <v-col cols="4"><strong>Időtartam:</strong></v-col>
               <v-col cols="8">
                 <span v-for="tag in buildTagList(tableState.dialogItem.value, 'time')" :key="tag" style="margin-right:4px;">
-                  <v-chip color="error" text-color="white" size="x-small">{{ tag }}</v-chip>
+                  <v-chip color="error" text-color="white" size="large">{{ tag }}</v-chip>
                 </span>
               </v-col>
             </v-row>
@@ -264,7 +264,7 @@ const scoutGamesAppTemplate = `
               <v-col cols="4"><strong>Funkció:</strong></v-col>
               <v-col cols="8">
                 <span v-for="tag in buildTagList(tableState.dialogItem.value, 'funkcio')" :key="tag" style="margin-right:4px;">
-                  <v-chip color="secondary" text-color="white" size="x-small">{{ tag }}</v-chip>
+                  <v-chip color="secondary" text-color="white" size="large">{{ tag }}</v-chip>
                 </span>
               </v-col>
             </v-row>
@@ -273,7 +273,8 @@ const scoutGamesAppTemplate = `
               <v-col cols="4"><strong>Forrás:</strong></v-col>
               <v-col cols="8">
                 <a :href="tableState.dialogItem.value.source" target="_blank" style="text-decoration: none;">
-                  <v-icon small>mdi-open-in-new</v-icon>
+                  <!-- replaced icon with link emoji -->
+                  🔗
                 </a>
               </v-col>
             </v-row>
