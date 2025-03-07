@@ -140,9 +140,10 @@ const scoutGamesAppTemplate = `
         <template v-slot:top>
           <v-row align="center" style="padding: 16px;">
             <v-col cols="3" class="text-left">
-              <div class="text-subtitle-1">
+              <!-- Changed counter to v-chip for a prettier display -->
+              <v-chip color="primary" text-color="white" outlined>
                 {{ tableState.filteredRows.value.length }} játék található
-              </div>
+              </v-chip>
             </v-col>
             <v-col cols="6" class="text-center">
               <v-pagination
@@ -152,13 +153,14 @@ const scoutGamesAppTemplate = `
               ></v-pagination>
             </v-col>
             <v-col cols="3" class="text-right">
+              <!-- Updated v-select width to fill the column -->
               <v-select
                 v-model="itemsPerPage"
                 :items="[25, 50, 100]"
                 label="Találatok oldalanként"
                 dense
                 hide-details
-                style="max-width: 150px;"
+                style="width: 100%;"
                 @change="page = 1"
               ></v-select>
             </v-col>
