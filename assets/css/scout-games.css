@@ -43,3 +43,27 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.scout-games-app-container {
+    margin: 0;
+    padding: 0;
+    max-width: 100% !important;
+    background: #fff;
+    position: relative;
+    z-index: 9999;
+}
+
+/* Increase specificity to override Divi defaults */
+.scout-games-app-container .v-app,
+.scout-games-app-container .v-container,
+.scout-games-app-container .v-row,
+.scout-games-app-container .v-col {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+}
+
+/* Additional reset if needed */
+.scout-games-app-container * {
+    box-sizing: border-box;
+}
