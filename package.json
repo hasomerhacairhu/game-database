@@ -1,0 +1,27 @@
+{
+  "name": "somer-game-database",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Somer játékadatbázis applet Vue 3 + Vuetify 3",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "papaparse": "^5.4.1",
+    "vue": "^3.4.21",
+    "vuetify": "^3.5.8"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.3.14",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "sass-embedded": "^1.93.3",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.6",
+    "vite-plugin-vuetify": "^2.0.1",
+    "vue-tsc": "^2.0.6"
+  }
+}

@@ -1,17 +1,39 @@
 Egy egyoldalas appletet készítünk.
 
 Technologia:
-- vuetify component library
-- vue keretrendszer, egy fileos komponensekkel.
+- vuetify 3 component library
+- vue 3 keretrendszer, egy fileos komponensekkel. jól tagolt apró komponensek sokaságából épüljön fel.
 
 Környezet
 Prod: github CI legyen hozzá ami buildel, utána meg cloudflaren vagy digitalocean appleten fogom futtatni.
-legyen egy developer környezet is hogy tudjam tesztelni.
+legyen egy developer környezet is hogy tudjam tesztelni lokálisan.
 
 Funkció:
 Rendelkezem google driveban egy 1200 soros tablélazattal, ami ifjúsági vezetők számára összegyűjtött játékokat tartalmaz. Ezt nyilvánosságra hozom driveból CSV formátumban.
-Az applet ezt a táblázatot tölti be, cacheli pár órára. 
+Az applet ezt a táblázatot tölti be, cacheli pár órára.
+A betöltés alatt loadert látunk, ameddig meg nem érkezik az adat.
+A listában minden sor kattintható. Kattintásra popup ablak nyílik amiben az alábbi infókat mutatja a játéjkról:
+-Játék célja: szöveg
+-Szabályok: szöveg
+-Kellékek: szöveg
+-Tér: chip (https://vuetifyjs.com/en/components/chips/#usage)
+-Csoport: chip
+-Korosztály: chip
+-Létszám: chip
+-Időtartam: chip
+-Funkció: chip
+-Forrás: 🔗 emoji ami a táblázatbból származó urlre mutat.
+
+
+Layout:
+- Felső menüsor címmel, logóvel és egy gombbal "Ugrás a somer.hu-ra"
+- egyszerű és összetett űrlap
+-- egyszerű szűrő egy midnenben kereső mező
+-- összetett szűrő minden mezőre lehet alaposan keresni. a paraméter csoportoknél (pl tér, korosztály), legördülő menüben lehessen többet kiválasztani. több kijelölése esetén bármelyik teljesülése elegendő.
+- szűrő törlése gomb
 Az appleten megjelenik egy ergonomikus szűrő űrlap, alatta egy táblázat, lapozó.
+- Footer: "Az adatbázist a Magyarországi Somer Hacair Egyesület üzemelteti." + legyen egy szöveg arról, hogy ha hibát találnak, akkor küldjék el nekünk.
+
 
 Adatforrás:
 https://docs.google.com/spreadsheets/d/e/2PACX-1vRcx1YPhoi6kUVe36T4T2162AhCdBwuVSX0ou2u-Vlicjf2So3VL3E2MDzrNYIbkgckP4n8p18_UOGP/pub?gid=0&single=true&output=csv
@@ -78,4 +100,5 @@ Játékok vetélkedőhöz
 Feszültségoldó
 
 
-Készíts
+Tegyél fel pontosító kérdéseket, hogy optimális appletet készíts
+Készíts feladatlistát külön MD fileba, ami alapján lépésenként fel lehet építeni az appletet.
