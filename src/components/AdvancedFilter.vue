@@ -35,7 +35,7 @@
       </v-col>
     </v-row>
 
-    <!-- 2. sor: 5 legördülő -->
+    <!-- 2. sor: 5 legördülő + törlés gomb -->
     <v-row dense class="mt-2">
       <!-- Tér -->
       <v-col cols="6" sm="4" md>
@@ -111,6 +111,21 @@
           hide-details
         ></v-select>
       </v-col>
+
+      <!-- Szűrő törlése gomb -->
+      <v-col cols="6" sm="4" md>
+        <v-btn
+          @click="clearFilters"
+          color="error"
+          variant="outlined"
+          density="compact"
+          prepend-icon="mdi-filter-remove"
+          block
+          height="40"
+        >
+          Törlés
+        </v-btn>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -133,7 +148,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: GameFilterState]
+  'clear': []
 }>()
+
+const clearFilters = () => {
+  emit('clear')
+}
 
 const advancedSearchText = computed({
   get: () => props.modelValue.advancedSearch,
