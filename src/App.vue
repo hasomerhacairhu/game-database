@@ -4,7 +4,7 @@
     <AppHeader />
 
     <!-- Main Content -->
-    <v-main>
+    <v-main class="bg-grey-lighten-4">
       <!-- Loading Overlay -->
       <v-overlay
         :model-value="loading"
@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useGameData } from '@/composables/useGameData'
 import { useGameFilter } from '@/composables/useGameFilter'
 import type { Game } from '@/types/Game'
@@ -80,26 +80,8 @@ import GameDetailsDialog from '@/components/GameDetailsDialog.vue'
 // Adatok betöltése
 const { games, loading, error, refetch } = useGameData()
 
-// Debug: games változás figyelése
-watch(games, (newGames) => {
-  console.log('App.vue - games változott, új hossz:', newGames.length)
-}, { immediate: true })
-
-watch(loading, (newLoading) => {
-  console.log('App.vue - loading:', newLoading)
-}, { immediate: true })
-
-watch(error, (newError) => {
-  console.log('App.vue - error:', newError)
-}, { immediate: true })
-
 // Szűrés
 const { filterState, filteredGames, clearFilters } = useGameFilter(games)
-
-// Debug: filteredGames változás figyelése
-watch(filteredGames, (newFiltered) => {
-  console.log('App.vue - filteredGames változott, új hossz:', newFiltered.length)
-}, { immediate: true })
 
 // Dialog kezelése
 const showDetailsDialog = ref(false)

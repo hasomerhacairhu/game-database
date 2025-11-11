@@ -13,19 +13,12 @@ export function useGameData() {
   const error = ref<string | null>(null)
 
   const parseBool = (value: string): boolean => {
-    return value?.trim().toLowerCase() === 'igaz' || value?.trim() === '1' || value?.trim().toLowerCase() === 'true'
+    if (!value) return false
+    const normalized = value.trim().toUpperCase()
+    return normalized === 'IGAZ' || normalized === '1' || normalized === 'TRUE'
   }
 
-  let loggedKeys = false
-  
   const parseCSVRow = (row: any): Game => {
-    // Debug: log először az összes kulcsot (csak egyszer)
-    if (!loggedKeys && Object.keys(row).length > 0) {
-      console.log('CSV sor kulcsok:', Object.keys(row))
-      console.log('Első sor értékek:', row)
-      loggedKeys = true
-    }
-    
     return {
       name: row['Játék neve'] || '',
       altNames: row['Játék további elnevezései'] || '',
@@ -34,33 +27,39 @@ export function useGameData() {
       materials: row['Szükséges kellékek'] || '',
       source: row['Forrásmegjelölés'] || '',
       
-      outdoorSpace: parseBool(row['Tér - Kültéren játszható']),
-      indoorSpace: parseBool(row['Tér - Beltéren játszható']),
+      // Tér
+      outdoorSpace: parseBool(row['Kültéren játszható']),
+      indoorSpace: parseBool(row['Beltéren játszható']),
       
-      groupPhaseForming: parseBool(row['Csoportdinamikai fázis - Alakulás']),
-      groupPhaseStorming: parseBool(row['Csoportdinamikai fázis - Viharzás']),
-      groupPhaseNorming: parseBool(row['Csoportdinamikai fázis - Normázás']),
-      groupPhasePerforming: parseBool(row['Csoportdinamikai fázis - Működés']),
+      // Csoportdinamikai fázis
+      groupPhaseForming: parseBool(row['Alakulás']),
+      groupPhaseStorming: parseBool(row['Viharzás']),
+      groupPhaseNorming: parseBool(row['Normázás']),
+      groupPhasePerforming: parseBool(row['Működés']),
       
-      age0to5: parseBool(row['Korosztály - 0-5']),
-      age6to10: parseBool(row['Korosztály - 6-10']),
-      age11to13: parseBool(row['Korosztály - 11-13']),
-      age14to16: parseBool(row['Korosztály - 14-16']),
-      age17plus: parseBool(row['Korosztály - 17+']),
+      // Korosztály
+      age0to5: parseBool(row['0-5']),
+      age6to10: parseBool(row['6-10']),
+      age11to13: parseBool(row['11-13']),
+      age14to16: parseBool(row['14-16']),
+      age17plus: parseBool(row['17+']),
       
-      function1: row['Funkció\t- 1.'] || '',
-      function2: row['Funkció\t- 2.'] || '',
-      function3: row['Funkció\t- 3.'] || '',
+      // Funkció
+      function1: row['1.'] || '',
+      function2: row['2.'] || '',
+      function3: row['3.'] || '',
       
-      groupSizeSmall: parseBool(row['Létszám - "kis csoport 3-5 fő"']),
-      groupSizeMedium: parseBool(row['Létszám - "közepes csoport 6-15 fő"']),
-      groupSizeLarge: parseBool(row['Létszám - "nagy csoport 16-30 fő"']),
-      groupSizeCommunity: parseBool(row['Létszám - "közösség 30+ fő"']),
+      // Létszám (fő)
+      groupSizeSmall: parseBool(row['kis csoport\n3-5 fő']),
+      groupSizeMedium: parseBool(row['közepes csoport\n6-15 fő']),
+      groupSizeLarge: parseBool(row['nagy csoport\n16-30 fő']),
+      groupSizeCommunity: parseBool(row['közösség\n30+ fő']),
       
-      duration3to10: parseBool(row['Időtartam - 3-10p']),
-      duration11to20: parseBool(row['Időtartam - 11-20p']),
-      duration21to30: parseBool(row['Időtartam - 21-30p']),
-      duration30plus: parseBool(row['Időtartam - 30+p'])
+      // Időtartam
+      duration3to10: parseBool(row['3-10p']),
+      duration11to20: parseBool(row['11-20p']),
+      duration21to30: parseBool(row['21-30p']),
+      duration30plus: parseBool(row['30+p'])
     }
   }
 
@@ -95,51 +94,36 @@ export function useGameData() {
   }
 
   const fetchGames = async () => {
-    console.log('fetchGames indult')
     loading.value = true
     error.value = null
 
-    // Debug: Cache törlése fejlesztés közben
-    localStorage.removeItem(CACHE_KEY)
-    localStorage.removeItem(CACHE_TIMESTAMP_KEY)
-    console.log('Cache törölve')
-
     // Először próbáljuk meg betölteni a cache-ből
-    // if (loadFromCache()) {
-    //   console.log('Adatok betöltve cache-ből, játékok száma:', games.value.length)
-    //   loading.value = false
-    //   return
-    // }
-
-    console.log('Cache-ben nincs adat, letöltés indítása...')
+    if (loadFromCache()) {
+      loading.value = false
+      return
+    }
     try {
       const response = await fetch(CSV_URL)
-      console.log('Fetch response status:', response.status)
       if (!response.ok) {
         throw new Error('Hiba a CSV betöltésekor')
       }
       
       const csvText = await response.text()
-      console.log('CSV szöveg hossza:', csvText.length)
-      console.log('CSV első 500 karakter:', csvText.substring(0, 500))
       
-      // A CSV-nek 2 fejléc sora van, az első sor kategóriák, a második az igazi fejlécek
-      // Távolítsuk el az első sort
+      // A CSV-nek 2 fejléc sora van: az első sor kategóriák, a második az igazi fejlécek
+      // Az első sort eltávolítjuk, a második lesz a header
       const lines = csvText.split('\n')
       const csvWithoutFirstLine = lines.slice(1).join('\n')
-      console.log('CSV első sor eltávolítva, új első 300 karakter:', csvWithoutFirstLine.substring(0, 300))
       
       Papa.parse<any>(csvWithoutFirstLine, {
         header: true,
         skipEmptyLines: true,
         complete: (results: Papa.ParseResult<any>) => {
-          console.log('CSV Parse eredmény:', results)
-          console.log('Első sor:', results.data[0])
-          console.log('Mezők:', results.meta?.fields)
+          // Az első sor tartalmazza a mezőneveket értékként (ez volt a második fejléc sor)
+          // Ezért az első sort is ki kell hagynunk
+          const dataRows = results.data.slice(1)
           
-          const parsedGames = results.data.map(parseCSVRow).filter((game: Game) => game.name)
-          console.log('Parsed games száma:', parsedGames.length)
-          console.log('Első játék:', parsedGames[0])
+          const parsedGames = dataRows.map(parseCSVRow).filter((game: Game) => game.name)
           
           games.value = parsedGames
           saveToCache(parsedGames)

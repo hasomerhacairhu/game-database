@@ -6,9 +6,9 @@
       v-model:page="page"
       :items-per-page="itemsPerPage"
       :items-per-page-options="itemsPerPageOptions"
-      class="elevation-1"
+      class="elevation-1 game-table"
       item-value="name"
-      @click:row="handleRowClick"
+      @click:row="(_, row) => handleRowClick(row.item)"
       @update:items-per-page="(val) => { itemsPerPage = val; page = 1 }"
     >
       <!-- Top toolbar -->
@@ -43,17 +43,68 @@
         </v-toolbar>
       </template>
 
-      <!-- Sorok -->
-      <template v-slot:item="{ item }">
-        <tr class="cursor-pointer" @click="handleRowClick(null, { item })">
-          <td>{{ item.name }}</td>
-          <td>{{ truncateText(item.goal, 100) }}</td>
-          <td>{{ getSpaceDisplay(item) }}</td>
-          <td>{{ getGroupPhaseDisplay(item) }}</td>
-          <td>{{ getAgeGroupDisplay(item) }}</td>
-          <td>{{ getGroupSizeDisplay(item) }}</td>
-          <td>{{ getDurationDisplay(item) }}</td>
-        </tr>
+      <!-- Név oszlop -->
+      <template v-slot:item.name="{ item }">
+        <span class="font-weight-medium">{{ item.name }}</span>
+      </template>
+
+      <!-- Cél oszlop -->
+      <template v-slot:item.goal="{ item }">
+        {{ truncateText(item.goal, 100) }}
+      </template>
+
+      <!-- Tér oszlop -->
+      <template v-slot:item.space="{ item }">
+        <div class="d-flex flex-wrap ga-1">
+          <v-chip v-if="item.outdoorSpace" size="x-small" color="somer-green-light" variant="flat" class="text-caption">Kültér</v-chip>
+          <v-chip v-if="item.indoorSpace" size="x-small" color="somer-green-light" variant="flat" class="text-caption">Beltér</v-chip>
+          <span v-if="!item.outdoorSpace && !item.indoorSpace">-</span>
+        </div>
+      </template>
+
+      <!-- Csoport oszlop -->
+      <template v-slot:item.groupPhase="{ item }">
+        <div class="d-flex flex-wrap ga-1">
+          <v-chip v-if="item.groupPhaseForming" size="x-small" color="somer-cyan-light" variant="flat" class="text-caption">Alakulás</v-chip>
+          <v-chip v-if="item.groupPhaseStorming" size="x-small" color="somer-cyan-light" variant="flat" class="text-caption">Viharzás</v-chip>
+          <v-chip v-if="item.groupPhaseNorming" size="x-small" color="somer-cyan-light" variant="flat" class="text-caption">Normázás</v-chip>
+          <v-chip v-if="item.groupPhasePerforming" size="x-small" color="somer-cyan-light" variant="flat" class="text-caption">Működés</v-chip>
+          <span v-if="!item.groupPhaseForming && !item.groupPhaseStorming && !item.groupPhaseNorming && !item.groupPhasePerforming">-</span>
+        </div>
+      </template>
+
+      <!-- Kor oszlop -->
+      <template v-slot:item.ageGroup="{ item }">
+        <div class="d-flex flex-wrap ga-1">
+          <v-chip v-if="item.age0to5" size="x-small" color="somer-blue-light" variant="flat" class="text-caption">0-5</v-chip>
+          <v-chip v-if="item.age6to10" size="x-small" color="somer-blue-light" variant="flat" class="text-caption">6-10</v-chip>
+          <v-chip v-if="item.age11to13" size="x-small" color="somer-blue-light" variant="flat" class="text-caption">11-13</v-chip>
+          <v-chip v-if="item.age14to16" size="x-small" color="somer-blue-light" variant="flat" class="text-caption">14-16</v-chip>
+          <v-chip v-if="item.age17plus" size="x-small" color="somer-blue-light" variant="flat" class="text-caption">17+</v-chip>
+          <span v-if="!item.age0to5 && !item.age6to10 && !item.age11to13 && !item.age14to16 && !item.age17plus">-</span>
+        </div>
+      </template>
+
+      <!-- Fő oszlop -->
+      <template v-slot:item.groupSize="{ item }">
+        <div class="d-flex flex-wrap ga-1">
+          <v-chip v-if="item.groupSizeSmall" size="x-small" color="somer-yellow-light" variant="flat" class="text-caption">3-5</v-chip>
+          <v-chip v-if="item.groupSizeMedium" size="x-small" color="somer-yellow-light" variant="flat" class="text-caption">6-15</v-chip>
+          <v-chip v-if="item.groupSizeLarge" size="x-small" color="somer-yellow-light" variant="flat" class="text-caption">16-30</v-chip>
+          <v-chip v-if="item.groupSizeCommunity" size="x-small" color="somer-yellow-light" variant="flat" class="text-caption">30+</v-chip>
+          <span v-if="!item.groupSizeSmall && !item.groupSizeMedium && !item.groupSizeLarge && !item.groupSizeCommunity">-</span>
+        </div>
+      </template>
+
+      <!-- Idő oszlop -->
+      <template v-slot:item.duration="{ item }">
+        <div class="d-flex flex-wrap ga-1">
+          <v-chip v-if="item.duration3to10" size="x-small" color="somer-lime-light" variant="flat" class="text-caption">3-10p</v-chip>
+          <v-chip v-if="item.duration11to20" size="x-small" color="somer-lime-light" variant="flat" class="text-caption">11-20p</v-chip>
+          <v-chip v-if="item.duration21to30" size="x-small" color="somer-lime-light" variant="flat" class="text-caption">21-30p</v-chip>
+          <v-chip v-if="item.duration30plus" size="x-small" color="somer-lime-light" variant="flat" class="text-caption">30+p</v-chip>
+          <span v-if="!item.duration3to10 && !item.duration11to20 && !item.duration21to30 && !item.duration30plus">-</span>
+        </div>
       </template>
 
       <!-- Bottom toolbar -->
@@ -132,13 +183,13 @@ const pageCount = computed(() => {
 })
 
 const headers = [
-  { title: 'Játék neve', key: 'name', align: 'start' as const, sortable: true },
-  { title: 'Cél', key: 'goal', align: 'start' as const, sortable: false },
-  { title: 'Tér', key: 'space', align: 'start' as const, sortable: false },
-  { title: 'Csoportdinamikai fázis', key: 'groupPhase', align: 'start' as const, sortable: false },
-  { title: 'Korosztály', key: 'ageGroup', align: 'start' as const, sortable: false },
-  { title: 'Létszám (fő)', key: 'groupSize', align: 'start' as const, sortable: false },
-  { title: 'Időtartam', key: 'duration', align: 'start' as const, sortable: false }
+  { title: 'Játék neve', key: 'name', align: 'start' as const, sortable: true, width: '250px' },
+  { title: 'Cél', key: 'goal', align: 'start' as const, sortable: false, width: '300px' },
+  { title: 'Tér', key: 'space', align: 'start' as const, sortable: false, width: '120px' },
+  { title: 'Csoport', key: 'groupPhase', align: 'start' as const, sortable: false, width: '140px' },
+  { title: 'Kor', key: 'ageGroup', align: 'start' as const, sortable: false, width: '140px' },
+  { title: 'Fő', key: 'groupSize', align: 'start' as const, sortable: false, width: '120px' },
+  { title: 'Idő', key: 'duration', align: 'start' as const, sortable: false, width: '120px' }
 ]
 
 const truncateText = (text: string, maxLength: number): string => {
@@ -147,17 +198,17 @@ const truncateText = (text: string, maxLength: number): string => {
   return text.substring(0, maxLength) + '...'
 }
 
-const handleRowClick = (_: any, { item }: { item: Game }) => {
+const handleRowClick = (item: Game) => {
   emit('game-selected', item)
 }
 </script>
 
 <style scoped>
-.cursor-pointer {
+:deep(.game-table tbody tr) {
   cursor: pointer;
 }
 
-.cursor-pointer:hover {
+:deep(.game-table tbody tr:hover) {
   background-color: rgba(0, 0, 0, 0.04);
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <v-footer color="grey-lighten-4" class="text-center py-4">
+  <v-footer color="secondary" class="text-center py-4">
     <v-container class="footer-content">
       <v-row>
         <v-col cols="12" class="text-body-1">

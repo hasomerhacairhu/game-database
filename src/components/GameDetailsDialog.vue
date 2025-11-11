@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="dialogOpen" max-width="800" scrollable>
     <v-card v-if="game">
-      <v-card-title class="text-h5 bg-primary">
-        <span class="text-white">{{ game.name }}</span>
+      <v-card-title class="text-h5 bg-primary text-white">
+        {{ game.name }}
       </v-card-title>
 
       <v-divider></v-divider>
@@ -36,88 +36,100 @@
 
         <!-- Chipek -->
         <v-row dense>
-          <!-- Tér -->
-          <v-col cols="12" v-if="spaceChips.length > 0">
-            <div class="text-subtitle-2 mb-2">Tér:</div>
-            <v-chip
-              v-for="chip in spaceChips"
-              :key="chip"
-              class="mr-2 mb-2"
-              color="blue"
-              variant="flat"
-            >
-              {{ chip }}
-            </v-chip>
+          <!-- Bal oldali oszlop -->
+          <v-col cols="12" md="6">
+            <!-- Tér -->
+            <div v-if="spaceChips.length > 0" class="mb-3">
+              <div class="text-subtitle-2 mb-2">Tér:</div>
+              <v-chip
+                v-for="chip in spaceChips"
+                :key="chip"
+                class="mr-2 mb-2"
+                size="small"
+                color="somer-green-light"
+                variant="flat"
+              >
+                {{ chip }}
+              </v-chip>
+            </div>
+
+            <!-- Csoportdinamikai fázis -->
+            <div v-if="groupPhaseChips.length > 0" class="mb-3">
+              <div class="text-subtitle-2 mb-2">Csoportdinamikai fázis:</div>
+              <v-chip
+                v-for="chip in groupPhaseChips"
+                :key="chip"
+                class="mr-2 mb-2"
+                size="small"
+                color="somer-cyan-light"
+                variant="flat"
+              >
+                {{ chip }}
+              </v-chip>
+            </div>
+
+            <!-- Korosztály -->
+            <div v-if="ageGroupChips.length > 0" class="mb-3">
+              <div class="text-subtitle-2 mb-2">Korosztály:</div>
+              <v-chip
+                v-for="chip in ageGroupChips"
+                :key="chip"
+                class="mr-2 mb-2"
+                size="small"
+                color="somer-blue-light"
+                variant="flat"
+              >
+                {{ chip }}
+              </v-chip>
+            </div>
           </v-col>
 
-          <!-- Csoportdinamikai fázis -->
-          <v-col cols="12" v-if="groupPhaseChips.length > 0">
-            <div class="text-subtitle-2 mb-2">Csoportdinamikai fázis:</div>
-            <v-chip
-              v-for="chip in groupPhaseChips"
-              :key="chip"
-              class="mr-2 mb-2"
-              color="purple"
-              variant="flat"
-            >
-              {{ chip }}
-            </v-chip>
-          </v-col>
+          <!-- Jobb oldali oszlop -->
+          <v-col cols="12" md="6">
+            <!-- Létszám -->
+            <div v-if="groupSizeChips.length > 0" class="mb-3">
+              <div class="text-subtitle-2 mb-2">Létszám:</div>
+              <v-chip
+                v-for="chip in groupSizeChips"
+                :key="chip"
+                class="mr-2 mb-2"
+                size="small"
+                color="somer-yellow-light"
+                variant="flat"
+              >
+                {{ chip }}
+              </v-chip>
+            </div>
 
-          <!-- Korosztály -->
-          <v-col cols="12" v-if="ageGroupChips.length > 0">
-            <div class="text-subtitle-2 mb-2">Korosztály:</div>
-            <v-chip
-              v-for="chip in ageGroupChips"
-              :key="chip"
-              class="mr-2 mb-2"
-              color="orange"
-              variant="flat"
-            >
-              {{ chip }}
-            </v-chip>
-          </v-col>
+            <!-- Időtartam -->
+            <div v-if="durationChips.length > 0" class="mb-3">
+              <div class="text-subtitle-2 mb-2">Időtartam:</div>
+              <v-chip
+                v-for="chip in durationChips"
+                :key="chip"
+                class="mr-2 mb-2"
+                size="small"
+                color="somer-lime-light"
+                variant="flat"
+              >
+                {{ chip }}
+              </v-chip>
+            </div>
 
-          <!-- Létszám -->
-          <v-col cols="12" v-if="groupSizeChips.length > 0">
-            <div class="text-subtitle-2 mb-2">Létszám:</div>
-            <v-chip
-              v-for="chip in groupSizeChips"
-              :key="chip"
-              class="mr-2 mb-2"
-              color="green"
-              variant="flat"
-            >
-              {{ chip }}
-            </v-chip>
-          </v-col>
-
-          <!-- Időtartam -->
-          <v-col cols="12" v-if="durationChips.length > 0">
-            <div class="text-subtitle-2 mb-2">Időtartam:</div>
-            <v-chip
-              v-for="chip in durationChips"
-              :key="chip"
-              class="mr-2 mb-2"
-              color="teal"
-              variant="flat"
-            >
-              {{ chip }}
-            </v-chip>
-          </v-col>
-
-          <!-- Funkció -->
-          <v-col cols="12" v-if="functionChips.length > 0">
-            <div class="text-subtitle-2 mb-2">Funkció:</div>
-            <v-chip
-              v-for="chip in functionChips"
-              :key="chip"
-              class="mr-2 mb-2"
-              color="indigo"
-              variant="flat"
-            >
-              {{ chip }}
-            </v-chip>
+            <!-- Funkció -->
+            <div v-if="functionChips.length > 0" class="mb-3">
+              <div class="text-subtitle-2 mb-2">Funkció:</div>
+              <v-chip
+                v-for="chip in functionChips"
+                :key="chip"
+                class="mr-2 mb-2"
+                size="small"
+                color="somer-orange-light"
+                variant="flat"
+              >
+                {{ chip }}
+              </v-chip>
+            </div>
           </v-col>
         </v-row>
 

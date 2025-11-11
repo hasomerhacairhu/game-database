@@ -116,8 +116,8 @@
       <v-col cols="6" sm="4" md>
         <v-btn
           @click="clearFilters"
-          color="error"
-          variant="outlined"
+          color="secondary"
+          variant="tonal"
           density="compact"
           prepend-icon="mdi-filter-remove"
           block
