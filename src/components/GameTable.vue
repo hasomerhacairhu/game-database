@@ -317,7 +317,7 @@ const pageCount = computed(() => {
 
 const headers = [
   { title: 'Játék neve', key: 'name', align: 'start' as const, sortable: true, width: '15%' },
-  { title: 'Cél', key: 'goal', align: 'start' as const, sortable: false, width: '30%' },
+  { title: 'Cél', key: 'goal', align: 'start' as const, sortable: true, width: '30%' },
   { title: 'Tér', key: 'space', align: 'start' as const, sortable: false, width: '10%' },
   { title: 'Csoport', key: 'groupPhase', align: 'start' as const, sortable: false, width: '10%' },
   { title: 'Kor', key: 'ageGroup', align: 'start' as const, sortable: false, width: '15%' },

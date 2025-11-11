@@ -61,6 +61,13 @@
     <GameDetailsDialog
       v-model="showDetailsDialog"
       :game="selectedGame"
+      @report-inaccuracy="openReportDialog"
+    />
+
+    <!-- Report Inaccuracy Dialog -->
+    <ReportInaccuracyDialog
+      v-model="showReportDialog"
+      :game-name="reportGameName"
     />
   </v-app>
 </template>
@@ -76,6 +83,7 @@ import AppFooter from '@/components/AppFooter.vue'
 import FilterPanel from '@/components/FilterPanel.vue'
 import GameTable from '@/components/GameTable.vue'
 import GameDetailsDialog from '@/components/GameDetailsDialog.vue'
+import ReportInaccuracyDialog from '@/components/ReportInaccuracyDialog.vue'
 
 // Adatok betöltése
 const { games, loading, error, refetch } = useGameData()
@@ -90,6 +98,15 @@ const selectedGame = ref<Game | null>(null)
 const openGameDetails = (game: Game) => {
   selectedGame.value = game
   showDetailsDialog.value = true
+}
+
+// Report dialog kezelése
+const showReportDialog = ref(false)
+const reportGameName = ref('')
+
+const openReportDialog = (gameName: string) => {
+  reportGameName.value = gameName
+  showReportDialog.value = true
 }
 </script>
 
