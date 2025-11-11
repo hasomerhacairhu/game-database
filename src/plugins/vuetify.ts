@@ -12,6 +12,17 @@ export default createVuetify({
     locale: 'hu',
     messages: { hu }
   },
+  defaults: {
+    VBtn: {
+      style: 'font-family: "Myriad Pro", sans-serif; font-weight: 400;',
+    },
+    VTextField: {
+      style: 'font-family: "Myriad Pro", sans-serif; font-weight: 400;',
+    },
+    VSelect: {
+      style: 'font-family: "Myriad Pro", sans-serif; font-weight: 400;',
+    },
+  },
   theme: {
     defaultTheme: 'light',
     themes: {
