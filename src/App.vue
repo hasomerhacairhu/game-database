@@ -50,18 +50,20 @@
           v-if="!loading && !error"
           :games="filteredGames"
           @game-selected="openGameDetails"
+          @auth-required="notification.showAuthRequired()"
         />
       </v-container>
     </v-main>
 
     <!-- Footer -->
-    <AppFooter />
+    <AppFooter @auth-required="notification.showAuthRequired()" />
 
     <!-- Game Details Dialog -->
     <GameDetailsDialog
       v-model="showDetailsDialog"
       :game="selectedGame"
       @report-inaccuracy="openReportDialog"
+      @auth-required="notification.showAuthRequired()"
     />
 
     <!-- Report Inaccuracy Dialog -->
@@ -69,6 +71,24 @@
       v-model="showReportDialog"
       :game-name="reportGameName"
     />
+
+    <!-- Global Notification Snackbar -->
+    <v-snackbar
+      v-model="notification.show.value"
+      :color="notification.type.value"
+      location="bottom center"
+      :timeout="notification.timeout.value"
+    >
+      {{ notification.message.value }}
+      <template v-slot:actions>
+        <v-btn
+          variant="text"
+          @click="notification.hideNotification()"
+        >
+          Bezár
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -76,6 +96,7 @@
 import { ref } from 'vue'
 import { useGameData } from '@/composables/useGameData'
 import { useGameFilter } from '@/composables/useGameFilter'
+import { useNotification } from '@/composables/useNotification'
 import type { Game } from '@/types/Game'
 
 import AppHeader from '@/components/AppHeader.vue'
@@ -84,6 +105,9 @@ import FilterPanel from '@/components/FilterPanel.vue'
 import GameTable from '@/components/GameTable.vue'
 import GameDetailsDialog from '@/components/GameDetailsDialog.vue'
 import ReportInaccuracyDialog from '@/components/ReportInaccuracyDialog.vue'
+
+// Notification rendszer
+const notification = useNotification()
 
 // Adatok betöltése
 const { games, loading, error, refetch } = useGameData()

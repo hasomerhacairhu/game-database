@@ -20,16 +20,19 @@
           <v-spacer></v-spacer>
           
           <!-- Pagination -->
-          <v-pagination
-            v-model="page"
-            :length="pageCount"
-            :total-visible="5"
-            density="compact"
-            class="mx-4"
-          ></v-pagination>
+          <div class="pagination-wrapper" @click="!isAuthenticated && $emit('auth-required')">
+            <v-pagination
+              v-model="page"
+              :length="pageCount"
+              :total-visible="5"
+              density="compact"
+              class="mx-4"
+              :class="{ 'pointer-events-none': !isAuthenticated }"
+            ></v-pagination>
+          </div>
           
           <v-spacer></v-spacer>
-          <div class="d-flex align-center ga-2">
+          <div class="d-flex align-center ga-2" @click="!isAuthenticated && $emit('auth-required')">
             <span class="text-caption text-medium-emphasis">Sorok/oldal:</span>
             <v-select
               v-model="itemsPerPage"
@@ -38,6 +41,7 @@
               variant="outlined"
               hide-details
               style="max-width: 100px;"
+              :class="{ 'pointer-events-none': !isAuthenticated }"
             ></v-select>
           </div>
         </v-toolbar>
@@ -249,16 +253,19 @@
           <v-spacer></v-spacer>
           
           <!-- Pagination -->
-          <v-pagination
-            v-model="page"
-            :length="pageCount"
-            :total-visible="5"
-            density="compact"
-            class="mx-4"
-          ></v-pagination>
+          <div class="pagination-wrapper" @click="!isAuthenticated && $emit('auth-required')">
+            <v-pagination
+              v-model="page"
+              :length="pageCount"
+              :total-visible="5"
+              density="compact"
+              class="mx-4"
+              :disabled="!isAuthenticated"
+            ></v-pagination>
+          </div>
           
           <v-spacer></v-spacer>
-          <div class="d-flex align-center ga-2">
+          <div class="d-flex align-center ga-2" @click="!isAuthenticated && $emit('auth-required')">
             <span class="text-caption text-medium-emphasis">Sorok/oldal:</span>
             <v-select
               v-model="itemsPerPage"
@@ -267,6 +274,7 @@
               variant="outlined"
               hide-details
               style="max-width: 100px;"
+              :class="{ 'pointer-events-none': !isAuthenticated }"
             ></v-select>
           </div>
         </v-toolbar>
@@ -284,6 +292,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useAuth } from '@/composables/useAuth'
 import type { Game } from '@/types/Game'
 import {
   getSpaceDisplay,
@@ -299,7 +308,10 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'game-selected': [game: Game]
+  'auth-required': []
 }>()
+
+const { isAuthenticated } = useAuth()
 
 const page = ref(1)
 const itemsPerPage = ref(25)
@@ -366,5 +378,9 @@ const handleRowClick = (item: Game) => {
 
 :deep(.game-table tbody tr:hover) {
   background-color: rgba(8, 160, 202, 0.08) !important;
+}
+
+.pointer-events-none {
+  pointer-events: none;
 }
 </style>

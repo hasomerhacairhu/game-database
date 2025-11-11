@@ -41,12 +41,13 @@
           </div>
           <div class="mb-3">
             <v-btn
-              href="https://docs.google.com/spreadsheets/d/1rYY5FKMq4wHGI-5i_wIHcdQxgGUgx_IyYlZKdnD2P-A/export?format=xlsx"
+              :href="isAuthenticated ? 'https://docs.google.com/spreadsheets/d/1rYY5FKMq4wHGI-5i_wIHcdQxgGUgx_IyYlZKdnD2P-A/export?format=xlsx' : undefined"
               target="_blank"
               color="primary"
               variant="elevated"
               prepend-icon="mdi-download"
               class="footer-btn mb-2"
+              @click.prevent="!isAuthenticated && $emit('auth-required')"
             >
               Teljes adatbázis letöltése (Excel)
             </v-btn>
@@ -61,6 +62,13 @@
 </template>
 
 <script setup lang="ts">
+import { useAuth } from '@/composables/useAuth'
+
+defineEmits<{
+  'auth-required': []
+}>()
+
+const { isAuthenticated } = useAuth()
 </script>
 
 <style scoped>

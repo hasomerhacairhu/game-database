@@ -31,6 +31,7 @@
             placeholder="Írd be a neved"
             variant="outlined"
             :rules="[rules.required]"
+            :readonly="isAuthenticated"
             class="mb-4"
           ></v-text-field>
 
@@ -54,10 +55,24 @@
             counter
           ></v-textarea>
 
+          <v-alert v-if="successMessage" type="success" variant="tonal" class="mt-2 mb-2">
+            {{ successMessage }}
+          </v-alert>
+
+          <v-alert v-if="errorMessage" type="error" variant="tonal" class="mt-2 mb-2">
+            {{ errorMessage }}
+          </v-alert>
+
           <v-alert type="info" variant="tonal" class="mt-2">
             <div class="text-body-2">
-              Bejelentésedet a <strong>{{ reportEmail }}</strong> címre küldjük el.
-              Köszönjük a visszajelzésed!
+              <span v-if="isAuthenticated">
+                Bejelentésedet a rendszerünkben tároljuk és hamarosan feldolgozzuk. 
+                Köszönjük a visszajelzésed!
+              </span>
+              <span v-else>
+                Bejelentésedet a <strong>{{ reportEmail }}</strong> címre küldjük el.
+                Köszönjük a visszajelzésed!
+              </span>
             </div>
           </v-alert>
         </v-form>
@@ -74,6 +89,7 @@
           color="warning" 
           variant="flat"
           :disabled="!formValid"
+          :loading="reportLoading"
           @click="submitReport"
         >
           Bejelentés küldése
@@ -85,6 +101,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useAuth } from '@/composables/useAuth'
+import { useReports } from '@/composables/useReports'
 
 const props = defineProps<{
   modelValue: boolean
@@ -93,7 +111,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
+  'report-submitted': []
 }>()
+
+const { user, userProfile, isAuthenticated } = useAuth()
+const { submitReport: submitReportToFirestore, loading: reportLoading } = useReports()
 
 const dialogOpen = computed({
   get: () => props.modelValue,
@@ -106,6 +128,8 @@ const senderName = ref('')
 const gameName = ref(props.gameName)
 const inaccuracyDescription = ref('')
 const reportEmail = 'titkar@somer.hu'
+const successMessage = ref('')
+const errorMessage = ref('')
 
 const rules = {
   required: (value: string) => !!value || 'Ez a mező kötelező',
@@ -117,30 +141,61 @@ watch(() => props.gameName, (newName) => {
   gameName.value = newName
 })
 
+// User név automatikus kitöltése ha be van jelentkezve
+watch(() => props.modelValue, (isOpen) => {
+  if (isOpen) {
+    if (isAuthenticated.value && userProfile.value) {
+      senderName.value = userProfile.value.displayName || user.value?.email || ''
+    }
+    successMessage.value = ''
+    errorMessage.value = ''
+  }
+})
+
 const closeDialog = () => {
   dialogOpen.value = false
   // Form reset
   setTimeout(() => {
     senderName.value = ''
     inaccuracyDescription.value = ''
+    successMessage.value = ''
+    errorMessage.value = ''
     formRef.value?.reset()
   }, 300)
 }
 
-const submitReport = () => {
+const submitReport = async () => {
   if (!formValid.value) return
 
-  // Email link generálása
-  const subject = encodeURIComponent(`Pontatlanság bejelentése - ${gameName.value}`)
-  const body = encodeURIComponent(
-    `Beküldő neve: ${senderName.value}\n\n` +
-    `Játék neve: ${gameName.value}\n\n` +
-    `Pontatlanság leírása:\n${inaccuracyDescription.value}`
-  )
-  
-  const mailtoLink = `mailto:${reportEmail}?subject=${subject}&body=${body}`
-  window.location.href = mailtoLink
+  try {
+    errorMessage.value = ''
+    successMessage.value = ''
 
-  closeDialog()
+    // Ha be van jelentkezve, Firestore-ba mentjük
+    if (isAuthenticated.value) {
+      await submitReportToFirestore(gameName.value, inaccuracyDescription.value)
+      successMessage.value = 'Bejelentésed sikeresen elküldtük! Köszönjük a visszajelzésed.'
+      emit('report-submitted')
+      
+      // Bezárás 2 másodperc után
+      setTimeout(() => {
+        closeDialog()
+      }, 2000)
+    } else {
+      // Ha nincs bejelentkezve, email linket nyitunk
+      const subject = encodeURIComponent(`Pontatlanság bejelentése - ${gameName.value}`)
+      const body = encodeURIComponent(
+        `Beküldő neve: ${senderName.value}\n\n` +
+        `Játék neve: ${gameName.value}\n\n` +
+        `Pontatlanság leírása:\n${inaccuracyDescription.value}`
+      )
+      
+      const mailtoLink = `mailto:${reportEmail}?subject=${subject}&body=${body}`
+      window.location.href = mailtoLink
+      closeDialog()
+    }
+  } catch (err: any) {
+    errorMessage.value = err.message || 'Hiba történt a bejelentés küldése során'
+  }
 }
 </script>

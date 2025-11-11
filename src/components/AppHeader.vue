@@ -30,18 +30,23 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn
-          href="https://somer.hu"
-          target="_blank"
-          color="white"
-          variant="outlined"
-          :size="scrolled ? 'small' : 'default'"
-          style="transition: all 0.4s ease;"
-        >
-          <v-icon start>mdi-open-in-new</v-icon>
-          <span v-if="!scrolled || $vuetify.display.mdAndUp">Ugrás a somer.hu-ra</span>
-          <span v-else>Somer.hu</span>
-        </v-btn>
+        <div class="d-flex align-center gap-3">
+          <v-btn
+            v-if="!isAuthenticated"
+            href="https://somer.hu"
+            target="_blank"
+            color="white"
+            variant="outlined"
+            size="default"
+            class="header-btn"
+          >
+            <v-icon start>mdi-open-in-new</v-icon>
+            <span v-if="!scrolled || $vuetify.display.mdAndUp">Ugrás a somer.hu-ra</span>
+            <span v-else>Somer.hu</span>
+          </v-btn>
+
+          <UserMenu />
+        </div>
       </div>
     </v-container>
   </v-app-bar>
@@ -49,8 +54,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useAuth } from '@/composables/useAuth'
 import logoSvg from '@/assets/somer-semel-white-with-transparent-bg.svg'
+import UserMenu from './UserMenu.vue'
 
+const { isAuthenticated } = useAuth()
 const logoUrl = logoSvg
 const scrolled = ref(false)
 
@@ -114,5 +122,14 @@ onUnmounted(() => {
 .subtitle.v-leave-active {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+.gap-3 {
+  gap: 12px;
+}
+
+.header-btn {
+  transition: all 0.3s ease;
+  min-height: 40px;
 }
 </style>

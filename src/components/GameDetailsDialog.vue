@@ -39,9 +39,24 @@
         </div>
 
         <!-- Szabályok -->
-        <div v-if="game.rules" class="mb-4">
+        <div v-if="game.rules" class="mb-4 description-container">
           <div class="text-subtitle-1 font-weight-bold mb-1">📋 Szabályok</div>
-          <div class="text-body-1" style="white-space: pre-wrap;">{{ game.rules }}</div>
+          <div 
+            class="text-body-1 description-text" 
+            :class="{ 'description-blurred': !isAuthenticated }"
+            style="white-space: pre-wrap;"
+          >
+            {{ game.rules }}
+          </div>
+          
+          <!-- Blur overlay with login prompt -->
+          <div v-if="!isAuthenticated" class="blur-overlay" @click="$emit('auth-required')">
+            <v-icon size="48" color="white" class="mb-2">mdi-lock</v-icon>
+            <div class="text-h6 text-white font-weight-bold mb-2">Jelentkezz be a teljes leírás olvasásához</div>
+            <v-btn color="white" variant="elevated" prepend-icon="mdi-login">
+              Bejelentkezés
+            </v-btn>
+          </div>
         </div>
 
         <!-- Kellékek -->
@@ -152,14 +167,15 @@
         </v-row>
 
         <!-- Gombok -->
-        <div class="mt-4 d-flex ga-2 flex-wrap">
+        <div class="mt-4 d-flex ga-2 flex-wrap align-center">
           <v-btn
             v-if="game.source"
-            :href="game.source"
+            :href="isAuthenticated ? game.source : undefined"
             target="_blank"
             color="primary"
             variant="outlined"
             prepend-icon="mdi-link"
+            @click.prevent="!isAuthenticated && $emit('auth-required')"
           >
             Forrás megtekintése
           </v-btn>
@@ -168,10 +184,15 @@
             color="warning"
             variant="outlined"
             prepend-icon="mdi-alert-circle-outline"
-            @click="openReportDialog"
+            @click="isAuthenticated ? openReportDialog() : $emit('auth-required')"
           >
             Pontatlanság bejelentése
           </v-btn>
+
+          <FavoriteButton
+            :game-name="game.name"
+            @auth-required="$emit('auth-required')"
+          />
         </div>
       </v-card-text>
 
@@ -189,7 +210,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useAuth } from '@/composables/useAuth'
 import type { Game } from '@/types/Game'
+import FavoriteButton from './FavoriteButton.vue'
 
 const props = defineProps<{
   modelValue: boolean
@@ -199,7 +222,10 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   'report-inaccuracy': [gameName: string]
+  'auth-required': []
 }>()
+
+const { isAuthenticated } = useAuth()
 
 const dialogOpen = computed({
   get: () => props.modelValue,
@@ -270,3 +296,32 @@ const functionChips = computed(() => {
   return chips
 })
 </script>
+
+<style scoped lang="scss">
+.description-container {
+  position: relative;
+}
+
+.description-blurred {
+  filter: blur(5px);
+  user-select: none;
+  pointer-events: none;
+}
+
+.blur-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 160, 202, 0.9);
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+}
+</style>
