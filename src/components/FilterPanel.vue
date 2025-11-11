@@ -1,16 +1,5 @@
 <template>
   <v-card class="mb-4" elevation="1">
-    <v-card-title class="d-flex align-center pb-0">
-      <v-icon class="mr-2" size="small">mdi-filter</v-icon>
-      <span>Szűrők</span>
-      <v-badge
-        v-if="activeFilterCount > 0"
-        :content="activeFilterCount"
-        color="primary"
-        inline
-        class="ml-2"
-      ></v-badge>
-    </v-card-title>
     <v-card-text class="pb-2">
       <!-- Szűrők -->
       <AdvancedFilter 

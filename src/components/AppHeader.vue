@@ -39,8 +39,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import logoSvg from '@/assets/somer-semel-white-with-transparent-bg.svg'
 
-const logoUrl = 'https://somer.fra1.digitaloceanspaces.com/somer.hu/uploads/2021/04/07135101/semelColor256.png'
+const logoUrl = logoSvg
 const scrolled = ref(false)
 
 const handleScroll = () => {
