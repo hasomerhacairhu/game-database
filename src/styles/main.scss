@@ -1,44 +1,72 @@
-// Myriad Pro font-face declarations
+// Myriad Pro font-face declarations - minden font fájl külön család
 @font-face {
-  font-family: 'Myriad Pro';
+  font-family: 'Myriad Pro Regular';
   src: url('@/assets/fonts/Myriad Pro Regular.ttf') format('truetype');
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Myriad Pro';
+  font-family: 'Myriad Pro Italic';
   src: url('@/assets/fonts/Myriad Pro Italic.ttf') format('truetype');
-  font-weight: 400;
-  font-style: italic;
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-  font-family: 'Myriad Pro';
+  font-family: 'Myriad Pro Bold';
   src: url('@/assets/fonts/Myriad Pro Bold.ttf') format('truetype');
-  font-weight: 700;
+  font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Myriad Pro';
+  font-family: 'Myriad Pro Bold Italic';
   src: url('@/assets/fonts/Myriad Pro Bold Italic.ttf') format('truetype');
-  font-weight: 700;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'Myriad Pro';
-  src: url('@/assets/fonts/Myriad Pro Semibold.ttf') format('truetype');
-  font-weight: 600;
+  font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Myriad Pro';
+  font-family: 'Myriad Pro Condensed';
+  src: url('@/assets/fonts/Myriad Pro Condensed.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Myriad Pro Condensed Italic';
+  src: url('@/assets/fonts/Myriad Pro Condensed Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Myriad Pro Black Italic';
+  src: url('@/assets/fonts/Myriad Pro Black Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Myriad Pro Semibold Condensed';
+  src: url('@/assets/fonts/Myriad Pro Semibold Condensed.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Myriad Pro Semibold';
+  src: url('@/assets/fonts/Myriad Pro Semibold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Myriad Pro Semibold Italic';
   src: url('@/assets/fonts/Myriad Pro Semibold Italic.ttf') format('truetype');
-  font-weight: 600;
-  font-style: italic;
+  font-weight: normal;
+  font-style: normal;
 }
 
 // Global styles
@@ -49,24 +77,18 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Myriad Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Myriad Pro Regular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 // Typography settings
-h1, .text-h1, .v-toolbar-title {
-  font-family: 'Myriad Pro', sans-serif;
-  font-weight: 700 !important; // Bold
-  font-style: italic !important;
+h1, .text-h1 {
+  font-family: 'Myriad Pro Bold Italic', sans-serif !important;
 }
 
 h2, .text-h2, .text-h3, .text-h4 {
-  font-family: 'Myriad Pro', sans-serif;
-  font-weight: 700 !important; // Bold
-  font-style: normal !important;
+  font-family: 'Myriad Pro Bold', sans-serif !important;
 }
 
 h3, h4, h5, h6, p, span, div, .text-body-1, .text-body-2, .v-btn, .v-label {
-  font-family: 'Myriad Pro', sans-serif;
-  font-weight: 400 !important; // Regular
-  font-style: normal !important;
+  font-family: 'Myriad Pro Regular', sans-serif;
 }

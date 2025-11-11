@@ -316,13 +316,13 @@ const pageCount = computed(() => {
 })
 
 const headers = [
-  { title: 'Játék neve', key: 'name', align: 'start' as const, sortable: true, width: '250px' },
-  { title: 'Cél', key: 'goal', align: 'start' as const, sortable: false, width: '300px' },
-  { title: 'Tér', key: 'space', align: 'start' as const, sortable: false, width: '120px' },
-  { title: 'Csoport', key: 'groupPhase', align: 'start' as const, sortable: false, width: '140px' },
-  { title: 'Kor', key: 'ageGroup', align: 'start' as const, sortable: false, width: '140px' },
-  { title: 'Fő', key: 'groupSize', align: 'start' as const, sortable: false, width: '120px' },
-  { title: 'Idő', key: 'duration', align: 'start' as const, sortable: false, width: '120px' }
+  { title: 'Játék neve', key: 'name', align: 'start' as const, sortable: true, width: '15%' },
+  { title: 'Cél', key: 'goal', align: 'start' as const, sortable: false, width: '30%' },
+  { title: 'Tér', key: 'space', align: 'start' as const, sortable: false, width: '10%' },
+  { title: 'Csoport', key: 'groupPhase', align: 'start' as const, sortable: false, width: '10%' },
+  { title: 'Kor', key: 'ageGroup', align: 'start' as const, sortable: false, width: '15%' },
+  { title: 'Fő', key: 'groupSize', align: 'start' as const, sortable: false, width: '10%' },
+  { title: 'Idő', key: 'duration', align: 'start' as const, sortable: false, width: '10%' }
 ]
 
 const truncateText = (text: string, maxLength: number): string => {
@@ -337,6 +337,25 @@ const handleRowClick = (item: Game) => {
 </script>
 
 <style scoped>
+/* Táblázat fejléc stílus */
+:deep(.game-table thead th) {
+  background-color: #08A0CA !important;
+  color: white !important;
+  font-family: 'Myriad Pro Bold', sans-serif !important;
+  font-size: 0.95rem !important;
+  font-weight: bold !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px 12px !important;
+  border-bottom: 2px solid #06789A !important;
+}
+
+:deep(.game-table thead th .v-data-table-header__content) {
+  color: white !important;
+  font-weight: bold !important;
+}
+
+/* Sorok */
 :deep(.game-table tbody tr) {
   cursor: pointer;
 }
