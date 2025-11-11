@@ -56,8 +56,22 @@
       <!-- Tér oszlop -->
       <template v-slot:item.space="{ item }">
         <div class="d-flex flex-wrap ga-1">
-          <v-chip v-if="item.outdoorSpace" size="x-small" color="somer-green-light" variant="flat" class="text-caption">Kültér</v-chip>
-          <v-chip v-if="item.indoorSpace" size="x-small" color="somer-green-light" variant="flat" class="text-caption">Beltér</v-chip>
+          <v-chip
+            v-if="item.outdoorSpace"
+            size="x-small"
+            color="somer-green-light"
+            variant="flat"
+          >
+            Kültér
+          </v-chip>
+          <v-chip
+            v-if="item.indoorSpace"
+            size="x-small"
+            color="somer-green-light"
+            variant="flat"
+          >
+            Beltér
+          </v-chip>
           <span v-if="!item.outdoorSpace && !item.indoorSpace">-</span>
         </div>
       </template>
@@ -65,10 +79,38 @@
       <!-- Csoport oszlop -->
       <template v-slot:item.groupPhase="{ item }">
         <div class="d-flex flex-wrap ga-1">
-          <v-chip v-if="item.groupPhaseForming" size="x-small" color="somer-cyan-light" variant="flat" class="text-caption">Alakulás</v-chip>
-          <v-chip v-if="item.groupPhaseStorming" size="x-small" color="somer-cyan-light" variant="flat" class="text-caption">Viharzás</v-chip>
-          <v-chip v-if="item.groupPhaseNorming" size="x-small" color="somer-cyan-light" variant="flat" class="text-caption">Normázás</v-chip>
-          <v-chip v-if="item.groupPhasePerforming" size="x-small" color="somer-cyan-light" variant="flat" class="text-caption">Működés</v-chip>
+          <v-chip
+            v-if="item.groupPhaseForming"
+            size="x-small"
+            color="somer-cyan-light"
+            variant="flat"
+          >
+            Alakulás
+          </v-chip>
+          <v-chip
+            v-if="item.groupPhaseStorming"
+            size="x-small"
+            color="somer-cyan-light"
+            variant="flat"
+          >
+            Viharzás
+          </v-chip>
+          <v-chip
+            v-if="item.groupPhaseNorming"
+            size="x-small"
+            color="somer-cyan-light"
+            variant="flat"
+          >
+            Normázás
+          </v-chip>
+          <v-chip
+            v-if="item.groupPhasePerforming"
+            size="x-small"
+            color="somer-cyan-light"
+            variant="flat"
+          >
+            Működés
+          </v-chip>
           <span v-if="!item.groupPhaseForming && !item.groupPhaseStorming && !item.groupPhaseNorming && !item.groupPhasePerforming">-</span>
         </div>
       </template>
@@ -76,11 +118,46 @@
       <!-- Kor oszlop -->
       <template v-slot:item.ageGroup="{ item }">
         <div class="d-flex flex-wrap ga-1">
-          <v-chip v-if="item.age0to5" size="x-small" color="somer-blue-light" variant="flat" class="text-caption">0-5</v-chip>
-          <v-chip v-if="item.age6to10" size="x-small" color="somer-blue-light" variant="flat" class="text-caption">6-10</v-chip>
-          <v-chip v-if="item.age11to13" size="x-small" color="somer-blue-light" variant="flat" class="text-caption">11-13</v-chip>
-          <v-chip v-if="item.age14to16" size="x-small" color="somer-blue-light" variant="flat" class="text-caption">14-16</v-chip>
-          <v-chip v-if="item.age17plus" size="x-small" color="somer-blue-light" variant="flat" class="text-caption">17+</v-chip>
+          <v-chip
+            v-if="item.age0to5"
+            size="x-small"
+            color="somer-blue-light"
+            variant="flat"
+          >
+            0-5
+          </v-chip>
+          <v-chip
+            v-if="item.age6to10"
+            size="x-small"
+            color="somer-blue-light"
+            variant="flat"
+          >
+            6-10
+          </v-chip>
+          <v-chip
+            v-if="item.age11to13"
+            size="x-small"
+            color="somer-blue-light"
+            variant="flat"
+          >
+            11-13
+          </v-chip>
+          <v-chip
+            v-if="item.age14to16"
+            size="x-small"
+            color="somer-blue-light"
+            variant="flat"
+          >
+            14-16
+          </v-chip>
+          <v-chip
+            v-if="item.age17plus"
+            size="x-small"
+            color="somer-blue-light"
+            variant="flat"
+          >
+            17+
+          </v-chip>
           <span v-if="!item.age0to5 && !item.age6to10 && !item.age11to13 && !item.age14to16 && !item.age17plus">-</span>
         </div>
       </template>
@@ -88,10 +165,38 @@
       <!-- Fő oszlop -->
       <template v-slot:item.groupSize="{ item }">
         <div class="d-flex flex-wrap ga-1">
-          <v-chip v-if="item.groupSizeSmall" size="x-small" color="somer-yellow-light" variant="flat" class="text-caption">3-5</v-chip>
-          <v-chip v-if="item.groupSizeMedium" size="x-small" color="somer-yellow-light" variant="flat" class="text-caption">6-15</v-chip>
-          <v-chip v-if="item.groupSizeLarge" size="x-small" color="somer-yellow-light" variant="flat" class="text-caption">16-30</v-chip>
-          <v-chip v-if="item.groupSizeCommunity" size="x-small" color="somer-yellow-light" variant="flat" class="text-caption">30+</v-chip>
+          <v-chip
+            v-if="item.groupSizeSmall"
+            size="x-small"
+            color="somer-yellow-light"
+            variant="flat"
+          >
+            3-5
+          </v-chip>
+          <v-chip
+            v-if="item.groupSizeMedium"
+            size="x-small"
+            color="somer-yellow-light"
+            variant="flat"
+          >
+            6-15
+          </v-chip>
+          <v-chip
+            v-if="item.groupSizeLarge"
+            size="x-small"
+            color="somer-yellow-light"
+            variant="flat"
+          >
+            16-30
+          </v-chip>
+          <v-chip
+            v-if="item.groupSizeCommunity"
+            size="x-small"
+            color="somer-yellow-light"
+            variant="flat"
+          >
+            30+
+          </v-chip>
           <span v-if="!item.groupSizeSmall && !item.groupSizeMedium && !item.groupSizeLarge && !item.groupSizeCommunity">-</span>
         </div>
       </template>
@@ -99,10 +204,38 @@
       <!-- Idő oszlop -->
       <template v-slot:item.duration="{ item }">
         <div class="d-flex flex-wrap ga-1">
-          <v-chip v-if="item.duration3to10" size="x-small" color="somer-lime-light" variant="flat" class="text-caption">3-10p</v-chip>
-          <v-chip v-if="item.duration11to20" size="x-small" color="somer-lime-light" variant="flat" class="text-caption">11-20p</v-chip>
-          <v-chip v-if="item.duration21to30" size="x-small" color="somer-lime-light" variant="flat" class="text-caption">21-30p</v-chip>
-          <v-chip v-if="item.duration30plus" size="x-small" color="somer-lime-light" variant="flat" class="text-caption">30+p</v-chip>
+          <v-chip
+            v-if="item.duration3to10"
+            size="x-small"
+            color="somer-lime-light"
+            variant="flat"
+          >
+            3-10
+          </v-chip>
+          <v-chip
+            v-if="item.duration11to20"
+            size="x-small"
+            color="somer-lime-light"
+            variant="flat"
+          >
+            11-20
+          </v-chip>
+          <v-chip
+            v-if="item.duration21to30"
+            size="x-small"
+            color="somer-lime-light"
+            variant="flat"
+          >
+            21-30
+          </v-chip>
+          <v-chip
+            v-if="item.duration30plus"
+            size="x-small"
+            color="somer-lime-light"
+            variant="flat"
+          >
+            30+
+          </v-chip>
           <span v-if="!item.duration3to10 && !item.duration11to20 && !item.duration21to30 && !item.duration30plus">-</span>
         </div>
       </template>
@@ -208,7 +341,11 @@ const handleRowClick = (item: Game) => {
   cursor: pointer;
 }
 
+:deep(.game-table tbody tr:nth-child(even)) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
 :deep(.game-table tbody tr:hover) {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: rgba(8, 160, 202, 0.08) !important;
 }
 </style>

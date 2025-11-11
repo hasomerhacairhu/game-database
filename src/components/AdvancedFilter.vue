@@ -49,7 +49,11 @@
           variant="outlined"
           density="compact"
           hide-details
-        ></v-select>
+        >
+          <template v-slot:prepend-inner>
+            <v-icon size="small">mdi-map-marker</v-icon>
+          </template>
+        </v-select>
       </v-col>
 
       <!-- Csoportdinamikai fázis -->
@@ -64,7 +68,11 @@
           variant="outlined"
           density="compact"
           hide-details
-        ></v-select>
+        >
+          <template v-slot:prepend-inner>
+            <v-icon size="small">mdi-account-group</v-icon>
+          </template>
+        </v-select>
       </v-col>
 
       <!-- Korosztály -->
@@ -79,7 +87,11 @@
           variant="outlined"
           density="compact"
           hide-details
-        ></v-select>
+        >
+          <template v-slot:prepend-inner>
+            <v-icon size="small">mdi-cake-variant</v-icon>
+          </template>
+        </v-select>
       </v-col>
 
       <!-- Létszám -->
@@ -94,7 +106,11 @@
           variant="outlined"
           density="compact"
           hide-details
-        ></v-select>
+        >
+          <template v-slot:prepend-inner>
+            <v-icon size="small">mdi-account-multiple</v-icon>
+          </template>
+        </v-select>
       </v-col>
 
       <!-- Időtartam -->
@@ -109,7 +125,11 @@
           variant="outlined"
           density="compact"
           hide-details
-        ></v-select>
+        >
+          <template v-slot:prepend-inner>
+            <v-icon size="small">mdi-clock-outline</v-icon>
+          </template>
+        </v-select>
       </v-col>
 
       <!-- Szűrő törlése gomb -->
@@ -188,5 +208,22 @@ const selectedGroupSizes = computed({
 const selectedDurations = computed({
   get: () => props.modelValue.durations,
   set: (value) => emit('update:modelValue', { ...props.modelValue, durations: value })
+})
+
+// Aktív szűrők száma
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (props.modelValue.advancedSearch) count++
+  count += props.modelValue.functions.length
+  count += props.modelValue.spaces.length
+  count += props.modelValue.groupPhases.length
+  count += props.modelValue.ageGroups.length
+  count += props.modelValue.groupSizes.length
+  count += props.modelValue.durations.length
+  return count
+})
+
+defineExpose({
+  activeFilterCount
 })
 </script>
