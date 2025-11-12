@@ -47,6 +47,14 @@
         </v-toolbar>
       </template>
 
+      <!-- Kedvenc oszlop -->
+      <template v-slot:item.favorite="{ item }">
+        <FavoriteButton
+          :game-id="item.id || item.name"
+          :game-name="item.name"
+        />
+      </template>
+
       <!-- Név oszlop -->
       <template v-slot:item.name="{ item }">
         <span class="font-weight-medium">{{ item.name }}</span>
@@ -187,6 +195,7 @@
 import { ref, computed } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import type { Game } from '@/types/Game'
+import FavoriteButton from './FavoriteButton.vue'
 import {
   getSpaceDisplay,
   getGroupPhaseDisplay,
@@ -219,11 +228,12 @@ const pageCount = computed(() => {
 })
 
 const headers = [
+  { title: '', key: 'favorite', align: 'center' as const, sortable: false, width: '60px' },
   { title: 'Játék neve', key: 'name', align: 'start' as const, sortable: true, width: '15%' },
-  { title: 'Cél', key: 'goal', align: 'start' as const, sortable: true, width: '30%' },
+  { title: 'Cél', key: 'goal', align: 'start' as const, sortable: true, width: '25%' },
   { title: 'Tér', key: 'space', align: 'start' as const, sortable: false, width: '10%' },
   { title: 'Csoport', key: 'groupPhase', align: 'start' as const, sortable: false, width: '10%' },
-  { title: 'Kor', key: 'ageGroup', align: 'start' as const, sortable: false, width: '15%' },
+  { title: 'Kor', key: 'ageGroup', align: 'start' as const, sortable: false, width: '10%' },
   { title: 'Fő', key: 'groupSize', align: 'start' as const, sortable: false, width: '10%' },
   { title: 'Idő', key: 'duration', align: 'start' as const, sortable: false, width: '10%' }
 ]

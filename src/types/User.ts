@@ -14,7 +14,7 @@ export interface UserProfile {
 
 export interface UserFavorites {
   uid: string
-  games: string[] // Játék nevek tömbje
+  games: string[] // Játék ID-k tömbje (Firestore document ID-k)
   updatedAt: Timestamp
 }
 

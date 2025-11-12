@@ -19,6 +19,38 @@ export function useNotification() {
     show.value = true
   }
 
+  const showSuccess = (msg: string, customTimeout?: number) => {
+    showNotification({
+      message: msg,
+      type: 'success',
+      timeout: customTimeout || 3000
+    })
+  }
+
+  const showError = (msg: string, customTimeout?: number) => {
+    showNotification({
+      message: msg,
+      type: 'error',
+      timeout: customTimeout || 5000
+    })
+  }
+
+  const showInfo = (msg: string, customTimeout?: number) => {
+    showNotification({
+      message: msg,
+      type: 'info',
+      timeout: customTimeout || 3000
+    })
+  }
+
+  const showWarning = (msg: string, customTimeout?: number) => {
+    showNotification({
+      message: msg,
+      type: 'warning',
+      timeout: customTimeout || 3000
+    })
+  }
+
   const showAuthRequired = () => {
     showNotification({
       message: '🔒 Jelentkezz be a funkció használatához!',
@@ -37,6 +69,10 @@ export function useNotification() {
     type,
     timeout,
     showNotification,
+    showSuccess,
+    showError,
+    showInfo,
+    showWarning,
     showAuthRequired,
     hideNotification
   }

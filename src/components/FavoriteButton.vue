@@ -1,58 +1,92 @@
 <template>
-  <v-btn
-    :icon="isFav ? 'mdi-star' : 'mdi-star-outline'"
-    :color="isFav ? 'yellow-darken-2' : 'grey'"
-    variant="text"
-    size="small"
-    @click="handleToggle"
-    :loading="toggling"
-  >
-    <v-tooltip activator="parent" location="top">
-      {{ isFav ? 'Eltávolítás a kedvencek közül' : 'Hozzáadás a kedvencekhez' }}
-    </v-tooltip>
-  </v-btn>
+  <v-tooltip :text="tooltipText" location="top">
+    <template v-slot:activator="{ props: tooltipProps }">
+      <v-btn
+        v-bind="tooltipProps"
+        :icon="isFav ? 'mdi-heart' : 'mdi-heart-outline'"
+        :color="isFav ? 'error' : 'grey-lighten-1'"
+        :loading="isLoading"
+        :disabled="isLoading"
+        size="small"
+        variant="text"
+        @click.stop="handleToggle"
+      />
+    </template>
+  </v-tooltip>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useFavorites } from '@/composables/useFavorites'
 import { useAuth } from '@/composables/useAuth'
+import { useNotification } from '@/composables/useNotification'
 
-const props = defineProps<{
+interface Props {
+  gameId: string
   gameName: string
-}>()
+}
 
-const emit = defineEmits<{
-  'auth-required': []
-}>()
+const props = defineProps<Props>()
 
+const { isFavorite, toggleFavorite } = useFavorites()
 const { isAuthenticated } = useAuth()
-const { isFavorite, toggleFavorite, loadFavorites } = useFavorites()
+const { showSuccess, showError, showInfo } = useNotification()
 
-const toggling = ref(false)
-const isFav = isFavorite(props.gameName)
+const isLoading = ref(false)
 
-// Kedvencek betöltése komponens mountolásakor
-onMounted(async () => {
-  if (isAuthenticated.value) {
-    await loadFavorites()
+// Computed property a kedvenc állapothoz
+const isFav = isFavorite(props.gameId)
+
+// Tooltip szöveg
+const tooltipText = computed(() => {
+  if (!isAuthenticated.value) {
+    return 'Jelentkezz be a kedvencek használatához'
   }
+  return isFav.value ? 'Eltávolítás a kedvencek közül' : 'Hozzáadás a kedvencekhez'
 })
 
+// Toggle kezelés
 const handleToggle = async () => {
-  // Ha nincs bejelentkezve, jelezzük
+  // Auth gate - login szükséges
   if (!isAuthenticated.value) {
-    emit('auth-required')
+    showInfo('Jelentkezz be a kedvencek használatához!')
     return
   }
 
+  isLoading.value = true
+  
+  // Aktuális állapot mentése a megfelelő üzenethez
+  const wasAlreadyFavorite = isFav.value
+
   try {
-    toggling.value = true
-    await toggleFavorite(props.gameName)
-  } catch (err) {
-    console.error('Kedvenc toggle hiba:', err)
+    await toggleFavorite(props.gameId)
+    
+    // Sikeres visszajelzés (fordított logika, mert már togglelve van)
+    if (!wasAlreadyFavorite) {
+      showSuccess(`"${props.gameName}" hozzáadva a kedvencekhez`)
+    } else {
+      showSuccess(`"${props.gameName}" eltávolítva a kedvencek közül`)
+    }
+  } catch (error) {
+    console.error('Kedvenc toggle hiba:', error)
+    showError('Hiba történt a kedvencek frissítése során')
   } finally {
-    toggling.value = false
+    isLoading.value = false
   }
 }
 </script>
+
+<style scoped>
+/* Animált szív effekt */
+.v-btn--icon {
+  transition: transform 0.2s ease;
+}
+
+.v-btn--icon:hover {
+  transform: scale(1.15);
+}
+
+.v-btn--icon:active {
+  transform: scale(0.95);
+}
+</style>

@@ -4,6 +4,15 @@
       <v-card-title class="text-h5 bg-primary text-white d-flex align-center">
         <span>Játék adatlap: {{ game.name }}</span>
         <v-spacer></v-spacer>
+        
+        <!-- Kedvenc gomb -->
+        <FavoriteButton
+          v-if="game"
+          :game-id="game.id || game.name"
+          :game-name="game.name"
+          class="mr-2"
+        />
+        
         <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
             <v-btn
