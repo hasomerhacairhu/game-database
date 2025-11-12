@@ -45,9 +45,10 @@ const loadUserProfile = async (uid: string) => {
       userProfile.value = userDoc.data() as UserProfile
     }
   } catch (err: any) {
-    error.value = err.message
-    console.error('Profil betöltési hiba:', err)
-    throw err
+    // Ha nincs jogosultság vagy nem létezik a user doc, csak logoljuk, ne dobjunk errort
+    console.warn('User profil nem tölthető be (lehet nincs még létrehozva):', err.message)
+    error.value = null // Ne legyen látható hiba
+    userProfile.value = null
   }
 }
 
@@ -122,6 +123,9 @@ export function useAuth() {
       await firebaseSignOut(auth)
       user.value = null
       userProfile.value = null
+      
+      // Oldal frissítése, hogy a lockolt tartalom is töltődjön
+      window.location.reload()
     } catch (err: any) {
       error.value = err.message
       console.error('Kijelentkezési hiba:', err)

@@ -61,22 +61,15 @@
       <template v-slot:item.space="{ item }">
         <div class="d-flex flex-wrap ga-1">
           <v-chip
-            v-if="item.outdoorSpace"
+            v-for="loc in item.location"
+            :key="loc"
             size="x-small"
             color="somer-green-light"
             variant="flat"
           >
-            Kültér
+            {{ loc }}
           </v-chip>
-          <v-chip
-            v-if="item.indoorSpace"
-            size="x-small"
-            color="somer-green-light"
-            variant="flat"
-          >
-            Beltér
-          </v-chip>
-          <span v-if="!item.outdoorSpace && !item.indoorSpace">-</span>
+          <span v-if="!item.location || item.location.length === 0">-</span>
         </div>
       </template>
 
@@ -84,38 +77,15 @@
       <template v-slot:item.groupPhase="{ item }">
         <div class="d-flex flex-wrap ga-1">
           <v-chip
-            v-if="item.groupPhaseForming"
+            v-for="phase in item.groupPhase"
+            :key="phase"
             size="x-small"
             color="somer-cyan-light"
             variant="flat"
           >
-            Alakulás
+            {{ phase }}
           </v-chip>
-          <v-chip
-            v-if="item.groupPhaseStorming"
-            size="x-small"
-            color="somer-cyan-light"
-            variant="flat"
-          >
-            Viharzás
-          </v-chip>
-          <v-chip
-            v-if="item.groupPhaseNorming"
-            size="x-small"
-            color="somer-cyan-light"
-            variant="flat"
-          >
-            Normázás
-          </v-chip>
-          <v-chip
-            v-if="item.groupPhasePerforming"
-            size="x-small"
-            color="somer-cyan-light"
-            variant="flat"
-          >
-            Működés
-          </v-chip>
-          <span v-if="!item.groupPhaseForming && !item.groupPhaseStorming && !item.groupPhaseNorming && !item.groupPhasePerforming">-</span>
+          <span v-if="!item.groupPhase || item.groupPhase.length === 0">-</span>
         </div>
       </template>
 
@@ -123,46 +93,15 @@
       <template v-slot:item.ageGroup="{ item }">
         <div class="d-flex flex-wrap ga-1">
           <v-chip
-            v-if="item.age0to5"
+            v-for="ageGroup in item.age"
+            :key="ageGroup"
             size="x-small"
             color="somer-blue-light"
             variant="flat"
           >
-            0-5
+            {{ ageGroup }}
           </v-chip>
-          <v-chip
-            v-if="item.age6to10"
-            size="x-small"
-            color="somer-blue-light"
-            variant="flat"
-          >
-            6-10
-          </v-chip>
-          <v-chip
-            v-if="item.age11to13"
-            size="x-small"
-            color="somer-blue-light"
-            variant="flat"
-          >
-            11-13
-          </v-chip>
-          <v-chip
-            v-if="item.age14to16"
-            size="x-small"
-            color="somer-blue-light"
-            variant="flat"
-          >
-            14-16
-          </v-chip>
-          <v-chip
-            v-if="item.age17plus"
-            size="x-small"
-            color="somer-blue-light"
-            variant="flat"
-          >
-            17+
-          </v-chip>
-          <span v-if="!item.age0to5 && !item.age6to10 && !item.age11to13 && !item.age14to16 && !item.age17plus">-</span>
+          <span v-if="!item.age || item.age.length === 0">-</span>
         </div>
       </template>
 
@@ -170,38 +109,15 @@
       <template v-slot:item.groupSize="{ item }">
         <div class="d-flex flex-wrap ga-1">
           <v-chip
-            v-if="item.groupSizeSmall"
+            v-for="size in item.groupSize"
+            :key="size"
             size="x-small"
             color="somer-yellow-light"
             variant="flat"
           >
-            3-5
+            {{ size }}
           </v-chip>
-          <v-chip
-            v-if="item.groupSizeMedium"
-            size="x-small"
-            color="somer-yellow-light"
-            variant="flat"
-          >
-            6-15
-          </v-chip>
-          <v-chip
-            v-if="item.groupSizeLarge"
-            size="x-small"
-            color="somer-yellow-light"
-            variant="flat"
-          >
-            16-30
-          </v-chip>
-          <v-chip
-            v-if="item.groupSizeCommunity"
-            size="x-small"
-            color="somer-yellow-light"
-            variant="flat"
-          >
-            30+
-          </v-chip>
-          <span v-if="!item.groupSizeSmall && !item.groupSizeMedium && !item.groupSizeLarge && !item.groupSizeCommunity">-</span>
+          <span v-if="!item.groupSize || item.groupSize.length === 0">-</span>
         </div>
       </template>
 
@@ -209,38 +125,15 @@
       <template v-slot:item.duration="{ item }">
         <div class="d-flex flex-wrap ga-1">
           <v-chip
-            v-if="item.duration3to10"
+            v-for="dur in item.length"
+            :key="dur"
             size="x-small"
             color="somer-lime-light"
             variant="flat"
           >
-            3-10
+            {{ dur }}
           </v-chip>
-          <v-chip
-            v-if="item.duration11to20"
-            size="x-small"
-            color="somer-lime-light"
-            variant="flat"
-          >
-            11-20
-          </v-chip>
-          <v-chip
-            v-if="item.duration21to30"
-            size="x-small"
-            color="somer-lime-light"
-            variant="flat"
-          >
-            21-30
-          </v-chip>
-          <v-chip
-            v-if="item.duration30plus"
-            size="x-small"
-            color="somer-lime-light"
-            variant="flat"
-          >
-            30+
-          </v-chip>
-          <span v-if="!item.duration3to10 && !item.duration11to20 && !item.duration21to30 && !item.duration30plus">-</span>
+          <span v-if="!item.length || item.length.length === 0">-</span>
         </div>
       </template>
 
@@ -318,12 +211,10 @@ const itemsPerPage = ref(25)
 const itemsPerPageOptions = [
   { value: 25, title: '25' },
   { value: 50, title: '50' },
-  { value: 100, title: '100' },
-  { value: -1, title: 'Összes' }
+  { value: 100, title: '100' }
 ]
 
 const pageCount = computed(() => {
-  if (itemsPerPage.value === -1) return 1
   return Math.ceil(props.games.length / itemsPerPage.value)
 })
 

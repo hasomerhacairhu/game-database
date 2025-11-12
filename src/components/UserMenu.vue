@@ -23,12 +23,12 @@
           class="user-menu-btn header-btn"
           size="default"
         >
-          <v-avatar size="32" class="mr-2">
+          <v-avatar size="28" class="user-avatar">
             <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :alt="userProfile.displayName"></v-img>
             <v-icon v-else icon="mdi-account-circle"></v-icon>
           </v-avatar>
-          <span class="text-white font-weight-medium">{{ displayName }}</span>
-          <v-icon icon="mdi-chevron-down" class="ml-1" color="white"></v-icon>
+          <span class="text-white font-weight-medium user-name">{{ displayName }}</span>
+          <v-icon icon="mdi-chevron-down" class="chevron-icon" color="white"></v-icon>
         </v-btn>
       </template>
 
@@ -106,18 +106,26 @@ defineEmits<{
   'show-favorites': []
 }>()
 
-const { user, userProfile, isAuthenticated, isProfileComplete, signOut } = useAuth()
+const { user, userProfile, isAuthenticated, isProfileComplete, loading, signOut } = useAuth()
 
 const showMandatoryProfileDialog = ref(false)
 
 // Ha bejelentkezett de nincs kitöltve a profil, kötelező profil dialógus megnyitása
-watch([isAuthenticated, isProfileComplete, userProfile], ([auth, complete]) => {
-  if (auth && !complete) {
+// Csak akkor fut, ha már betöltődött a profil (loading === false)
+watch([isAuthenticated, isProfileComplete, userProfile, loading], ([auth, complete, profile, isLoading]) => {
+  // Ne mutassuk azonnal, várjunk a betöltésre
+  if (isLoading) {
+    showMandatoryProfileDialog.value = false
+    return
+  }
+  
+  // Ha be van jelentkezve és a profil betöltődött, de nincs születési dátum
+  if (auth && profile !== null && !complete) {
     showMandatoryProfileDialog.value = true
   } else {
     showMandatoryProfileDialog.value = false
   }
-}, { immediate: true })
+})
 
 const showLoginDialog = ref(false)
 const showProfileDialog = ref(false)
@@ -154,6 +162,8 @@ const handleSignOut = async () => {
 .user-menu-btn {
   text-transform: none;
   border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px !important;
+  height: auto !important;
   
   &:hover {
     background-color: rgba(255, 255, 255, 0.25) !important;
@@ -161,7 +171,22 @@ const handleSignOut = async () => {
   }
   
   :deep(.v-btn__content) {
-    gap: 0;
+    gap: 12px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-avatar {
+    margin: 0;
+  }
+  
+  .user-name {
+    margin: 0 4px;
+  }
+  
+  .chevron-icon {
+    margin: 0;
+    opacity: 0.8;
   }
 }
 </style>

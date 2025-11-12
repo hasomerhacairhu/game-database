@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogOpen" max-width="500" :persistent="isRequired">
+  <v-dialog v-if="dialogOpen" v-model="dialogOpen" max-width="500" :persistent="isRequired">
     <v-card>
       <v-card-title class="bg-primary text-white d-flex align-center">
         <span>{{ isRequired ? 'Profil kitöltése (kötelező)' : 'Profilom' }}</span>

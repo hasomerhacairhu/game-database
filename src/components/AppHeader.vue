@@ -24,7 +24,15 @@
             v-show="!scrolled" 
             class="subtitle"
           >
-            A Hasomer Hacair nagy játékgyűjteménye ifjúsági vezetők részére.
+            <span class="subtitle-grid">
+              <span class="grid-item">A Hasomer Hacair nagy játékgyűjteménye</span>
+              <span class="grid-item occupation-cell">
+                <Transition name="flip" mode="out-in">
+                  <span :key="currentOccupation" class="occupation">{{ currentOccupation }}</span>
+                </Transition>
+              </span>
+              <span class="grid-item">részére.</span>
+            </span>
           </div>
         </div>
 
@@ -62,16 +70,71 @@ const { isAuthenticated } = useAuth()
 const logoUrl = logoSvg
 const scrolled = ref(false)
 
+// Foglalkozások listája (random sorrendben váltakoznak)
+const occupations = [
+  'ifjúsági vezetők',
+  'tanárok',
+  'drámainstruktorok',
+  'cserkészek',
+  'coachok',
+  'trénerek',
+  'madrihok',
+  'pedagógusok',
+  'animátorok',
+  'táborvezetők',
+  'közösségszervezők',
+  'edzők',
+  'színjátszók'
+]
+
+const currentOccupation = ref(occupations[0])
+let occupationInterval: number | null = null
+
+// Random foglalkozás választása (nem lehet ugyanaz, mint az előző)
+const getRandomOccupation = () => {
+  const availableOccupations = occupations.filter(occ => occ !== currentOccupation.value)
+  const randomIndex = Math.floor(Math.random() * availableOccupations.length)
+  return availableOccupations[randomIndex]
+}
+
+let lastScrollY = 0
+
 const handleScroll = () => {
-  scrolled.value = window.scrollY > 50
+  const currentScrollY = window.scrollY
+  
+  // Ha lefelé görgettünk (scrollY > 50), állítsuk be scrolled = true
+  if (currentScrollY > 50) {
+    scrolled.value = true
+    lastScrollY = currentScrollY
+  }
+  // Csak akkor álljon vissza false-ra, ha:
+  // 1. ScrollY <= 50 (az oldal tetején vagyunk)
+  // 2. És az előző scrollY is <= 50 volt (nem ugrott vissza 0-ra dialóg miatt)
+  else if (currentScrollY <= 50 && lastScrollY <= 50) {
+    scrolled.value = false
+  }
+  
+  // Ha a scrollY jelentősen csökkent (több mint 100px), valószínűleg dialog nyílt meg
+  // Ilyenkor ne frissítsük a lastScrollY-t
+  if (Math.abs(currentScrollY - lastScrollY) < 100 || currentScrollY > lastScrollY) {
+    lastScrollY = currentScrollY
+  }
 }
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  
+  // 5 másodpercenként váltson foglalkozást
+  occupationInterval = window.setInterval(() => {
+    currentOccupation.value = getRandomOccupation()
+  }, 5000)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  if (occupationInterval) {
+    clearInterval(occupationInterval)
+  }
 })
 </script>
 
@@ -122,6 +185,57 @@ onUnmounted(() => {
 .subtitle.v-leave-active {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+.subtitle-grid {
+  display: inline-grid;
+  grid-template-columns: auto auto auto;
+  gap: 0.25em;
+  align-items: baseline;
+}
+
+.grid-item {
+  white-space: nowrap;
+}
+
+.occupation-cell {
+  display: grid;
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.occupation {
+  grid-column: 1;
+  grid-row: 1;
+  display: inline-block;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 1);
+  white-space: nowrap;
+}
+
+/* Flip animáció - 3D forgás effekt */
+.flip-enter-active,
+.flip-leave-active {
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.flip-enter-from {
+  opacity: 0;
+  transform: rotateX(90deg) scale(0.8);
+}
+
+.flip-enter-to {
+  opacity: 1;
+  transform: rotateX(0deg) scale(1);
+}
+
+.flip-leave-from {
+  opacity: 1;
+  transform: rotateX(0deg) scale(1);
+}
+
+.flip-leave-to {
+  opacity: 0;
+  transform: rotateX(-90deg) scale(0.8);
 }
 
 .gap-3 {

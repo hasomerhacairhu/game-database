@@ -18,7 +18,7 @@
       <v-col cols="12" md="8">
         <v-select
           v-model="selectedFunctions"
-          :items="FUNCTIONS"
+          :items="GAME_FUNCTIONS"
           label="Funkció"
           multiple
           chips
@@ -41,7 +41,7 @@
       <v-col cols="6" sm="4" md>
         <v-select
           v-model="selectedSpaces"
-          :items="SPACES"
+          :items="LOCATION_OPTIONS"
           label="Tér"
           multiple
           chips
@@ -58,28 +58,33 @@
 
       <!-- Csoportdinamikai fázis -->
       <v-col cols="6" sm="4" md>
-        <v-select
-          v-model="selectedGroupPhases"
-          :items="GROUP_PHASES"
-          label="Csoport"
-          multiple
-          chips
-          closable-chips
-          variant="outlined"
-          density="compact"
-          hide-details
-        >
-          <template v-slot:prepend-inner>
-            <v-icon size="small">mdi-account-group</v-icon>
+        <v-tooltip text="Csoportdinamikai fázis" location="top">
+          <template v-slot:activator="{ props }">
+            <v-select
+              v-bind="props"
+              v-model="selectedGroupPhases"
+              :items="GROUP_PHASE_OPTIONS"
+              label="Csoport"
+              multiple
+              chips
+              closable-chips
+              variant="outlined"
+              density="compact"
+              hide-details
+            >
+              <template v-slot:prepend-inner>
+                <v-icon size="small">mdi-account-group</v-icon>
+              </template>
+            </v-select>
           </template>
-        </v-select>
+        </v-tooltip>
       </v-col>
 
       <!-- Korosztály -->
       <v-col cols="6" sm="4" md>
         <v-select
           v-model="selectedAgeGroups"
-          :items="AGE_GROUPS"
+          :items="AGE_OPTIONS"
           label="Korosztály"
           multiple
           chips
@@ -98,7 +103,7 @@
       <v-col cols="6" sm="4" md>
         <v-select
           v-model="selectedGroupSizes"
-          :items="GROUP_SIZES"
+          :items="GROUP_SIZE_OPTIONS"
           label="Létszám"
           multiple
           chips
@@ -117,7 +122,7 @@
       <v-col cols="6" sm="4" md>
         <v-select
           v-model="selectedDurations"
-          :items="DURATIONS"
+          :items="LENGTH_OPTIONS"
           label="Időtartam"
           multiple
           chips
@@ -154,12 +159,12 @@
 import { computed } from 'vue'
 import type { GameFilterState } from '@/types/Game'
 import {
-  FUNCTIONS,
-  SPACES,
-  GROUP_PHASES,
-  AGE_GROUPS,
-  GROUP_SIZES,
-  DURATIONS
+  GAME_FUNCTIONS,
+  LOCATION_OPTIONS,
+  GROUP_PHASE_OPTIONS,
+  AGE_OPTIONS,
+  GROUP_SIZE_OPTIONS,
+  LENGTH_OPTIONS
 } from '@/types/Game'
 
 const props = defineProps<{
@@ -181,45 +186,45 @@ const advancedSearchText = computed({
 })
 
 const selectedFunctions = computed({
-  get: () => props.modelValue.functions,
-  set: (value) => emit('update:modelValue', { ...props.modelValue, functions: value })
+  get: () => props.modelValue.gameFunction,
+  set: (value) => emit('update:modelValue', { ...props.modelValue, gameFunction: value })
 })
 
 const selectedSpaces = computed({
-  get: () => props.modelValue.spaces,
-  set: (value) => emit('update:modelValue', { ...props.modelValue, spaces: value })
+  get: () => props.modelValue.location,
+  set: (value) => emit('update:modelValue', { ...props.modelValue, location: value })
 })
 
 const selectedGroupPhases = computed({
-  get: () => props.modelValue.groupPhases,
-  set: (value) => emit('update:modelValue', { ...props.modelValue, groupPhases: value })
+  get: () => props.modelValue.groupPhase,
+  set: (value) => emit('update:modelValue', { ...props.modelValue, groupPhase: value })
 })
 
 const selectedAgeGroups = computed({
-  get: () => props.modelValue.ageGroups,
-  set: (value) => emit('update:modelValue', { ...props.modelValue, ageGroups: value })
+  get: () => props.modelValue.age,
+  set: (value) => emit('update:modelValue', { ...props.modelValue, age: value })
 })
 
 const selectedGroupSizes = computed({
-  get: () => props.modelValue.groupSizes,
-  set: (value) => emit('update:modelValue', { ...props.modelValue, groupSizes: value })
+  get: () => props.modelValue.groupSize,
+  set: (value) => emit('update:modelValue', { ...props.modelValue, groupSize: value })
 })
 
 const selectedDurations = computed({
-  get: () => props.modelValue.durations,
-  set: (value) => emit('update:modelValue', { ...props.modelValue, durations: value })
+  get: () => props.modelValue.length,
+  set: (value) => emit('update:modelValue', { ...props.modelValue, length: value })
 })
 
 // Aktív szűrők száma
 const activeFilterCount = computed(() => {
   let count = 0
   if (props.modelValue.advancedSearch) count++
-  count += props.modelValue.functions.length
-  count += props.modelValue.spaces.length
-  count += props.modelValue.groupPhases.length
-  count += props.modelValue.ageGroups.length
-  count += props.modelValue.groupSizes.length
-  count += props.modelValue.durations.length
+  count += props.modelValue.gameFunction.length
+  count += props.modelValue.location.length
+  count += props.modelValue.groupPhase.length
+  count += props.modelValue.age.length
+  count += props.modelValue.groupSize.length
+  count += props.modelValue.length.length
   return count
 })
 

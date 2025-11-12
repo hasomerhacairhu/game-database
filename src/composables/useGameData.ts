@@ -1,68 +1,44 @@
-import { ref, onMounted } from 'vue'
-import Papa from 'papaparse'
-import type { Game } from '@/types/Game'
+import { ref, computed, readonly } from 'vue'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { db } from '@/firebase/config'
+import type { Game, GameFilterState } from '@/types/Game'
 
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRcx1YPhoi6kUVe36T4T2162AhCdBwuVSX0ou2u-Vlicjf2So3VL3E2MDzrNYIbkgckP4n8p18_UOGP/pub?gid=0&single=true&output=csv'
+// Cache configuration
 const CACHE_KEY = 'somer_games_cache'
 const CACHE_TIMESTAMP_KEY = 'somer_games_cache_timestamp'
-const CACHE_DURATION = 2 * 60 * 60 * 1000 // 2 óra milliszekundumban
+const CACHE_DURATION = 60 * 60 * 1000 // 1 óra milliszekundumban
 
+// Singleton state (shared across all composable instances)
+const games = ref<Game[]>([])
+const loading = ref(false)
+const error = ref<string | null>(null)
+const lastFetch = ref<number | null>(null)
+
+/**
+ * Fisher-Yates shuffle algorithm - randomize array order
+ */
+const shuffleArray = <T>(array: T[]): T[] => {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+/**
+ * useGameData - Firestore-based game data management
+ * 
+ * Load-once strategy:
+ * 1. Betölt minden játékot Firestore-ból
+ * 2. Cache-eli localStorage-ban 1 órára
+ * 3. Client-side filtering (instant, nincs hálózati kérés)
+ */
 export function useGameData() {
-  const games = ref<Game[]>([])
-  const loading = ref(false)
-  const error = ref<string | null>(null)
-
-  const parseBool = (value: string): boolean => {
-    if (!value) return false
-    const normalized = value.trim().toUpperCase()
-    return normalized === 'IGAZ' || normalized === '1' || normalized === 'TRUE'
-  }
-
-  const parseCSVRow = (row: any): Game => {
-    return {
-      name: row['Játék neve'] || '',
-      altNames: row['Játék további elnevezései'] || '',
-      goal: row['Gyakorlat célja'] || '',
-      rules: row['Játékszabály leírása'] || '',
-      materials: row['Szükséges kellékek'] || '',
-      source: row['Forrásmegjelölés'] || '',
-      
-      // Tér
-      outdoorSpace: parseBool(row['Kültéren játszható']),
-      indoorSpace: parseBool(row['Beltéren játszható']),
-      
-      // Csoportdinamikai fázis
-      groupPhaseForming: parseBool(row['Alakulás']),
-      groupPhaseStorming: parseBool(row['Viharzás']),
-      groupPhaseNorming: parseBool(row['Normázás']),
-      groupPhasePerforming: parseBool(row['Működés']),
-      
-      // Korosztály
-      age0to5: parseBool(row['0-5']),
-      age6to10: parseBool(row['6-10']),
-      age11to13: parseBool(row['11-13']),
-      age14to16: parseBool(row['14-16']),
-      age17plus: parseBool(row['17+']),
-      
-      // Funkció
-      function1: row['1.'] || '',
-      function2: row['2.'] || '',
-      function3: row['3.'] || '',
-      
-      // Létszám (fő)
-      groupSizeSmall: parseBool(row['kis csoport\n3-5 fő']),
-      groupSizeMedium: parseBool(row['közepes csoport\n6-15 fő']),
-      groupSizeLarge: parseBool(row['nagy csoport\n16-30 fő']),
-      groupSizeCommunity: parseBool(row['közösség\n30+ fő']),
-      
-      // Időtartam
-      duration3to10: parseBool(row['3-10p']),
-      duration11to20: parseBool(row['11-20p']),
-      duration21to30: parseBool(row['21-30p']),
-      duration30plus: parseBool(row['30+p'])
-    }
-  }
-
+  
+  /**
+   * Load from localStorage cache
+   */
   const loadFromCache = (): boolean => {
     try {
       const cachedData = localStorage.getItem(CACHE_KEY)
@@ -72,83 +48,221 @@ export function useGameData() {
         const timestamp = parseInt(cacheTimestamp, 10)
         const now = Date.now()
         
-        // Ellenőrizzük, hogy nem járt-e le a cache (2 óra)
         if (now - timestamp < CACHE_DURATION) {
-          games.value = JSON.parse(cachedData)
+          const cachedGames = JSON.parse(cachedData)
+          games.value = shuffleArray(cachedGames) // Randomize on each load
+          lastFetch.value = timestamp
+          console.log(`✅ Loaded ${games.value.length} games from cache (randomized)`)
           return true
+        } else {
+          console.log('⏰ Cache expired, fetching fresh data...')
         }
       }
-    } catch (e) {
-      console.error('Cache betöltési hiba:', e)
+    } catch (err) {
+      console.error('❌ Cache load error:', err)
     }
     return false
   }
 
-  const saveToCache = (data: Game[]) => {
+  /**
+   * Save to localStorage cache
+   */
+  const saveToCache = (data: Game[]): void => {
     try {
       localStorage.setItem(CACHE_KEY, JSON.stringify(data))
       localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString())
-    } catch (e) {
-      console.error('Cache mentési hiba:', e)
+      console.log(`💾 Cached ${data.length} games`)
+    } catch (err) {
+      console.error('❌ Cache save error:', err)
     }
   }
 
-  const fetchGames = async () => {
-    loading.value = true
-    error.value = null
-
-    // Először próbáljuk meg betölteni a cache-ből
-    if (loadFromCache()) {
-      loading.value = false
-      return
+  /**
+   * Fetch all games from Firestore 'games' collection
+   */
+  const fetchGames = async (forceRefresh = false): Promise<Game[]> => {
+    // Check if already loaded and cache is valid
+    if (!forceRefresh && games.value.length > 0) {
+      const cacheAge = lastFetch.value ? Date.now() - lastFetch.value : Infinity
+      if (cacheAge < CACHE_DURATION) {
+        console.log('✅ Using in-memory cached games')
+        return games.value
+      }
     }
+
+    // Try loading from localStorage first
+    if (!forceRefresh && loadFromCache()) {
+      return games.value
+    }
+
     try {
-      const response = await fetch(CSV_URL)
-      if (!response.ok) {
-        throw new Error('Hiba a CSV betöltésekor')
+      loading.value = true
+      error.value = null
+      
+      console.log('🔄 Fetching games from Firestore...')
+      
+      // Firestore query: games collection, ordered by name
+      const gamesRef = collection(db, 'games')
+      const q = query(gamesRef, orderBy('name', 'asc'))
+      const snapshot = await getDocs(q)
+      
+      // Map Firestore documents to Game objects
+      const fetchedGames: Game[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Game))
+      
+      // Randomize order
+      games.value = shuffleArray(fetchedGames)
+      lastFetch.value = Date.now()
+      
+      // Save to cache (randomized order)
+      saveToCache(games.value)
+      
+      console.log(`✅ Loaded ${fetchedGames.length} games from Firestore (randomized)`)
+      
+      return games.value
+      
+    } catch (err: any) {
+      const errorMessage = err?.message || 'Failed to fetch games'
+      error.value = errorMessage
+      console.error('❌ Firestore fetch error:', err)
+      
+      // If Firestore fails, try loading from cache as fallback
+      if (loadFromCache()) {
+        console.log('⚠️ Using stale cache as fallback')
+        return games.value
       }
       
-      const csvText = await response.text()
+      throw new Error(errorMessage)
       
-      // A CSV-nek 2 fejléc sora van: az első sor kategóriák, a második az igazi fejlécek
-      // Az első sort eltávolítjuk, a második lesz a header
-      const lines = csvText.split('\n')
-      const csvWithoutFirstLine = lines.slice(1).join('\n')
-      
-      Papa.parse<any>(csvWithoutFirstLine, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results: Papa.ParseResult<any>) => {
-          // Az első sor tartalmazza a mezőneveket értékként (ez volt a második fejléc sor)
-          // Ezért az első sort is ki kell hagynunk
-          const dataRows = results.data.slice(1)
-          
-          const parsedGames = dataRows.map(parseCSVRow).filter((game: Game) => game.name)
-          
-          games.value = parsedGames
-          saveToCache(parsedGames)
-          loading.value = false
-        },
-        error: (err: Error) => {
-          console.error('CSV parse hiba:', err)
-          error.value = 'Hiba a CSV feldolgozásakor: ' + err.message
-          loading.value = false
-        }
-      })
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Ismeretlen hiba történt'
+    } finally {
       loading.value = false
     }
   }
 
-  onMounted(() => {
-    fetchGames()
+  /**
+   * Client-side filtering (instant, no network request)
+   * Filters games based on GameFilterState
+   */
+  const filterGames = (filters: Partial<GameFilterState>): Game[] => {
+    let filtered = games.value
+
+    // Simple search (name, goal, rules)
+    if (filters.simpleSearch) {
+      const searchLower = filters.simpleSearch.toLowerCase()
+      filtered = filtered.filter(game =>
+        game.name.toLowerCase().includes(searchLower) ||
+        game.goal?.toLowerCase().includes(searchLower) ||
+        game.rules?.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Advanced search (all text fields)
+    if (filters.advancedSearch) {
+      const searchLower = filters.advancedSearch.toLowerCase()
+      filtered = filtered.filter(game =>
+        game.name.toLowerCase().includes(searchLower) ||
+        game.goal?.toLowerCase().includes(searchLower) ||
+        game.rules?.toLowerCase().includes(searchLower) ||
+        game.materials?.toLowerCase().includes(searchLower) ||
+        game.sourceName?.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Game function filter (multi-select)
+    if (filters.gameFunction && filters.gameFunction.length > 0) {
+      filtered = filtered.filter(game =>
+        game.gameFunction?.some(fn => filters.gameFunction!.includes(fn))
+      )
+    }
+
+    // Location filter (multi-select)
+    if (filters.location && filters.location.length > 0) {
+      filtered = filtered.filter(game =>
+        game.location?.some(loc => filters.location!.includes(loc))
+      )
+    }
+
+    // Group phase filter (multi-select)
+    if (filters.groupPhase && filters.groupPhase.length > 0) {
+      filtered = filtered.filter(game =>
+        game.groupPhase?.some(phase => filters.groupPhase!.includes(phase))
+      )
+    }
+
+    // Age filter (multi-select)
+    if (filters.age && filters.age.length > 0) {
+      filtered = filtered.filter(game =>
+        game.age?.some(ageGroup => filters.age!.includes(ageGroup))
+      )
+    }
+
+    // Group size filter (multi-select)
+    if (filters.groupSize && filters.groupSize.length > 0) {
+      filtered = filtered.filter(game =>
+        game.groupSize?.some(size => filters.groupSize!.includes(size))
+      )
+    }
+
+    // Length filter (multi-select)
+    if (filters.length && filters.length.length > 0) {
+      filtered = filtered.filter(game =>
+        game.length?.some(len => filters.length!.includes(len))
+      )
+    }
+
+    return filtered
+  }
+
+  /**
+   * Clear cache and refetch
+   */
+  const clearCache = () => {
+    try {
+      localStorage.removeItem(CACHE_KEY)
+      localStorage.removeItem(CACHE_TIMESTAMP_KEY)
+      games.value = []
+      lastFetch.value = null
+      console.log('🗑️ Cache cleared')
+    } catch (err) {
+      console.error('❌ Cache clear error:', err)
+    }
+  }
+
+  /**
+   * Computed: Total games count
+   */
+  const totalGames = computed(() => games.value.length)
+
+  /**
+   * Computed: Is data loaded
+   */
+  const isLoaded = computed(() => games.value.length > 0)
+
+  /**
+   * Computed: Cache age in minutes
+   */
+  const cacheAge = computed(() => {
+    if (!lastFetch.value) return null
+    return Math.floor((Date.now() - lastFetch.value) / 60000)
   })
 
+  // Return public API
   return {
-    games,
-    loading,
-    error,
-    refetch: fetchGames
+    // State (readonly to prevent external mutation)
+    games: readonly(games),
+    loading: readonly(loading),
+    error: readonly(error),
+    
+    // Computed
+    totalGames,
+    isLoaded,
+    cacheAge,
+    
+    // Methods
+    fetchGames,
+    filterGames,
+    clearCache
   }
 }

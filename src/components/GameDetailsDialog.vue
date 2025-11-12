@@ -245,55 +245,27 @@ const openReportDialog = () => {
 
 // Chipek generálása
 const spaceChips = computed(() => {
-  const chips: string[] = []
-  if (props.game?.outdoorSpace) chips.push('Kültéren játszható')
-  if (props.game?.indoorSpace) chips.push('Beltéren játszható')
-  return chips
+  return props.game?.location || []
 })
 
 const groupPhaseChips = computed(() => {
-  const chips: string[] = []
-  if (props.game?.groupPhaseForming) chips.push('Alakulás')
-  if (props.game?.groupPhaseStorming) chips.push('Viharzás')
-  if (props.game?.groupPhaseNorming) chips.push('Normázás')
-  if (props.game?.groupPhasePerforming) chips.push('Működés')
-  return chips
+  return props.game?.groupPhase || []
 })
 
 const ageGroupChips = computed(() => {
-  const chips: string[] = []
-  if (props.game?.age0to5) chips.push('0-5')
-  if (props.game?.age6to10) chips.push('6-10')
-  if (props.game?.age11to13) chips.push('11-13')
-  if (props.game?.age14to16) chips.push('14-16')
-  if (props.game?.age17plus) chips.push('17+')
-  return chips
+  return props.game?.age || []
 })
 
 const groupSizeChips = computed(() => {
-  const chips: string[] = []
-  if (props.game?.groupSizeSmall) chips.push('Kis csoport (3-5 fő)')
-  if (props.game?.groupSizeMedium) chips.push('Közepes csoport (6-15 fő)')
-  if (props.game?.groupSizeLarge) chips.push('Nagy csoport (16-30 fő)')
-  if (props.game?.groupSizeCommunity) chips.push('Közösség (30+ fő)')
-  return chips
+  return props.game?.groupSize || []
 })
 
 const durationChips = computed(() => {
-  const chips: string[] = []
-  if (props.game?.duration3to10) chips.push('3-10 perc')
-  if (props.game?.duration11to20) chips.push('11-20 perc')
-  if (props.game?.duration21to30) chips.push('21-30 perc')
-  if (props.game?.duration30plus) chips.push('30+ perc')
-  return chips
+  return props.game?.length || []
 })
 
 const functionChips = computed(() => {
-  const chips: string[] = []
-  if (props.game?.function1) chips.push(props.game.function1)
-  if (props.game?.function2) chips.push(props.game.function2)
-  if (props.game?.function3) chips.push(props.game.function3)
-  return chips
+  return props.game?.gameFunction || []
 })
 </script>
 

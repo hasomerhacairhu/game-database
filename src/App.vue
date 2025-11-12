@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useGameData } from '@/composables/useGameData'
 import { useGameFilter } from '@/composables/useGameFilter'
 import { useNotification } from '@/composables/useNotification'
@@ -109,11 +109,45 @@ import ReportInaccuracyDialog from '@/components/ReportInaccuracyDialog.vue'
 // Notification rendszer
 const notification = useNotification()
 
-// Adatok betöltése
-const { games, loading, error, refetch } = useGameData()
+// Adatok betöltése (Firestore)
+const { 
+  games, 
+  loading, 
+  error, 
+  fetchGames, 
+  filterGames, 
+  totalGames, 
+  cacheAge 
+} = useGameData()
 
-// Szűrés
-const { filterState, filteredGames, clearFilters } = useGameFilter(games)
+// Játékok betöltése app induláskor
+onMounted(async () => {
+  try {
+    await fetchGames()
+    console.log(`✅ App loaded: ${totalGames.value} games from Firestore`)
+    
+    // Debug: cache info
+    if (cacheAge.value !== null) {
+      console.log(`📦 Cache age: ${cacheAge.value} minutes`)
+    }
+  } catch (err) {
+    console.error('❌ Failed to load games:', err)
+    notification.showError('Nem sikerült betölteni a játékokat. Próbáld újra később!')
+  }
+})
+
+// Refetch wrapper with notification
+const refetch = async () => {
+  try {
+    await fetchGames(true) // Force refresh
+    notification.showSuccess('Játékok sikeresen frissítve!')
+  } catch (err) {
+    notification.showError('Nem sikerült frissíteni a játékokat.')
+  }
+}
+
+// Szűrés - használjuk a useGameFilter-t a filterState kezeléséhez
+const { filterState, filteredGames, clearFilters } = useGameFilter(games, filterGames)
 
 // Dialog kezelése
 const showDetailsDialog = ref(false)
