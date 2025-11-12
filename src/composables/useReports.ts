@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { collection, addDoc, query, where, getDocs, Timestamp, orderBy } from 'firebase/firestore'
-import { db } from '@/firebase/config'
+import { db } from '@/plugins/firebase'
 import { useAuth } from './useAuth'
 import type { GameReport } from '@/types/User'
 

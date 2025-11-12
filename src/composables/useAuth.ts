@@ -7,7 +7,7 @@ import {
   User
 } from 'firebase/auth'
 import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore'
-import { auth, db } from '@/firebase/config'
+import { auth, db } from '@/plugins/firebase'
 import type { UserProfile } from '@/types/User'
 
 const user = ref<User | null>(null)

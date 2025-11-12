@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore'
-import { db } from '@/firebase/config'
+import { db } from '@/plugins/firebase'
 import { useAuth } from './useAuth'
 import type { UserFavorites } from '@/types/User'
 

@@ -1,6 +1,6 @@
 import { ref, computed, readonly } from 'vue'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
-import { db } from '@/firebase/config'
+import { db } from '@/plugins/firebase'
 import type { Game, GameFilterState } from '@/types/Game'
 
 // Cache configuration

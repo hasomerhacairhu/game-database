@@ -1,6 +1,57 @@
 # 🎮 Firebase Backend Architektúra - Játék Adatbázis
 
-## 📋 Tartalom
+## � Projekt Státusz (2025-11-12)
+
+### ✅ MEGVALÓSULT (Production-ready)
+
+**Backend & Data Pipeline:**
+- ✅ Firebase Firestore `games` collection (1163 játék)
+- ✅ n8n workflow: Google Sheets → Firebase sync (napi automatikus)
+- ✅ Security Rules: games collection (read: public, write: admin)
+- ✅ Array-based data model: location[], age[], groupPhase[], groupSize[], length[], gameFunction[]
+
+**Frontend Integration:**
+- ✅ useGameData.ts: Firestore load + localStorage cache (1h TTL)
+- ✅ Client-side filtering (6 multi-select filters)
+- ✅ Game.ts: Complete type definitions + constants export
+- ✅ GameTable.vue: Array chip display (v-for loops)
+- ✅ GameDetailsDialog.vue: Simplified chip generation
+- ✅ AdvancedFilter.vue: Multi-select filters + tooltip
+- ✅ Fisher-Yates shuffle: Randomized game display
+
+**UX Enhancements:**
+- ✅ Animated subtitle: 12 rotating occupations (5s flip animation)
+- ✅ CSS Grid layout: Smooth text transitions
+- ✅ Header scroll behavior: Dialog open detection (lastScrollY tracking)
+- ✅ Profile dialog flash fix: v-if + loading state check
+- ✅ Logout refresh: window.location.reload()
+
+### 🔄 FOLYAMATBAN
+
+**Backend Setup:**
+- 🔄 Firestore composite indexes (auto-generated on first query)
+
+### ❌ NEM KEZDETT (Következő fázis)
+
+**User Features (Phase 2):**
+- ❌ useFavorites.ts composable
+- ❌ useGameRatings.ts composable
+- ❌ FavoriteButton.vue komponens
+- ❌ GameDetailsDialog: sourceName/sourceLink UI megjelenítés
+- ❌ Ratings & Comments sections
+
+**Deployment:**
+- ❌ Frontend production deploy (Vercel/Netlify)
+- ❌ DNS + SSL konfiguráció
+- ❌ Firebase Analytics setup
+
+**Testing:**
+- ❌ Unit tests (Vitest)
+- ❌ E2E tests (Playwright)
+
+---
+
+## �📋 Tartalom
 
 1. [Architektúra Áttekintés](#architektúra-áttekintés)
 2. [Firebase Firestore Struktúra](#firebase-firestore-struktúra)
@@ -846,9 +897,9 @@ export function useGameData() {
 - [x] Firebase projekt létrehozva
 - [x] Authentication (Google OAuth) beállítva
 - [x] Firestore Database létrehozva
-- [ ] **Security Rules frissítése** (games, users, ratings, comments collections)
-- [ ] **Firestore Indexes létrehozása** (composite indexes filterekhez)
-- [ ] **Service Account kulcs generálása** (n8n sync-hez)
+- [x] **Security Rules frissítése** (games collection: read: true, write: false) ✅
+- [ ] **Firestore Indexes létrehozása** (composite indexes filterekhez - auto-generált első query után)
+- [x] **Service Account kulcs generálása** (n8n sync-hez) ✅
 
 #### Security Rules Deploy
 ```bash
@@ -867,34 +918,33 @@ firebase deploy --only firestore:rules
 ### 🤖 2. n8n Workflow Setup
 
 #### n8n Telepítés
-- [ ] n8n self-hosted Docker setup (Oracle Cloud Free Tier)
-- [ ] vagy n8n Cloud subscription ($20/hó)
-- [ ] Reverse proxy (Nginx) + SSL cert (Let's Encrypt)
-- [ ] Basic auth beállítása
+- [x] n8n self-hosted Docker setup (működik) ✅
+- [ ] Reverse proxy (Nginx) + SSL cert (Let's Encrypt) - opcionális
+- [ ] Basic auth beállítása - opcionális
 
 #### Workflow Építés
-- [ ] Új workflow: "Google Sheets → Firebase Sync"
-- [ ] **Trigger**: Schedule (naponta 1x vagy manuális)
-- [ ] **HTTP Request**: Google Sheets CSV letöltés
-- [ ] **Function Node**: CSV parse + transform (array fields)
-- [ ] **Split In Batches**: 50 doc/batch
-- [ ] **Firestore Node**: Bulk import games collection
-- [ ] **Error Handling**: Catch errors + send notification
+- [x] Új workflow: "Google Sheets → Firebase Sync" ✅
+- [x] **Trigger**: Schedule (naponta 1x) ✅
+- [x] **HTTP Request**: Google Sheets CSV letöltés ✅
+- [x] **Function Node**: CSV parse + transform (array fields: location[], age[], groupPhase[], length[], groupSize[], gameFunction[]) ✅
+- [x] **Split In Batches**: 50 doc/batch ✅
+- [x] **Firestore Node**: Bulk import games collection (1163 játék feltöltve) ✅
+- [x] **Error Handling**: Catch errors működik ✅
 
 #### Credentials
-- [ ] Firebase Service Account JSON hozzáadása
-- [ ] Google Sheets API access (ha OAuth szükséges)
+- [x] Firebase Service Account JSON hozzáadva ✅
+- [x] Google Sheets CSV export URL használva (OAuth nem szükséges) ✅
 
 ---
 
 ### 💻 3. Frontend Development
 
 #### useGameData.ts - Firestore Integration
-- [ ] **fetchGames()**: Load all games from Firestore `games` collection
-- [ ] **Client-side filtering**: ageGroups, groupSize, gameFunction, location
-- [ ] **Cache strategy**: 1 óra localStorage cache
-- [ ] **Loading states**: skeleton loaders
-- [ ] **Error handling**: retry logic + offline detection
+- [x] **fetchGames()**: Load all games from Firestore `games` collection (getDocs) ✅
+- [x] **Client-side filtering**: age[], groupSize[], gameFunction[], location[], groupPhase[], length[] array fields ✅
+- [x] **Cache strategy**: 1 óra localStorage cache (TTL + stale fallback) ✅
+- [x] **Loading states**: loading ref exported ✅
+- [x] **Error handling**: try-catch + fallback cache + error ref ✅
 
 ```typescript
 // TODO: Implementálandó
@@ -922,73 +972,79 @@ const fetchGames = async () => {
 - [ ] **aggregateStats()**: Átlag számítás (vagy Cloud Function)
 
 #### Game.ts - Type Definitions Update
-- [ ] **Interface frissítése**: Új array fields (location, age, groupPhase, stb.)
-- [ ] **Remove old fields**: Régi boolean object struktúrák törlése
-- [ ] **Add new fields**: sourceName, sourceLink, materials, updateTime
+- [x] **Interface frissítése**: Új array fields (location[], age[], groupPhase[], groupSize[], length[], gameFunction[]) ✅
+- [x] **Remove old fields**: Régi boolean object struktúrák törölve ✅
+- [x] **Add new fields**: sourceName, sourceLink, materials, otherNames, status, updateTime ✅
+- [x] **Export constants**: LOCATION_OPTIONS, GROUP_PHASE_OPTIONS, AGE_OPTIONS, GROUP_SIZE_OPTIONS, LENGTH_OPTIONS, GAME_FUNCTIONS ✅
 
 ---
 
 ### 🎨 4. UI Components Update
 
 #### GameTable.vue
-- [ ] **Oszlopok frissítése**: gameFunction (array), location (array)
-- [ ] **v-chip megjelenítés**: Array értékek chip-ekként
-- [ ] **Kedvenc ikon**: FavoriteButton integration
+- [x] **Oszlopok frissítése**: gameFunction (array), location (array) ✅
+- [x] **v-chip megjelenítés**: v-for loops minden array mezőhöz (location, groupPhase, age, groupSize, length) ✅
+- [x] **Page size options**: Összes opció eltávolítva, csak [25, 50, 100] ✅
+- [ ] **Kedvenc ikon**: FavoriteButton integration (később)
 
-#### FilterPanel.vue
-- [ ] **Multi-select filters**: age, groupSize, groupPhase, location
-- [ ] **Checkbox groups**: Több érték egyidejű kiválasztása
-- [ ] **Active filter chips**: Kiválasztott filterek megjelenítése
+#### FilterPanel.vue (AdvancedFilter.vue + SimpleFilter.vue)
+- [x] **Multi-select filters**: age[], groupSize[], groupPhase[], location[], length[], gameFunction[] ✅
+- [x] **v-select megjelenítés**: Minden filter multi-select :items prop ✅
+- [x] **Active filter chips**: activeFilterCount computed property ✅
+- [x] **Tooltip**: "Csoport" filter tooltip hozzáadva ("Csoportdinamikai fázis") ✅
 
 #### GameDetailsDialog.vue
-- [ ] **Ratings section**: Értékelések listája + form
-- [ ] **Comments section**: Kommentek thread (opcionális)
-- [ ] **Source link**: sourceName + sourceLink megjelenítése
-- [ ] **Favorite button**: 1-click kedvenc mentés
+- [x] **Chip megjelenítés**: Simplified computed properties (direct array return) ✅
+- [x] **Array fields**: spaceChips, groupPhaseChips, ageGroupChips, groupSizeChips, durationChips, functionChips ✅
+- [ ] **Ratings section**: Értékelések listája + form (később)
+- [ ] **Comments section**: Kommentek thread (később)
+- [ ] **Source link**: sourceName + sourceLink megjelenítése (mezők léteznek, UI még nincs)
+- [ ] **Favorite button**: 1-click kedvenc mentés (később)
 
 #### FavoriteButton.vue (új komponens)
-- [ ] **Heart icon**: Filled/outlined state
-- [ ] **Auth gate**: Login required notification
-- [ ] **Optimistic UI**: Instant feedback
-- [ ] **Error handling**: Rollback on failure
+- [ ] **Heart icon**: Filled/outlined state (NEM KEZDETT)
+- [ ] **Auth gate**: Login required notification (NEM KEZDETT)
+- [ ] **Optimistic UI**: Instant feedback (NEM KEZDETT)
+- [ ] **Error handling**: Rollback on failure (NEM KEZDETT)
 
 ---
 
 ### 🧪 5. Testing
 
 #### Unit Tests
-- [ ] useGameData.ts composable tesztek
-- [ ] useFavorites.ts composable tesztek
-- [ ] useGameRatings.ts composable tesztek
-- [ ] Filter logic tesztek
+- [ ] useGameData.ts composable tesztek (NEM KEZDETT)
+- [ ] useFavorites.ts composable tesztek (NEM KEZDETT)
+- [ ] useFavorites.ts composable tesztek (NEM KEZDETT)
+- [ ] Filter logic tesztek (NEM KEZDETT)
 
 #### Integration Tests
-- [ ] Firebase Auth flow teszt
-- [ ] Firestore CRUD műveletek
-- [ ] n8n workflow teszt (staging)
-- [ ] Security Rules tesztek (Firestore Emulator)
+- [x] Firebase Auth flow teszt (működik login/logout/profile) ✅
+- [x] Firestore CRUD műveletek (games collection read működik) ✅
+- [x] n8n workflow teszt (1163 játék sikeresen sync-elve) ✅
+- [ ] Security Rules tesztek (Firestore Emulator) (NEM KEZDETT)
 
-#### E2E Tests
-- [ ] User journey: Browse → Filter → View Details → Add Favorite
-- [ ] User journey: Login → Profile → Rate Game → View My Ratings
-- [ ] Offline mode teszt
+#### E2E Tests (Manual QA végzve)
+- [x] User journey: Browse → Filter → View Details (működik) ✅
+- [x] Offline mode teszt (localStorage cache működik) ✅
+- [ ] User journey: Login → Profile → Rate Game → View My Ratings (ratings még nincs)
+- [ ] Add Favorite feature (még nincs implementálva)
 
 ---
 
 ### 🚀 6. Deployment
 
 #### Staging Environment
-- [ ] Firebase staging project létrehozása
-- [ ] n8n workflow deploy (test data)
-- [ ] Frontend deploy Vercel preview
-- [ ] QA testing
+- [ ] Firebase staging project létrehozása (NEM SZÜKSÉGES - production projektben dolgozunk)
+- [x] n8n workflow deploy (production data - 1163 játék) ✅
+- [ ] Frontend deploy Vercel preview (NEM KEZDETT)
+- [x] QA testing (lokálisan végzett manual testing) ✅
 
 #### Production Deploy
-- [ ] n8n workflow aktiválása (napi schedule)
-- [ ] Firebase production rules deploy
-- [ ] Frontend build + deploy (Vercel)
-- [ ] DNS + SSL konfiguráció
-- [ ] Analytics setup (Firebase Analytics)
+- [x] n8n workflow aktiválása (napi schedule beállítva) ✅
+- [x] Firebase production rules deploy (games: read true, write false) ✅
+- [ ] Frontend build + deploy (Vercel/Netlify) (NEM KEZDETT)
+- [ ] DNS + SSL konfiguráció (NEM KEZDETT)
+- [ ] Analytics setup (Firebase Analytics) (NEM KEZDETT)
 
 ---
 
@@ -1013,11 +1069,13 @@ const fetchGames = async () => {
 
 ### 📚 8. Documentation
 
-- [ ] **README.md**: Project setup + dev environment
-- [ ] **ARCHITECTURE.md**: System design diagram
-- [ ] **API.md**: Firestore collections + security rules
-- [ ] **DEPLOYMENT.md**: Deployment process
-- [ ] **n8n-workflow.json**: Export + version control
+- [x] **README.md**: Project setup + dev environment (létezik, részletes) ✅
+- [x] **GAME-FIREBASE-DEV.md**: Teljes Firebase architektúra dokumentáció ✅
+- [x] **LOGIN-DEV.md**: Auth flow dokumentáció ✅
+- [ ] **ARCHITECTURE.md**: System design diagram (NEM KEZDETT)
+- [ ] **API.md**: Firestore collections + security rules (részben GAME-FIREBASE-DEV.md-ben)
+- [ ] **DEPLOYMENT.md**: Deployment process (NEM KEZDETT)
+- [ ] **n8n-workflow.json**: Export + version control (NEM KEZDETT)
 
 ---
 
