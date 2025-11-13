@@ -175,42 +175,32 @@
           </v-col>
         </v-row>
 
-        <!-- Gombok -->
-        <div class="mt-4 d-flex ga-2 flex-wrap align-center">
-          <v-btn
-            v-if="game.source"
-            :href="isAuthenticated ? game.source : undefined"
-            target="_blank"
-            color="primary"
-            variant="outlined"
-            prepend-icon="mdi-link"
-            @click.prevent="!isAuthenticated && $emit('auth-required')"
-          >
-            Forrás megtekintése
-          </v-btn>
-          
-          <v-btn
-            color="warning"
-            variant="outlined"
-            prepend-icon="mdi-alert-circle-outline"
-            @click="isAuthenticated ? openReportDialog() : $emit('auth-required')"
-          >
-            Pontatlanság bejelentése
-          </v-btn>
-
-          <FavoriteButton
-            :game-name="game.name"
-            @auth-required="$emit('auth-required')"
-          />
-        </div>
       </v-card-text>
 
       <v-divider></v-divider>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" variant="text" @click="closeDialog">
-          Bezárás
+      <!-- Actions at bottom of dialog -->
+      <v-card-actions class="pa-4 d-flex ga-2">
+        <!-- Hibabejelentés gomb -->
+        <v-btn
+          color="warning"
+          variant="outlined"
+          prepend-icon="mdi-alert-circle-outline"
+          @click="isAuthenticated ? openReportDialog() : $emit('auth-required')"
+        >
+          Pontatlanság bejelentése
+        </v-btn>
+        
+        <!-- Forrás megtekintése gomb -->
+        <v-btn
+          v-if="game?.sourceLink"
+          variant="outlined"
+          :href="game.sourceLink"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <v-icon start icon="mdi-link-variant"></v-icon>
+          Forrás megtekintése
         </v-btn>
       </v-card-actions>
     </v-card>
