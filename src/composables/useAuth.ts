@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
   User
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore'
+import { doc, setDoc, getDoc, Timestamp, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '@/plugins/firebase'
 import type { UserProfile } from '@/types/User'
 
@@ -134,30 +134,37 @@ export function useAuth() {
   }
 
   // User profil frissítése
-  const updateUserProfile = async (updates: Partial<UserProfile>) => {
-    if (!user.value) {
-      throw new Error('Nincs bejelentkezett felhasználó')
-    }
-
-    try {
-      const userDocRef = doc(db, 'users', user.value.uid)
-      await setDoc(userDocRef, updates, { merge: true })
-      
-      // Lokális state frissítése
-      if (userProfile.value) {
-        userProfile.value = { ...userProfile.value, ...updates }
-      }
-    } catch (err: any) {
-      error.value = err.message
-      console.error('Profil frissítési hiba:', err)
-      throw err
+  const updateUserProfile = async (data: Partial<UserProfile>) => {
+    if (!user.value) throw new Error('Nincs bejelentkezve')
+    
+    const userRef = doc(db, 'users', user.value.uid)
+    await updateDoc(userRef, {
+      ...data,
+      updatedAt: serverTimestamp()
+    })
+    
+    // Lokális state frissítése
+    const docSnap = await getDoc(userRef)
+    if (docSnap.exists()) {
+      userProfile.value = docSnap.data() as UserProfile
     }
   }
 
   // Ellenőrzi, hogy a profil ki van-e töltve (születési dátum kötelező)
   const isProfileComplete = computed(() => {
     if (!userProfile.value) return false
-    return !!userProfile.value.birthDate
+    
+    const hasRequiredFields = 
+      userProfile.value.birthDate && 
+      userProfile.value.occupation && 
+      userProfile.value.institution
+    
+    // If occupation is "Egyéb", occupationCustom is also required
+    if (userProfile.value.occupation === 'Egyéb') {
+      return hasRequiredFields && userProfile.value.occupationCustom
+    }
+    
+    return hasRequiredFields
   })
 
   return {

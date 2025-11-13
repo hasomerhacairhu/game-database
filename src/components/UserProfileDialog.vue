@@ -62,6 +62,40 @@
             class="mb-2"
           ></v-text-field>
 
+          <v-select
+            v-model="formData.occupation"
+            label="Foglalkozás *"
+            prepend-inner-icon="mdi-briefcase"
+            variant="outlined"
+            density="comfortable"
+            :items="occupations"
+            :rules="[rules.required]"
+            class="mb-2"
+          ></v-select>
+
+          <v-text-field
+            v-if="formData.occupation === 'Egyéb'"
+            v-model="formData.occupationCustom"
+            label="Egyéb foglalkozás megadása *"
+            prepend-inner-icon="mdi-pencil"
+            variant="outlined"
+            density="comfortable"
+            :rules="[rules.required]"
+            class="mb-2"
+          ></v-text-field>
+
+          <v-text-field
+            v-model="formData.institution"
+            label="Intézmény *"
+            prepend-inner-icon="mdi-domain"
+            variant="outlined"
+            density="comfortable"
+            :rules="[rules.required]"
+            hint="Az intézmény ahol dolgozol/tevékenykedsz"
+            persistent-hint
+            class="mb-2"
+          ></v-text-field>
+
           <v-alert v-if="error" type="error" variant="tonal" density="compact" class="mb-4">
             {{ error }}
           </v-alert>
@@ -126,8 +160,24 @@ const successMessage = ref<string | null>(null)
 const formData = ref({
   displayName: '',
   phoneNumber: '',
-  birthDate: ''
+  birthDate: '',
+  occupation: '',
+  occupationCustom: '',
+  institution: ''
 })
+
+const occupations = [
+  'Madrih',
+  'Cserkész',
+  'Pedagógus',
+  'Gyermek- és ifjúsági munkás',
+  'Drámapedagógus',
+  'Ifjúsági vezető',
+  'Animátor',
+  'Tréner',
+  'Coach',
+  'Egyéb'
+]
 
 const rules = {
   required: (value: string) => !!value || 'Ez a mező kötelező'
@@ -153,7 +203,10 @@ watch([() => props.modelValue, userProfile], ([isOpen, profile]) => {
     formData.value = {
       displayName: displayNameToUse,
       phoneNumber: profile.phoneNumber || '',
-      birthDate: profile.birthDate || ''
+      birthDate: profile.birthDate || '',
+      occupation: profile.occupation || '',
+      occupationCustom: profile.occupationCustom || '',
+      institution: profile.institution || ''
     }
     error.value = null
     successMessage.value = null
@@ -188,10 +241,14 @@ const handleSubmit = async () => {
     error.value = null
     successMessage.value = null
 
+    // Update handleSubmit to include new fields
     await updateUserProfile({
       displayName: formData.value.displayName,
       phoneNumber: formData.value.phoneNumber || '',
-      birthDate: formData.value.birthDate
+      birthDate: formData.value.birthDate,
+      occupation: formData.value.occupation,
+      occupationCustom: formData.value.occupation === 'Egyéb' ? formData.value.occupationCustom : '',
+      institution: formData.value.institution
     })
 
     successMessage.value = 'Profilod sikeresen frissítve!'
