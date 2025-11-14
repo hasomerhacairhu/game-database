@@ -58,7 +58,10 @@
     </v-main>
 
     <!-- Footer -->
-    <AppFooter @auth-required="notification.showAuthRequired()" />
+    <AppFooter 
+      @auth-required="notification.showAuthRequired()"
+      @report-inaccuracy="openEmptyReportDialog"
+    />
 
     <!-- Game Details Dialog -->
     <GameDetailsDialog
@@ -66,6 +69,7 @@
       :game="selectedGame"
       @report-inaccuracy="openReportDialog"
       @auth-required="notification.showAuthRequired()"
+      @open-login-dialog="openLoginDialog"
     />
 
     <!-- Report Inaccuracy Dialog -->
@@ -73,6 +77,9 @@
       v-model="showReportDialog"
       :game-name="reportGameName"
     />
+
+    <!-- Login Dialog -->
+    <LoginDialog v-model="showLoginDialog" />
 
     <!-- Global Notification Snackbar -->
     <v-snackbar
@@ -109,6 +116,7 @@ import FilterPanel from '@/components/FilterPanel.vue'
 import GameTable from '@/components/GameTable.vue'
 import GameDetailsDialog from '@/components/GameDetailsDialog.vue'
 import ReportInaccuracyDialog from '@/components/ReportInaccuracyDialog.vue'
+import LoginDialog from '@/components/LoginDialog.vue'
 
 // Notification rendszer
 const notification = useNotification()
@@ -164,6 +172,12 @@ const showFavoritesOnly = ref(false)
 
 // Toggle favorites filter
 const toggleFavoritesFilter = () => {
+  // Check if user is authenticated
+  if (!isAuthenticated.value) {
+    notification.showInfo('Jelentkezz be a kedvencek használatához!')
+    return
+  }
+  
   showFavoritesOnly.value = !showFavoritesOnly.value
 }
 
@@ -219,6 +233,18 @@ const reportGameName = ref('')
 const openReportDialog = (gameName: string) => {
   reportGameName.value = gameName
   showReportDialog.value = true
+}
+
+const openEmptyReportDialog = () => {
+  reportGameName.value = ''
+  showReportDialog.value = true
+}
+
+// Login dialog kezelése
+const showLoginDialog = ref(false)
+
+const openLoginDialog = () => {
+  showLoginDialog.value = true
 }
 </script>
 

@@ -75,7 +75,7 @@
             color="somer-green-light"
             variant="flat"
           >
-            {{ loc }}
+            {{ shortLocation(loc) }}
           </v-chip>
           <span v-if="!item.location || item.location.length === 0">-</span>
         </div>
@@ -242,6 +242,12 @@ const truncateText = (text: string, maxLength: number): string => {
   if (!text) return '-'
   if (text.length <= maxLength) return text
   return text.substring(0, maxLength) + '...'
+}
+
+const shortLocation = (location: string): string => {
+  if (location === 'Kültéren játszható') return 'Kültér'
+  if (location === 'Beltéren játszható') return 'Beltér'
+  return location
 }
 
 const handleRowClick = (item: Game) => {

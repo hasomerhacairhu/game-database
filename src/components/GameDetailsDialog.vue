@@ -73,7 +73,7 @@
             <v-icon size="48" color="white" class="mb-3">mdi-lock</v-icon>
             <div class="text-h6 text-white font-weight-bold mb-2">Jelentkezz be a teljes leírás olvasásához!</div>
             <div class="text-subtitle-1 text-white mb-3" style="opacity: 0.9;">Díjmentesen használható.</div>
-            <v-btn color="white" variant="elevated" prepend-icon="mdi-login">
+            <v-btn color="white" variant="elevated" prepend-icon="mdi-login" @click="$emit('open-login-dialog')">
               Bejelentkezés
             </v-btn>
           </div>
@@ -200,9 +200,10 @@
         <v-btn
           v-if="game?.sourceLink"
           variant="outlined"
-          :href="game.sourceLink"
-          target="_blank"
-          rel="noopener noreferrer"
+          :href="isAuthenticated ? game.sourceLink : undefined"
+          :target="isAuthenticated ? '_blank' : undefined"
+          :rel="isAuthenticated ? 'noopener noreferrer' : undefined"
+          @click="!isAuthenticated && $emit('auth-required')"
         >
           <v-icon start icon="mdi-link-variant"></v-icon>
           Forrás megtekintése
@@ -276,6 +277,7 @@ const functionChips = computed(() => {
 <style scoped lang="scss">
 .description-container {
   position: relative;
+  min-height: 200px;
 }
 
 .description-blurred {
@@ -298,7 +300,7 @@ const functionChips = computed(() => {
   background: linear-gradient(135deg, rgba(130, 205, 233, 0.45) 0%, rgba(130, 205, 233, 0.95) 100%);
   cursor: pointer;
   border-radius: 8px;
-  padding: 24px;
+  padding: 40px 32px;
   text-align: center;
 }
 </style>
