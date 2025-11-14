@@ -5,7 +5,9 @@
       <AdvancedFilter 
         ref="filterComponent"
         v-model="filterState"
-        @clear="clearAllFilters"
+        :show-favorites-only="showFavoritesOnly"
+        @clear="emit('clear')"
+        @toggle-favorites="emit('toggle-favorites')"
       />
     </v-card-text>
   </v-card>
@@ -18,11 +20,13 @@ import AdvancedFilter from './AdvancedFilter.vue'
 
 const props = defineProps<{
   modelValue: GameFilterState
+  showFavoritesOnly?: boolean
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: GameFilterState]
   'clear': []
+  'toggle-favorites': []
 }>()
 
 const filterComponent = ref<InstanceType<typeof AdvancedFilter>>()

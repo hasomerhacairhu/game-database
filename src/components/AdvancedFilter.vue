@@ -138,17 +138,32 @@
       </v-col>
 
       <!-- Szűrő törlése gomb -->
-      <v-col cols="6" sm="4" md>
+      <v-col cols="6" sm="4" md="auto">
         <v-btn
           @click="clearFilters"
           color="secondary"
           variant="tonal"
           density="compact"
           prepend-icon="mdi-filter-remove"
-          block
           height="40"
+          min-width="120"
         >
           Törlés
+        </v-btn>
+      </v-col>
+
+      <!-- Kedvencek szűrő gomb -->
+      <v-col cols="6" sm="4" md="auto">
+        <v-btn
+          @click="toggleFavorites"
+          :color="showFavoritesOnly ? 'red' : 'secondary'"
+          :variant="showFavoritesOnly ? 'flat' : 'tonal'"
+          density="compact"
+          height="40"
+          min-width="120"
+        >
+          <v-icon start :icon="showFavoritesOnly ? 'mdi-heart' : 'mdi-heart-outline'"></v-icon>
+          Kedvencek
         </v-btn>
       </v-col>
     </v-row>
@@ -169,15 +184,21 @@ import {
 
 const props = defineProps<{
   modelValue: GameFilterState
+  showFavoritesOnly?: boolean
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: GameFilterState]
   'clear': []
+  'toggle-favorites': []
 }>()
 
 const clearFilters = () => {
   emit('clear')
+}
+
+const toggleFavorites = () => {
+  emit('toggle-favorites')
 }
 
 const advancedSearchText = computed({
