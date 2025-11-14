@@ -47,31 +47,36 @@
           <div class="text-body-1">{{ game.goal }}</div>
         </div>
 
-        <!-- Szabályok -->
-        <div v-if="game.rules" class="mb-4 description-container">
-          <div class="text-subtitle-1 font-weight-bold mb-1">📋 Szabályok</div>
-          <div 
-            class="text-body-1 description-text" 
-            :class="{ 'description-blurred': !isAuthenticated }"
-            style="white-space: pre-wrap;"
-          >
-            {{ game.rules }}
+        <!-- Szabályok és Kellékek (blurred content) -->
+        <div class="mb-4 description-container">
+          <div :class="{ 'description-blurred': !isAuthenticated }">
+            <!-- Szabályok -->
+            <div v-if="game.rules" class="mb-4">
+              <div class="text-subtitle-1 font-weight-bold mb-1">📋 Szabályok</div>
+              <div 
+                class="text-body-1" 
+                style="white-space: pre-wrap;"
+              >
+                {{ game.rules }}
+              </div>
+            </div>
+
+            <!-- Kellékek -->
+            <div v-if="game.materials">
+              <div class="text-subtitle-1 font-weight-bold mb-1">🛠️ Kellékek</div>
+              <div class="text-body-1">{{ game.materials }}</div>
+            </div>
           </div>
           
           <!-- Blur overlay with login prompt -->
           <div v-if="!isAuthenticated" class="blur-overlay" @click="$emit('auth-required')">
-            <v-icon size="48" color="white" class="mb-2">mdi-lock</v-icon>
-            <div class="text-h6 text-white font-weight-bold mb-2">Jelentkezz be a teljes leírás olvasásához</div>
+            <v-icon size="48" color="white" class="mb-3">mdi-lock</v-icon>
+            <div class="text-h6 text-white font-weight-bold mb-2">Jelentkezz be a teljes leírás olvasásához!</div>
+            <div class="text-subtitle-1 text-white mb-3" style="opacity: 0.9;">Díjmentesen használható.</div>
             <v-btn color="white" variant="elevated" prepend-icon="mdi-login">
               Bejelentkezés
             </v-btn>
           </div>
-        </div>
-
-        <!-- Kellékek -->
-        <div v-if="game.materials" class="mb-4">
-          <div class="text-subtitle-1 font-weight-bold mb-1">🛠️ Kellékek</div>
-          <div class="text-body-1">{{ game.materials }}</div>
         </div>
 
         <v-divider class="my-4"></v-divider>
@@ -285,11 +290,12 @@ const functionChips = computed(() => {
   left: 0;
   right: 0;
   bottom: 0;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(8, 160, 202, 0.9);
+  background: linear-gradient(135deg, rgba(130, 205, 233, 0.45) 0%, rgba(130, 205, 233, 0.95) 100%);
   cursor: pointer;
   border-radius: 8px;
   padding: 24px;
