@@ -1,7 +1,9 @@
 <template>
   <v-tooltip :text="tooltipText" location="top" :open-delay="1500">
     <template v-slot:activator="{ props: tooltipProps }">
+      <!-- Small icon-only button -->
       <v-btn
+        v-if="size === 'small'"
         v-bind="tooltipProps"
         :icon="isFav ? 'mdi-heart' : 'mdi-heart-outline'"
         :color="isFav ? 'somer-orange' : 'grey-lighten-1'"
@@ -11,6 +13,21 @@
         variant="text"
         @click.stop="handleToggle"
       />
+      
+      <!-- Large button with text -->
+      <v-btn
+        v-else
+        v-bind="tooltipProps"
+        :prepend-icon="isFav ? 'mdi-heart' : 'mdi-heart-outline'"
+        :color="isFav ? 'somer-orange' : 'grey-lighten-1'"
+        :loading="isLoading"
+        :disabled="isLoading"
+        size="large"
+        variant="tonal"
+        @click.stop="handleToggle"
+      >
+        {{ isFav ? 'Kedvenc' : 'Kedvenc' }}
+      </v-btn>
     </template>
   </v-tooltip>
 </template>
@@ -24,9 +41,12 @@ import { useNotification } from '@/composables/useNotification'
 interface Props {
   gameId: string
   gameName: string
+  size?: 'small' | 'large'
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  size: 'small'
+})
 
 const { isFavorite, toggleFavorite } = useFavorites()
 const { isAuthenticated } = useAuth()

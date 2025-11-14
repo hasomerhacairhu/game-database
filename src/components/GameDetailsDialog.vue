@@ -2,16 +2,8 @@
   <v-dialog v-model="dialogOpen" max-width="800" scrollable>
     <v-card v-if="game">
       <v-card-title class="text-h5 bg-primary text-white d-flex align-center">
-        <span>Játék adatlap: {{ game.name }}</span>
+        <span>Játék adatlap</span>
         <v-spacer></v-spacer>
-        
-        <!-- Kedvenc gomb -->
-        <FavoriteButton
-          v-if="game"
-          :game-id="game.id || game.name"
-          :game-name="game.name"
-          class="mr-2"
-        />
         
         <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
@@ -31,13 +23,31 @@
       <v-divider></v-divider>
 
       <v-card-text class="pt-4">
-        <!-- Játék neve és alternatív nevek -->
+        <!-- Játék neve és akció gombok -->
         <div class="mb-4">
-          <div class="d-flex align-center flex-wrap ga-2">
-            <span class="text-h6 font-weight-bold">{{ game.name }}</span>
-            <span v-if="game.altNames" class="text-body-1 text-medium-emphasis">
-              ({{ game.altNames }})
-            </span>
+          <div class="d-flex align-center justify-space-between flex-wrap ga-3">
+            <div class="d-flex align-center flex-wrap ga-2">
+              <span class="text-h5 font-weight-bold">{{ game.name }}</span>
+              <span v-if="game.altNames" class="text-body-1 text-medium-emphasis">
+                ({{ game.altNames }})
+              </span>
+            </div>
+            
+            <!-- Akció gombok -->
+            <div class="d-flex ga-2">
+              <TriedGameButton
+                v-if="game"
+                :game-id="game.id || game.name"
+                :game-name="game.name"
+              />
+              
+              <FavoriteButton
+                v-if="game"
+                :game-id="game.id || game.name"
+                :game-name="game.name"
+                size="large"
+              />
+            </div>
           </div>
         </div>
 
@@ -218,6 +228,7 @@ import { computed } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import type { Game } from '@/types/Game'
 import FavoriteButton from './FavoriteButton.vue'
+import TriedGameButton from './TriedGameButton.vue'
 
 const props = defineProps<{
   modelValue: boolean

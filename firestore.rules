@@ -56,6 +56,14 @@ service cloud.firestore {
     }
     
     // ═══════════════════════════════════════════
+    // TRIED GAMES COLLECTION
+    // ═══════════════════════════════════════════
+    match /tried/{userId} {
+      // User csak a saját kipróbált játékait olvashatja/írhatja
+      allow read, write: if isOwner(userId);
+    }
+    
+    // ═══════════════════════════════════════════
     // REPORTS COLLECTION
     // ═══════════════════════════════════════════
     match /reports/{reportId} {
