@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <!-- Header -->
-    <AppHeader />
+    <AppHeader @show-favorites="showOnlyFavorites" />
 
     <!-- Main Content -->
     <v-main class="bg-grey-lighten-4">
@@ -100,6 +100,7 @@ import { useGameData } from '@/composables/useGameData'
 import { useGameFilter } from '@/composables/useGameFilter'
 import { useNotification } from '@/composables/useNotification'
 import { useAuth } from '@/composables/useAuth'
+import { useFavorites } from '@/composables/useFavorites'
 import type { Game } from '@/types/Game'
 
 import AppHeader from '@/components/AppHeader.vue'
@@ -126,8 +127,8 @@ const {
 // Auth
 const { isAuthenticated } = useAuth()
 
-// Favorites - TODO: implement proper useFavorites composable
-const favoriteGames = ref<Game[]>([])
+// Favorites
+const { favorites } = useFavorites()
 
 // Játékok betöltése app induláskor
 onMounted(async () => {
@@ -156,7 +157,7 @@ const refetch = async () => {
 }
 
 // Szűrés - használjuk a useGameFilter-t a filterState kezeléséhez
-const { filterState, filteredGames: allFilteredGames, clearFilters } = useGameFilter(games, filterGames)
+const { filterState, filteredGames: allFilteredGames, clearFilters: clearGameFilters } = useGameFilter(games, filterGames)
 
 // Favorites filter state
 const showFavoritesOnly = ref(false)
@@ -164,6 +165,18 @@ const showFavoritesOnly = ref(false)
 // Toggle favorites filter
 const toggleFavoritesFilter = () => {
   showFavoritesOnly.value = !showFavoritesOnly.value
+}
+
+// Clear all filters including favorites
+const clearFilters = () => {
+  clearGameFilters()
+  showFavoritesOnly.value = false
+}
+
+// Show only favorites - clear all filters and activate favorites filter
+const showOnlyFavorites = () => {
+  clearGameFilters()
+  showFavoritesOnly.value = true
 }
 
 // Computed property for filtered games including favorites logic
@@ -177,17 +190,17 @@ const filteredGames = computed(() => {
       return []
     }
     
-    // Check if favoriteGames exists and has value
-    if (favoriteGames && favoriteGames.value && Array.isArray(favoriteGames.value)) {
-      const favoriteIds = favoriteGames.value.map((g: Game) => g.id || g.name)
-      result = result.filter(game => favoriteIds.includes(game.id || game.name))
+    // Filter by favorite game IDs
+    if (favorites.value && favorites.value.length > 0) {
+      result = result.filter(game => favorites.value.includes(game.id || ''))
     } else {
-      // No favorites loaded yet - show empty list
+      // No favorites yet - show empty list
       return []
     }
   }
   
-  return result
+  // Return a shallow copy to avoid readonly issues
+  return [...result]
 })
 
 // Dialog kezelése

@@ -62,7 +62,7 @@
 
       <!-- Cél oszlop -->
       <template v-slot:item.goal="{ item }">
-        {{ truncateText(item.goal, 100) }}
+        {{ truncateText(item.goal, 80) }}
       </template>
 
       <!-- Tér oszlop -->
@@ -192,7 +192,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, type DeepReadonly } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import type { Game } from '@/types/Game'
 import FavoriteButton from './FavoriteButton.vue'
@@ -205,7 +205,7 @@ import {
 } from '@/utils/gameDisplayHelpers'
 
 const props = defineProps<{
-  games: Game[]
+  games: readonly Game[] | Game[] | DeepReadonly<Game[]>
 }>()
 
 const emit = defineEmits<{
@@ -228,7 +228,7 @@ const pageCount = computed(() => {
 })
 
 const headers = [
-  { title: '', key: 'favorite', align: 'center' as const, sortable: false, width: '60px' },
+  { title: '', key: 'favorite', align: 'center' as const, sortable: false, width: 'auto' },
   { title: 'Játék neve', key: 'name', align: 'start' as const, sortable: true, width: '15%' },
   { title: 'Cél', key: 'goal', align: 'start' as const, sortable: true, width: '25%' },
   { title: 'Tér', key: 'space', align: 'start' as const, sortable: false, width: '10%' },
@@ -259,7 +259,7 @@ const handleRowClick = (item: Game) => {
   font-weight: bold !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 16px 12px !important;
+  padding: 10px 3px !important;
   border-bottom: 2px solid #06789A !important;
 }
 
@@ -268,9 +268,13 @@ const handleRowClick = (item: Game) => {
   font-weight: bold !important;
 }
 
-/* Sorok */
+/* Sorok - minimális padding */
 :deep(.game-table tbody tr) {
   cursor: pointer;
+}
+
+:deep(.game-table tbody td) {
+  padding: 0px 3px !important;
 }
 
 :deep(.game-table tbody tr:nth-child(even)) {

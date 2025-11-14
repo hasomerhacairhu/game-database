@@ -137,33 +137,33 @@
         </v-select>
       </v-col>
 
-      <!-- Szűrő törlése gomb -->
-      <v-col cols="6" sm="4" md="auto">
-        <v-btn
-          @click="clearFilters"
-          color="secondary"
-          variant="tonal"
-          density="compact"
-          prepend-icon="mdi-filter-remove"
-          height="40"
-          min-width="120"
-        >
-          Törlés
-        </v-btn>
-      </v-col>
-
       <!-- Kedvencek szűrő gomb -->
       <v-col cols="6" sm="4" md="auto">
         <v-btn
           @click="toggleFavorites"
-          :color="showFavoritesOnly ? 'red' : 'secondary'"
+          :color="showFavoritesOnly ? 'somer-orange-light' : 'primary'"
           :variant="showFavoritesOnly ? 'flat' : 'tonal'"
           density="compact"
           height="40"
-          min-width="120"
+          block
         >
           <v-icon start :icon="showFavoritesOnly ? 'mdi-heart' : 'mdi-heart-outline'"></v-icon>
           Kedvencek
+        </v-btn>
+      </v-col>
+
+      <!-- Szűrő törlése gomb -->
+      <v-col cols="6" sm="4" md="auto">
+        <v-btn
+          @click="clearFilters"
+          color="primary"
+          variant="tonal"
+          density="compact"
+          prepend-icon="mdi-filter-remove"
+          height="40"
+          block
+        >
+          Törlés
         </v-btn>
       </v-col>
     </v-row>

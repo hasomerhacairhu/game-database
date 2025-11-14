@@ -48,7 +48,7 @@
         ></v-list-item>
 
         <v-list-item
-          prepend-icon="mdi-star"
+          prepend-icon="mdi-heart"
           title="Kedvenc játékaim"
           @click="$emit('show-favorites')"
         ></v-list-item>
@@ -63,7 +63,7 @@
         ></v-list-item>
 
         <v-list-item
-          prepend-icon="mdi-heart"
+          prepend-icon="mdi-human-greeting"
           title="Támogatom a Somert"
           href="https://somer.hu/tamogatom"
           target="_blank"

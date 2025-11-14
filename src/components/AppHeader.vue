@@ -53,7 +53,7 @@
             <span v-else>Somer.hu</span>
           </v-btn>
 
-          <UserMenu />
+          <UserMenu @show-favorites="$emit('show-favorites')" />
         </div>
       </div>
     </v-container>
@@ -65,6 +65,10 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import logoSvg from '@/assets/somer-semel-white-with-transparent-bg.svg'
 import UserMenu from './UserMenu.vue'
+
+defineEmits<{
+  'show-favorites': []
+}>()
 
 const { isAuthenticated } = useAuth()
 const logoUrl = logoSvg

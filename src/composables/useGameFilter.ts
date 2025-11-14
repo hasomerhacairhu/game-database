@@ -1,15 +1,15 @@
-import { ref, computed, type Ref } from 'vue'
+import { ref, computed, type Ref, type DeepReadonly } from 'vue'
 import type { Game, GameFilterState } from '@/types/Game'
 
 /**
  * useGameFilter - Wrapper for useGameData filterGames method
  * Manages filter state and computes filtered games using array-based Game model
  * 
- * @param games - Ref to all games from useGameData
+ * @param games - Ref to all games from useGameData (can be readonly)
  * @param filterGames - filterGames function from useGameData
  */
 export function useGameFilter(
-  games: Ref<Game[]>, 
+  games: Ref<readonly Game[]> | Readonly<Ref<readonly Game[]>> | Ref<DeepReadonly<Game[]>>, 
   filterGames: (filters: Partial<GameFilterState>) => Game[]
 ) {
   // Filter state (array-based fields matching new Game model)

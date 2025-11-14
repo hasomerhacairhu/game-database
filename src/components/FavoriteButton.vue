@@ -4,7 +4,7 @@
       <v-btn
         v-bind="tooltipProps"
         :icon="isFav ? 'mdi-heart' : 'mdi-heart-outline'"
-        :color="isFav ? 'error' : 'grey-lighten-1'"
+        :color="isFav ? 'somer-orange' : 'grey-lighten-1'"
         :loading="isLoading"
         :disabled="isLoading"
         size="small"
