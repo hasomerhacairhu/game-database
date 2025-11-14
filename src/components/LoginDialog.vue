@@ -16,14 +16,32 @@
           </p>
         </div>
 
-        <v-list density="compact" class="mb-4">
-          <v-list-item prepend-icon="mdi-text" title="Teljes játékleírások olvasása"></v-list-item>
-          <v-list-item prepend-icon="mdi-star" title="Kedvenc játékok mentése"></v-list-item>
-          <v-list-item prepend-icon="mdi-alert-circle" title="Pontatlanságok bejelentése"></v-list-item>
-          <v-list-item prepend-icon="mdi-table-arrow-right" title="Lapozás a táblázatban"></v-list-item>
-          <v-list-item prepend-icon="mdi-download" title="Excel letöltés"></v-list-item>
-          <v-list-item prepend-icon="mdi-link-variant" title="Játék forrás megnyitása"></v-list-item>
-        </v-list>
+        <v-row class="mb-4">
+          <v-col cols="6" class="text-center">
+            <div class="feature-item">
+              <v-icon icon="mdi-text" size="40" color="primary" class="mb-2"></v-icon>
+              <div class="text-body-2">Teljes játékleírások olvasása</div>
+            </div>
+          </v-col>
+          <v-col cols="6" class="text-center">
+            <div class="feature-item">
+              <v-icon icon="mdi-heart" size="40" color="primary" class="mb-2"></v-icon>
+              <div class="text-body-2">Kedvenc játékok mentése</div>
+            </div>
+          </v-col>
+          <v-col cols="6" class="text-center">
+            <div class="feature-item">
+              <v-icon icon="mdi-alert-circle" size="40" color="primary" class="mb-2"></v-icon>
+              <div class="text-body-2">Pontatlanságok bejelentése</div>
+            </div>
+          </v-col>
+          <v-col cols="6" class="text-center">
+            <div class="feature-item">
+              <v-icon icon="mdi-link-variant" size="40" color="primary" class="mb-2"></v-icon>
+              <div class="text-body-2">Játék forrás megnyitása</div>
+            </div>
+          </v-col>
+        </v-row>
 
         <v-alert type="info" variant="tonal" density="compact" class="mb-4">
           <template v-slot:text>
@@ -98,7 +116,12 @@ const handleGoogleSignIn = async () => {
 </script>
 
 <style scoped lang="scss">
-.v-list-item {
-  min-height: 36px !important;
+.feature-item {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
 }
 </style>
