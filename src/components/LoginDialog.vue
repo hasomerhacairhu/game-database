@@ -8,46 +8,47 @@
       </v-card-title>
 
       <v-card-text class="pt-6">
-        <div class="text-center mb-6">
-          <v-icon icon="mdi-account-circle" size="80" color="primary" class="mb-4"></v-icon>
-          <h3 class="text-h6 mb-2">Üdvözlünk a Somer Játékadatbázisban!</h3>
-          <p class="text-body-2 text-medium-emphasis">
-            Jelentkezz be, hogy hozzáférj az alábbi funkciókhoz:
-          </p>
+        <div class="d-flex align-center mb-5">
+          <v-icon icon="mdi-account-circle" size="64" color="primary" class="mr-4"></v-icon>
+          <div>
+            <h3 class="text-h6 mb-1">Üdvözlünk a Somer Játékadatbázisban!</h3>
+            <p class="text-body-2 text-medium-emphasis mb-0">
+              Jelentkezz be, hogy hozzáférj az alábbi funkciókhoz:
+            </p>
+          </div>
         </div>
 
-        <v-row class="mb-4">
-          <v-col cols="6" class="text-center">
+        <v-row dense class="mb-3">
+          <v-col cols="6">
             <div class="feature-item">
-              <v-icon icon="mdi-text" size="40" color="primary" class="mb-2"></v-icon>
-              <div class="text-body-2">Teljes játékleírások olvasása</div>
+              <v-icon icon="mdi-text" size="32" color="primary" class="mb-1"></v-icon>
+              <div class="text-caption">Teljes játékleírások olvasása</div>
             </div>
           </v-col>
-          <v-col cols="6" class="text-center">
+          <v-col cols="6">
             <div class="feature-item">
-              <v-icon icon="mdi-heart" size="40" color="primary" class="mb-2"></v-icon>
-              <div class="text-body-2">Kedvenc játékok mentése</div>
+              <v-icon icon="mdi-heart" size="32" color="primary" class="mb-1"></v-icon>
+              <div class="text-caption">Kedvenc játékok mentése</div>
             </div>
           </v-col>
-          <v-col cols="6" class="text-center">
+          <v-col cols="6">
             <div class="feature-item">
-              <v-icon icon="mdi-alert-circle" size="40" color="primary" class="mb-2"></v-icon>
-              <div class="text-body-2">Pontatlanságok bejelentése</div>
+              <v-icon icon="mdi-alert-circle" size="32" color="primary" class="mb-1"></v-icon>
+              <div class="text-caption">Pontatlanságok bejelentése</div>
             </div>
           </v-col>
-          <v-col cols="6" class="text-center">
+          <v-col cols="6">
             <div class="feature-item">
-              <v-icon icon="mdi-link-variant" size="40" color="primary" class="mb-2"></v-icon>
-              <div class="text-body-2">Játék forrás megnyitása</div>
+              <v-icon icon="mdi-link-variant" size="32" color="primary" class="mb-1"></v-icon>
+              <div class="text-caption">Játék forrás megnyitása</div>
             </div>
           </v-col>
         </v-row>
 
         <v-alert type="info" variant="tonal" density="compact" class="mb-4">
-          <template v-slot:text>
-            <strong>Díjmentesen használható!</strong><br>
-            Az alkalmazás 100%-ban ingyenes. A bejelentkezés a felhasználói élmény javítása mellett segít nekünk jobban megismerni közösségünket.
-          </template>
+          <div class="text-caption">
+            <strong>Díjmentesen használható!</strong> Az alkalmazás 100%-ban ingyenes. A bejelentkezés a felhasználói élmény javítása mellett segít nekünk jobban megismerni közösségünket.
+          </div>
         </v-alert>
 
         <div v-if="error" class="mb-4">
@@ -117,11 +118,11 @@ const handleGoogleSignIn = async () => {
 
 <style scoped lang="scss">
 .feature-item {
-  padding: 12px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100px;
+  min-height: 70px;
 }
 </style>
