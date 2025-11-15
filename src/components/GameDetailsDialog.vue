@@ -23,46 +23,59 @@
       <v-divider></v-divider>
 
       <v-card-text class="pt-4">
-        <!-- Játék neve és akció gombok -->
-        <div class="mb-4">
-          <div class="d-flex align-center justify-space-between flex-wrap ga-3">
-            <div class="d-flex align-center flex-wrap ga-2">
+        <!-- Két oszlopos layout: Cím+Cél | Gombok+Értékelés -->
+        <v-row class="mb-4">
+          <!-- Bal oldali oszlop: Cím és Cél -->
+          <v-col cols="12" md="6">
+            <!-- Játék neve -->
+            <div class="mb-1">
               <span class="text-h5 font-weight-bold">{{ game.name }}</span>
-              <span v-if="game.altNames" class="text-body-1 text-medium-emphasis">
-                ({{ game.altNames }})
-              </span>
             </div>
             
-            <!-- Akció gombok -->
-            <div class="d-flex ga-2">
-              <TriedGameButton
-                v-if="game"
-                :game-id="game.id || game.name"
-                :game-name="game.name"
-              />
-              
-              <FavoriteButton
-                v-if="game"
-                :game-id="game.id || game.name"
-                :game-name="game.name"
-                size="large"
-              />
+            <!-- További néven is ismert -->
+            <div v-if="game.otherNames" class="mb-3">
+              <span class="text-caption text-medium-emphasis">További néven is ismert: </span>
+              <span class="text-body-2">{{ game.otherNames }}</span>
             </div>
-          </div>
-        </div>
 
-        <!-- Értékelési panel -->
-        <RatingPanel
-          v-if="game"
-          :game-id="game.id || game.name"
-          :game-name="game.name"
-        />
+            <!-- Játék célja -->
+            <div v-if="game.goal" class="mt-4">
+              <div class="text-subtitle-1 font-weight-bold mb-1">🎯 Játék célja</div>
+              <div class="text-body-1">{{ game.goal }}</div>
+            </div>
+          </v-col>
 
-        <!-- Játék célja -->
-        <div v-if="game.goal" class="mb-4">
-          <div class="text-subtitle-1 font-weight-bold mb-1">🎯 Játék célja</div>
-          <div class="text-body-1">{{ game.goal }}</div>
-        </div>
+          <!-- Jobb oldali oszlop: Akció gombok és Értékelési panel -->
+          <v-col cols="12" md="6">
+            <!-- Akció gombok -->
+            <v-row dense class="mb-3">
+              <v-col cols="6">
+                <TriedGameButton
+                  v-if="game"
+                  :game-id="game.id || game.name"
+                  :game-name="game.name"
+                  class="w-100"
+                />
+              </v-col>
+              <v-col cols="6">
+                <FavoriteButton
+                  v-if="game"
+                  :game-id="game.id || game.name"
+                  :game-name="game.name"
+                  size="large"
+                  class="w-100"
+                />
+              </v-col>
+            </v-row>
+
+            <!-- Értékelési panel -->
+            <RatingPanel
+              v-if="game"
+              :game-id="game.id || game.name"
+              :game-name="game.name"
+            />
+          </v-col>
+        </v-row>
 
         <!-- Szabályok és Kellékek (blurred content) -->
         <div class="mb-4 description-container">
@@ -202,10 +215,10 @@
       <v-divider></v-divider>
 
       <!-- Actions at bottom of dialog -->
-      <v-card-actions class="pa-4 d-flex ga-2">
+      <v-card-actions class="pa-4 d-flex ga-2 justify-start">
         <!-- Hibabejelentés gomb -->
         <v-btn
-          color="warning"
+          color="secondary"
           variant="outlined"
           prepend-icon="mdi-alert-circle-outline"
           @click="isAuthenticated ? openReportDialog() : $emit('auth-required')"
@@ -216,6 +229,7 @@
         <!-- Forrás megtekintése gomb -->
         <v-btn
           v-if="game?.sourceLink"
+          color="secondary"
           variant="outlined"
           :href="isAuthenticated ? game.sourceLink : undefined"
           :target="isAuthenticated ? '_blank' : undefined"

@@ -110,13 +110,22 @@ export function useRatings(gameId?: string) {
 
     try {
       const ratingsRef = collection(db, 'ratings')
-      await addDoc(ratingsRef, {
-        ...rating,
+      const data: any = {
+        gameId: rating.gameId,
+        gameName: rating.gameName,
         userId: user.value.uid,
         userName: user.value.displayName || 'Névtelen',
         userEmail: user.value.email,
+        stars: rating.stars,
         createdAt: Timestamp.now()
-      })
+      }
+      
+      // Csak akkor add hozzá a comment-et, ha nem undefined
+      if (rating.comment) {
+        data.comment = rating.comment
+      }
+      
+      await addDoc(ratingsRef, data)
     } catch (error) {
       console.error('Értékelés hozzáadási hiba:', error)
       throw error
@@ -131,10 +140,19 @@ export function useRatings(gameId?: string) {
 
     try {
       const ratingRef = doc(db, 'ratings', ratingId)
-      await updateDoc(ratingRef, {
-        ...data,
+      const updateData: any = {
         updatedAt: Timestamp.now()
-      })
+      }
+      
+      // Csak azokat a mezőket add hozzá, amik nem undefined
+      if (data.stars !== undefined) {
+        updateData.stars = data.stars
+      }
+      if (data.comment !== undefined) {
+        updateData.comment = data.comment
+      }
+      
+      await updateDoc(ratingRef, updateData)
     } catch (error) {
       console.error('Értékelés frissítési hiba:', error)
       throw error

@@ -24,6 +24,7 @@
         :disabled="isLoading"
         size="large"
         variant="tonal"
+        block
         @click.stop="handleToggle"
       >
         {{ isFav ? 'Kedvenc' : 'Kedvenc' }}
@@ -50,7 +51,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { isFavorite, toggleFavorite } = useFavorites()
 const { isAuthenticated } = useAuth()
-const { showSuccess, showError, showInfo } = useNotification()
+const { showSuccess, showError, showAuthRequired } = useNotification()
 
 const isLoading = ref(false)
 
@@ -69,7 +70,7 @@ const tooltipText = computed(() => {
 const handleToggle = async () => {
   // Auth gate - login szükséges
   if (!isAuthenticated.value) {
-    showInfo('Jelentkezz be a kedvencek használatához!')
+    showAuthRequired()
     return
   }
 

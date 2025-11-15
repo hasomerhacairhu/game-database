@@ -9,6 +9,7 @@
         :disabled="isLoading"
         size="large"
         variant="tonal"
+        block
         @click.stop="handleToggle"
       >
         {{ isTried ? 'Már kipróbáltam' : 'Kipróbáltam' }}

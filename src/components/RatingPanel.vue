@@ -1,29 +1,38 @@
 <template>
-  <v-card class="rating-panel mb-4" elevation="0" variant="outlined">
+  <v-card class="rating-panel mb-4" elevation="0" variant="outlined" :class="{ 'disabled-panel': !isAuthenticated }">
     <v-card-text class="pa-4">
       <!-- Átlagértékelés és közvetlen csillagozó -->
       <div class="d-flex align-center justify-space-between">
         <div class="d-flex align-center ga-2">
-          <v-icon icon="mdi-star" color="amber-darken-2" size="28"></v-icon>
+          <v-icon icon="mdi-star" :color="isAuthenticated ? 'amber-darken-2' : 'grey-lighten-2'" size="32"></v-icon>
           <div>
-            <div class="text-h6">
-              {{ averageRating > 0 ? averageRating.toFixed(1) : '–' }}
-              <span class="text-body-2 text-medium-emphasis">/ 5.0</span>
-            </div>
-            <div class="text-caption text-medium-emphasis">
-              {{ ratingCount }} értékelés
-            </div>
+            <!-- Ha van értékelés -->
+            <template v-if="ratingCount > 0">
+              <div class="text-h4 font-weight-bold">
+                {{ averageRating.toFixed(1) }}
+              </div>
+              <div class="text-caption text-medium-emphasis">
+                {{ ratingCount }} értékelés
+              </div>
+            </template>
+            
+            <!-- Ha még nincs értékelés -->
+            <template v-else>
+              <div class="text-body-2 text-medium-emphasis">
+                Légy te az első,<br>aki értékel!
+              </div>
+            </template>
           </div>
         </div>
 
         <!-- Közvetlen csillagozó -->
-        <div>
+        <div @click.capture="handleRatingClick">
           <v-rating
             :model-value="userRating?.stars || 0"
             :length="5"
             :size="32"
-            color="amber-darken-2"
-            active-color="amber-darken-2"
+            :color="isAuthenticated ? 'amber-darken-2' : 'grey-lighten-2'"
+            :active-color="isAuthenticated ? 'amber-darken-2' : 'grey-lighten-2'"
             hover
             :disabled="!isAuthenticated"
             @update:model-value="handleStarClick"
@@ -35,10 +44,10 @@
       </div>
 
       <!-- Értékelő dialog -->
-      <v-dialog v-model="dialogOpen" max-width="500">
+      <v-dialog v-model="dialogOpen" max-width="450">
         <v-card>
-          <v-card-title class="bg-primary text-white d-flex align-center">
-            <span>{{ userRating ? 'Értékelés szerkesztése' : 'Játék értékelése' }}</span>
+          <v-card-title class="bg-primary text-white d-flex align-center pa-3">
+            <span class="text-subtitle-1">{{ userRating ? 'Értékelés szerkesztése' : 'Játék értékelése' }}</span>
             <v-spacer></v-spacer>
             <v-btn
               icon="mdi-close"
@@ -49,13 +58,13 @@
             ></v-btn>
           </v-card-title>
 
-          <v-card-text class="pt-6">
-            <div class="text-center mb-4">
-              <div class="text-h6 mb-3">{{ gameName }}</div>
+          <v-card-text class="pa-4">
+            <div class="text-center mb-3">
+              <div class="text-subtitle-2 mb-3">{{ gameName }}</div>
               <v-rating
                 v-model="selectedStars"
                 :length="5"
-                :size="48"
+                :size="56"
                 color="amber-darken-2"
                 active-color="amber-darken-2"
                 hover
@@ -66,13 +75,16 @@
             </div>
 
             <v-textarea
+              ref="commentTextarea"
               v-model="comment"
               label="Megjegyzés (opcionális)"
               placeholder="Írd le a tapasztalataidat..."
-              rows="4"
+              rows="3"
               variant="outlined"
+              density="compact"
               counter="500"
               :rules="[rules.maxLength]"
+              autofocus
             ></v-textarea>
 
             <v-alert
@@ -86,12 +98,13 @@
             </v-alert>
           </v-card-text>
 
-          <v-card-actions class="pa-4">
+          <v-card-actions class="pa-3">
             <v-btn
               v-if="userRating"
               color="error"
               variant="text"
               prepend-icon="mdi-delete"
+              size="small"
               @click="handleDelete"
               :loading="deleting"
             >
@@ -100,6 +113,7 @@
             <v-spacer></v-spacer>
             <v-btn
               variant="text"
+              size="small"
               @click="closeDialog"
             >
               Mégse
@@ -108,6 +122,7 @@
               color="primary"
               variant="elevated"
               prepend-icon="mdi-check"
+              size="small"
               @click="handleSubmit"
               :loading="saving"
               :disabled="selectedStars === 0"
@@ -155,6 +170,7 @@ const comment = ref('')
 const saving = ref(false)
 const deleting = ref(false)
 const error = ref<string | null>(null)
+const isDeleting = ref(false) // Flag to prevent dialog opening after delete
 
 // Rating labels
 const ratingLabels = [
@@ -183,15 +199,81 @@ onUnmounted(() => {
   stopRatingsListener()
 })
 
-// Handle star click - open dialog with pre-selected stars
-const handleStarClick = (stars: string | number) => {
+// Handle clicking on rating area to detect which star was clicked
+const handleRatingClick = async (event: MouseEvent) => {
+  if (!isAuthenticated.value || isDeleting.value) {
+    return
+  }
+
+  // Find which star was clicked by examining the click target
+  const target = event.target as HTMLElement
+  const button = target.closest('button')
+  
+  if (button) {
+    // Get the aria-label which contains the star number
+    const ariaLabel = button.getAttribute('aria-label')
+    if (ariaLabel) {
+      const match = ariaLabel.match(/(\d+)/)
+      if (match) {
+        const clickedStars = parseInt(match[1])
+        
+        // If clicking the same rating, delete it
+        if (userRating.value && userRating.value.stars === clickedStars) {
+          event.preventDefault()
+          event.stopPropagation()
+          
+          if (confirm('Biztosan törlöd az értékelésedet?')) {
+            isDeleting.value = true
+            try {
+              await deleteRating(userRating.value.id!)
+              showSuccess('Értékelés törölve!')
+              await new Promise(resolve => setTimeout(resolve, 500))
+            } catch (err: any) {
+              showError(err.message || 'Hiba történt a törlés során')
+            } finally {
+              isDeleting.value = false
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Handle star click - open dialog with pre-selected stars or delete if same rating
+const handleStarClick = async (stars: string | number) => {
   if (!isAuthenticated.value) {
     showAuthRequired()
     return
   }
 
+  // Skip if currently in the process of deleting
+  if (isDeleting.value) {
+    return
+  }
+
+  const clickedStars = typeof stars === 'number' ? stars : parseInt(stars)
+
+  // Ha van már értékelés és ugyanarra a csillagra kattintott, töröld
+  if (userRating.value && userRating.value.stars === clickedStars) {
+    if (confirm('Biztosan törlöd az értékelésedet?')) {
+      isDeleting.value = true
+      try {
+        await deleteRating(userRating.value.id!)
+        showSuccess('Értékelés törölve!')
+        // Wait a bit longer to ensure the rating is cleared before allowing new clicks
+        await new Promise(resolve => setTimeout(resolve, 500))
+      } catch (err: any) {
+        showError(err.message || 'Hiba történt a törlés során')
+      } finally {
+        isDeleting.value = false
+      }
+    }
+    return
+  }
+
   // Előre kiválasztott csillagok beállítása
-  selectedStars.value = typeof stars === 'number' ? stars : parseInt(stars)
+  selectedStars.value = clickedStars
 
   // Ha van már értékelés, töltsd be a megjegyzést
   if (userRating.value) {
@@ -277,5 +359,10 @@ const handleDelete = async () => {
 <style scoped>
 .rating-panel {
   border-color: rgba(0, 0, 0, 0.12);
+}
+
+.disabled-panel {
+  opacity: 0.6;
+  pointer-events: none;
 }
 </style>
