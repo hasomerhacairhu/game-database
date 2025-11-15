@@ -18,16 +18,17 @@
       <v-btn
         v-else
         v-bind="tooltipProps"
-        :prepend-icon="isFav ? 'mdi-heart' : 'mdi-heart-outline'"
         :color="isFav ? 'somer-orange' : 'grey-lighten-1'"
         :loading="isLoading"
         :disabled="isLoading"
         size="large"
         variant="tonal"
         block
+        class="vertical-btn"
         @click.stop="handleToggle"
       >
-        {{ isFav ? 'Kedvenc' : 'Kedvenc' }}
+        <v-icon :icon="isFav ? 'mdi-heart' : 'mdi-heart-outline'" size="24" class="mb-1"></v-icon>
+        <span>{{ isFav ? 'Kedvenc' : 'Kedvenc' }}</span>
       </v-btn>
     </template>
   </v-tooltip>
@@ -109,5 +110,17 @@ const handleToggle = async () => {
 
 .v-btn--icon:active {
   transform: scale(0.95);
+}
+
+.vertical-btn :deep(.v-btn__content) {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vertical-btn {
+  height: auto !important;
+  min-height: 64px;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 </style>

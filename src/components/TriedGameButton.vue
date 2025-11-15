@@ -3,16 +3,17 @@
     <template v-slot:activator="{ props: tooltipProps }">
       <v-btn
         v-bind="tooltipProps"
-        :prepend-icon="isTried ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
         :color="isTried ? 'success' : 'grey-lighten-1'"
         :loading="isLoading"
         :disabled="isLoading"
         size="large"
         variant="tonal"
         block
+        class="vertical-btn"
         @click.stop="handleToggle"
       >
-        {{ isTried ? 'Már kipróbáltam' : 'Kipróbáltam' }}
+        <v-icon :icon="isTried ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'" size="24" class="mb-1"></v-icon>
+        <span>{{ isTried ? 'Már kipróbáltam' : 'Kipróbáltam' }}</span>
       </v-btn>
     </template>
   </v-tooltip>
@@ -82,5 +83,15 @@ const handleToggle = async () => {
 </script>
 
 <style scoped>
-/* Nincs custom styling - natúr Vuetify megjelenes */
+.vertical-btn :deep(.v-btn__content) {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vertical-btn {
+  height: auto !important;
+  min-height: 64px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
 </style>
