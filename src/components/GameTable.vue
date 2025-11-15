@@ -215,7 +215,7 @@ const enrichedGames = computed(() => {
 })
 
 const page = ref(1)
-const itemsPerPage = ref(25)
+const itemsPerPage = ref(50)
 const itemsPerPageOptions = [
   { value: 25, title: '25' },
   { value: 50, title: '50' },
