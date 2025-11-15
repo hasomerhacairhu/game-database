@@ -141,6 +141,7 @@ import { ref, watch } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useRatings } from '@/composables/useRatings'
 import { useNotification } from '@/composables/useNotification'
+import { useTriedGames } from '@/composables/useTriedGames'
 
 interface Props {
   gameId: string
@@ -149,7 +150,12 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const emit = defineEmits<{
+  'shake-tried-button': []
+}>()
+
 const { isAuthenticated } = useAuth()
+const { isGameTried } = useTriedGames()
 const { 
   userRating, 
   averageRating, 
@@ -161,7 +167,7 @@ const {
   stopRatingsListener
 } = useRatings()
 
-const { showSuccess, showError, showAuthRequired } = useNotification()
+const { showSuccess, showWarning, showAuthRequired } = useNotification()
 
 // Dialog state
 const dialogOpen = ref(false)
@@ -199,9 +205,27 @@ onUnmounted(() => {
   stopRatingsListener()
 })
 
+// Check if game is tried and show error if not
+const checkGameTried = (): boolean => {
+  const isTried = isGameTried(props.gameId)
+  if (!isTried.value) {
+    showWarning('Csak kipróbált játékot értékelhetsz! Jelöld meg először a "Kipróbáltam" gombbal.')
+    emit('shake-tried-button')
+    return false
+  }
+  return true
+}
+
 // Handle clicking on rating area to detect which star was clicked
 const handleRatingClick = async (event: MouseEvent) => {
   if (!isAuthenticated.value || isDeleting.value) {
+    return
+  }
+
+  // Check if game is tried
+  if (!checkGameTried()) {
+    event.preventDefault()
+    event.stopPropagation()
     return
   }
 
@@ -249,6 +273,11 @@ const handleStarClick = async (stars: string | number) => {
 
   // Skip if currently in the process of deleting
   if (isDeleting.value) {
+    return
+  }
+
+  // Check if game is tried
+  if (!checkGameTried()) {
     return
   }
 

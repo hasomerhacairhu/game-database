@@ -50,12 +50,14 @@
             <!-- Akció gombok -->
             <v-row dense class="mb-3">
               <v-col cols="6">
-                <TriedGameButton
-                  v-if="game"
-                  :game-id="game.id || game.name"
-                  :game-name="game.name"
-                  class="w-100"
-                />
+                <div ref="triedButtonContainer" :class="{ 'shake-animation': isShaking }">
+                  <TriedGameButton
+                    v-if="game"
+                    :game-id="game.id || game.name"
+                    :game-name="game.name"
+                    class="w-100"
+                  />
+                </div>
               </v-col>
               <v-col cols="6">
                 <FavoriteButton
@@ -73,6 +75,7 @@
               v-if="game"
               :game-id="game.id || game.name"
               :game-name="game.name"
+              @shake-tried-button="handleShakeTriedButton"
             />
           </v-col>
         </v-row>
@@ -245,7 +248,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import type { Game } from '@/types/Game'
 import FavoriteButton from './FavoriteButton.vue'
@@ -265,6 +268,16 @@ const emit = defineEmits<{
 }>()
 
 const { isAuthenticated } = useAuth()
+
+// Shake animation state
+const isShaking = ref(false)
+
+const handleShakeTriedButton = () => {
+  isShaking.value = true
+  setTimeout(() => {
+    isShaking.value = false
+  }, 600)
+}
 
 const dialogOpen = computed({
   get: () => props.modelValue,
@@ -336,5 +349,21 @@ const functionChips = computed(() => {
   border-radius: 8px;
   padding: 40px 32px;
   text-align: center;
+}
+
+.shake-animation {
+  animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-8px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(8px);
+  }
 }
 </style>
