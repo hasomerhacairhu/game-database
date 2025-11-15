@@ -108,6 +108,7 @@ import { useGameFilter } from '@/composables/useGameFilter'
 import { useNotification } from '@/composables/useNotification'
 import { useAuth } from '@/composables/useAuth'
 import { useFavorites } from '@/composables/useFavorites'
+import { useTriedGames } from '@/composables/useTriedGames'
 import type { Game } from '@/types/Game'
 
 import AppHeader from '@/components/AppHeader.vue'
@@ -137,6 +138,10 @@ const { isAuthenticated } = useAuth()
 
 // Favorites
 const { favorites } = useFavorites()
+
+// Tried games
+const { triedGames } = useTriedGames()
+console.log('🎮 App.vue: useTriedGames initialized')
 
 // Játékok betöltése app induláskor
 onMounted(async () => {

@@ -2,13 +2,12 @@
   <v-card>
     <v-data-table
       :headers="headers"
-      :items="games"
+      :items="enrichedGames"
       v-model:page="page"
       :items-per-page="itemsPerPage"
       :items-per-page-options="itemsPerPageOptions"
       class="elevation-1 game-table"
-      item-value="name"
-      @click:row="(_, row) => handleRowClick(row.item)"
+      item-value="_rowKey"
       @update:items-per-page="(val) => { itemsPerPage = val; page = 1 }"
     >
       <!-- Top toolbar -->
@@ -47,102 +46,92 @@
         </v-toolbar>
       </template>
 
-      <!-- Kedvenc oszlop -->
-      <template v-slot:item.favorite="{ item }">
-        <FavoriteButton
-          :game-id="item.id || item.name"
-          :game-name="item.name"
-        />
-      </template>
-
-      <!-- Név oszlop -->
-      <template v-slot:item.name="{ item }">
-        <span class="font-weight-medium">{{ item.name }}</span>
-      </template>
-
-      <!-- Cél oszlop -->
-      <template v-slot:item.goal="{ item }">
-        {{ truncateText(item.goal, 80) }}
-      </template>
-
-      <!-- Tér oszlop -->
-      <template v-slot:item.space="{ item }">
-        <div class="d-flex flex-wrap ga-1">
-          <v-chip
-            v-for="loc in item.location"
-            :key="loc"
-            size="x-small"
-            color="somer-green-light"
-            variant="flat"
-          >
-            {{ shortLocation(loc) }}
-          </v-chip>
-          <span v-if="!item.location || item.location.length === 0">-</span>
-        </div>
-      </template>
-
-      <!-- Csoport oszlop -->
-      <template v-slot:item.groupPhase="{ item }">
-        <div class="d-flex flex-wrap ga-1">
-          <v-chip
-            v-for="phase in item.groupPhase"
-            :key="phase"
-            size="x-small"
-            color="somer-cyan-light"
-            variant="flat"
-          >
-            {{ phase }}
-          </v-chip>
-          <span v-if="!item.groupPhase || item.groupPhase.length === 0">-</span>
-        </div>
-      </template>
-
-      <!-- Kor oszlop -->
-      <template v-slot:item.ageGroup="{ item }">
-        <div class="d-flex flex-wrap ga-1">
-          <v-chip
-            v-for="ageGroup in item.age"
-            :key="ageGroup"
-            size="x-small"
-            color="somer-blue-light"
-            variant="flat"
-          >
-            {{ ageGroup }}
-          </v-chip>
-          <span v-if="!item.age || item.age.length === 0">-</span>
-        </div>
-      </template>
-
-      <!-- Fő oszlop -->
-      <template v-slot:item.groupSize="{ item }">
-        <div class="d-flex flex-wrap ga-1">
-          <v-chip
-            v-for="size in item.groupSize"
-            :key="size"
-            size="x-small"
-            color="somer-yellow-light"
-            variant="flat"
-          >
-            {{ size }}
-          </v-chip>
-          <span v-if="!item.groupSize || item.groupSize.length === 0">-</span>
-        </div>
-      </template>
-
-      <!-- Idő oszlop -->
-      <template v-slot:item.duration="{ item }">
-        <div class="d-flex flex-wrap ga-1">
-          <v-chip
-            v-for="dur in item.length"
-            :key="dur"
-            size="x-small"
-            color="somer-lime-light"
-            variant="flat"
-          >
-            {{ dur }}
-          </v-chip>
-          <span v-if="!item.length || item.length.length === 0">-</span>
-        </div>
+      <!-- Custom row template for tried games -->
+      <template v-slot:item="{ item }">
+        <tr :class="{ 'tried-game-row': item._isTried }" @click="handleRowClick(item as Game)">
+          <td class="text-center">
+            <FavoriteButton
+              :game-id="item.id || item.name"
+              :game-name="item.name"
+            />
+          </td>
+          <td>
+            <span class="font-weight-medium">{{ item.name }}</span>
+          </td>
+          <td>
+            {{ truncateText(item.goal, 80) }}
+          </td>
+          <td>
+            <div class="d-flex flex-wrap ga-1">
+              <v-chip
+                v-for="loc in item.location"
+                :key="loc"
+                size="x-small"
+                color="somer-green-light"
+                variant="flat"
+              >
+                {{ shortLocation(loc) }}
+              </v-chip>
+              <span v-if="!item.location || item.location.length === 0">-</span>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex flex-wrap ga-1">
+              <v-chip
+                v-for="phase in item.groupPhase"
+                :key="phase"
+                size="x-small"
+                color="somer-cyan-light"
+                variant="flat"
+              >
+                {{ phase }}
+              </v-chip>
+              <span v-if="!item.groupPhase || item.groupPhase.length === 0">-</span>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex flex-wrap ga-1">
+              <v-chip
+                v-for="ageGroup in item.age"
+                :key="ageGroup"
+                size="x-small"
+                color="somer-blue-light"
+                variant="flat"
+              >
+                {{ ageGroup }}
+              </v-chip>
+              <span v-if="!item.age || item.age.length === 0">-</span>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex flex-wrap ga-1">
+              <v-chip
+                v-for="size in item.groupSize"
+                :key="size"
+                size="x-small"
+                color="somer-yellow-light"
+                variant="flat"
+              >
+                {{ size }}
+              </v-chip>
+              <span v-if="!item.groupSize || item.groupSize.length === 0">-</span>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex flex-wrap ga-1">
+              <v-chip
+                v-for="dur in item.length"
+                :key="dur"
+                size="x-small"
+                color="somer-lime-light"
+                variant="flat"
+              >
+                {{ dur }}
+              </v-chip>
+              <span v-if="!item.length || item.length.length === 0">-</span>
+            </div>
+          </td>
+        </tr>
       </template>
 
       <!-- Bottom toolbar -->
@@ -194,15 +183,9 @@
 <script setup lang="ts">
 import { ref, computed, type DeepReadonly } from 'vue'
 import { useAuth } from '@/composables/useAuth'
+import { useTriedGames } from '@/composables/useTriedGames'
 import type { Game } from '@/types/Game'
 import FavoriteButton from './FavoriteButton.vue'
-import {
-  getSpaceDisplay,
-  getGroupPhaseDisplay,
-  getAgeGroupDisplay,
-  getGroupSizeDisplay,
-  getDurationDisplay
-} from '@/utils/gameDisplayHelpers'
 
 const props = defineProps<{
   games: readonly Game[] | Game[] | DeepReadonly<Game[]>
@@ -214,6 +197,22 @@ const emit = defineEmits<{
 }>()
 
 const { isAuthenticated } = useAuth()
+const { triedGames } = useTriedGames()
+
+// Enriched games - hozzáadja a tried flag-et minden játékhoz
+const enrichedGames = computed(() => {
+  return props.games.map(game => {
+    const gameId = game.id || game.name
+    const isTried = triedGames.value.includes(gameId)
+    
+    return {
+      ...game,
+      _isTried: isTried,
+      // Hozzáadjuk a tried- prefix-et a name-hez, amit az item-value használ
+      _rowKey: isTried ? `tried-${gameId}` : gameId
+    }
+  })
+})
 
 const page = ref(1)
 const itemsPerPage = ref(25)
@@ -286,6 +285,21 @@ const handleRowClick = (item: Game) => {
 :deep(.game-table tbody tr:nth-child(even)) {
   background-color: rgba(0, 0, 0, 0.02);
 }
+
+/* Kipróbált játékok - 3px zöld bal border */
+/* Class alapú szelektor */
+:deep(.game-table tbody tr.tried-game-row) {
+  border-left: 3px solid #66BB6A !important;
+}
+
+:deep(.v-table tbody tr.tried-game-row td:first-child),
+:deep(.game-table tbody tr.tried-game-row td:first-child),
+:deep(tbody tr.tried-game-row td:first-child) {
+  border-left: 3px solid #66BB6A !important;
+  padding-left: 6px !important;
+}
+
+
 
 :deep(.game-table tbody tr:hover) {
   background-color: rgba(8, 160, 202, 0.08) !important;

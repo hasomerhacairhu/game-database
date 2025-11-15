@@ -7,7 +7,6 @@
         :color="isTried ? 'success' : 'grey-lighten-1'"
         :loading="isLoading"
         :disabled="isLoading"
-        class="tried-button"
         size="large"
         variant="tonal"
         @click.stop="handleToggle"
@@ -82,26 +81,5 @@ const handleToggle = async () => {
 </script>
 
 <style scoped>
-.tried-button {
-  white-space: nowrap;
-  transition: transform 0.2s ease;
-}
-
-/* Hover effect */
-.tried-button:hover {
-  transform: scale(1.05);
-}
-
-.tried-button:active {
-  transform: scale(0.98);
-}
-
-/* Icon pulse animáció amikor aktív lesz */
-.tried-button :deep(.v-btn__prepend) {
-  transition: transform 0.2s ease;
-}
-
-.tried-button:hover :deep(.v-btn__prepend) {
-  transform: scale(1.15);
-}
+/* Nincs custom styling - natúr Vuetify megjelenes */
 </style>
