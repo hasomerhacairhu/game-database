@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 interface Notification {
   message: string
@@ -10,6 +10,21 @@ const show = ref(false)
 const message = ref('')
 const type = ref<'success' | 'error' | 'warning' | 'info'>('info')
 const timeout = ref(3000)
+
+// Icon és színek a típus alapján
+const iconMap = {
+  success: 'mdi-check-circle',
+  error: 'mdi-alert-circle',
+  warning: 'mdi-alert',
+  info: 'mdi-information'
+}
+
+const iconColorMap = {
+  success: '#4CAF50',
+  error: '#F44336',
+  warning: '#FF9800',
+  info: '#2196F3'
+}
 
 export function useNotification() {
   const showNotification = (notification: Notification) => {
@@ -53,7 +68,7 @@ export function useNotification() {
 
   const showAuthRequired = () => {
     showNotification({
-      message: '🔒 Jelentkezz be a funkció használatához!',
+      message: 'Jelentkezz be a funkció használatához! 🔒',
       type: 'warning',
       timeout: 3000
     })
@@ -63,11 +78,17 @@ export function useNotification() {
     show.value = false
   }
 
+  // Computed properties az ikon és szín meghatározásához
+  const icon = computed(() => iconMap[type.value])
+  const iconColor = computed(() => iconColorMap[type.value])
+
   return {
     show,
     message,
     type,
     timeout,
+    icon,
+    iconColor,
     showNotification,
     showSuccess,
     showError,

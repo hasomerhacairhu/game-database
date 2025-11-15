@@ -32,7 +32,7 @@ const props = defineProps<Props>()
 
 const { isGameTried, toggleTriedGame } = useTriedGames()
 const { isAuthenticated } = useAuth()
-const { showSuccess, showError, showInfo } = useNotification()
+const { showSuccess, showError, showAuthRequired } = useNotification()
 
 const isLoading = ref(false)
 
@@ -42,7 +42,7 @@ const isTried = isGameTried(props.gameId)
 // Tooltip szöveg
 const tooltipText = computed(() => {
   if (!isAuthenticated.value) {
-    return 'Jelentkezz be a funkció használatához'
+    return 'Jelentkezz be a funkció használatához!'
   }
   return isTried.value 
     ? 'Mégsem próbáltam ki' 
@@ -53,7 +53,7 @@ const tooltipText = computed(() => {
 const handleToggle = async () => {
   // Auth gate - login szükséges
   if (!isAuthenticated.value) {
-    showInfo('Jelentkezz be a funkció használatához!')
+    showAuthRequired()
     return
   }
 
@@ -67,9 +67,9 @@ const handleToggle = async () => {
     
     // Sikeres visszajelzés (fordított logika, mert már togglelve van)
     if (!wasAlreadyTried) {
-      showSuccess(`"${props.gameName}" megjelölve kipróbáltként`)
+      showSuccess(`"${props.gameName}" megjelölve kipróbáltként. 👍`)
     } else {
-      showSuccess(`"${props.gameName}" eltávolítva a kipróbált játékok közül`)
+      showSuccess(`"${props.gameName}" eltávolítva a kipróbált játékok közül. 🗑️`)
     }
   } catch (error) {
     console.error('Kipróbált toggle hiba:', error)

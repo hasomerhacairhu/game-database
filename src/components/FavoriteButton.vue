@@ -83,9 +83,9 @@ const handleToggle = async () => {
     
     // Sikeres visszajelzés (fordított logika, mert már togglelve van)
     if (!wasAlreadyFavorite) {
-      showSuccess(`"${props.gameName}" hozzáadva a kedvencekhez`)
+      showSuccess(`"${props.gameName}" hozzáadva a kedvencekhez. ❤️`)
     } else {
-      showSuccess(`"${props.gameName}" eltávolítva a kedvencek közül`)
+      showSuccess(`"${props.gameName}" eltávolítva a kedvencek közül. 💔`)
     }
   } catch (error) {
     console.error('Kedvenc toggle hiba:', error)
