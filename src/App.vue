@@ -8,15 +8,23 @@
       <!-- Loading Overlay -->
       <v-overlay
         :model-value="loading"
-        class="align-center justify-center"
+        class="loading-overlay d-flex align-center justify-center"
         persistent
       >
-        <v-progress-circular
-          color="primary"
-          indeterminate
-          size="64"
-        ></v-progress-circular>
-        <div class="text-h6 mt-4 text-white">Játékok betöltése...</div>
+        <v-card
+          class="loading-card pa-8"
+          elevation="8"
+        >
+          <div class="text-center">
+            <v-progress-circular
+              color="primary"
+              indeterminate
+              size="64"
+              width="6"
+            ></v-progress-circular>
+            <div class="text-h6 mt-6 text-grey-darken-2">Játékok betöltése...</div>
+          </div>
+        </v-card>
       </v-overlay>
 
       <!-- Központosított tartalom max 1200px -->
@@ -84,17 +92,32 @@
     <!-- Global Notification Snackbar -->
     <v-snackbar
       v-model="notification.show.value"
-      :color="notification.type.value"
       location="bottom center"
       :timeout="notification.timeout.value"
+      color="grey-lighten-4"
+      elevation="8"
+      rounded="lg"
+      class="notification-snackbar"
     >
-      {{ notification.message.value }}
+      <div class="d-flex align-center">
+        <div :class="`notification-border notification-border-${notification.type.value}`"></div>
+        <v-icon
+          :color="notification.iconColor.value"
+          size="20"
+          class="mr-3"
+        >
+          {{ notification.icon.value }}
+        </v-icon>
+        <span class="text-grey-darken-3">{{ notification.message.value }}</span>
+      </div>
       <template v-slot:actions>
         <v-btn
+          icon="mdi-close"
           variant="text"
+          size="small"
+          color="grey-darken-1"
           @click="notification.hideNotification()"
         >
-          Bezár
         </v-btn>
       </template>
     </v-snackbar>
@@ -257,5 +280,52 @@ const openLoginDialog = () => {
 .content-container {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* Loading overlay styles */
+.loading-overlay {
+  backdrop-filter: blur(8px);
+  background-color: rgba(130, 205, 233, 0.3) !important;
+}
+
+.loading-card {
+  background-color: white !important;
+  min-width: 300px;
+  border-radius: 10px !important;
+}
+
+/* Notification styles */
+:deep(.notification-snackbar .v-snackbar__wrapper) {
+  position: relative;
+  padding-left: 0 !important;
+}
+
+.notification-border {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 8px 0 0 8px;
+}
+
+.notification-border-success {
+  background-color: #4CAF50;
+}
+
+.notification-border-error {
+  background-color: #F44336;
+}
+
+.notification-border-warning {
+  background-color: #FF9800;
+}
+
+.notification-border-info {
+  background-color: #2196F3;
+}
+
+:deep(.notification-snackbar .v-snackbar__content) {
+  padding-left: 16px !important;
 }
 </style>
