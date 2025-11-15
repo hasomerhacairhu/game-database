@@ -21,9 +21,9 @@
           variant="elevated"
           color="rgba(255, 255, 255, 0.15)"
           class="user-menu-btn header-btn"
-          size="default"
+          size="large"
         >
-          <v-avatar size="28" class="user-avatar">
+          <v-avatar size="32" class="user-avatar">
             <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :alt="userProfile.displayName"></v-img>
             <v-icon v-else icon="mdi-account-circle"></v-icon>
           </v-avatar>
@@ -32,32 +32,35 @@
         </v-btn>
       </template>
 
-      <v-list density="compact" min-width="200">
-        <v-list-item>
-          <v-list-item-title class="text-caption text-medium-emphasis">
+      <v-list class="user-dropdown" density="comfortable" min-width="240" elevation="4">
+        <v-list-item class="email-item">
+          <v-list-item-title class="text-body-2 text-medium-emphasis">
             {{ userProfile?.email }}
           </v-list-item-title>
         </v-list-item>
 
-        <v-divider></v-divider>
+        <v-divider class="my-1"></v-divider>
 
         <v-list-item
           prepend-icon="mdi-account"
           title="Profilom"
+          class="menu-item"
           @click="openProfileDialog"
         ></v-list-item>
 
         <v-list-item
           prepend-icon="mdi-heart"
           title="Kedvenc játékaim"
+          class="menu-item"
           @click="$emit('show-favorites')"
         ></v-list-item>
 
-        <v-divider></v-divider>
+        <v-divider class="my-1"></v-divider>
 
         <v-list-item
           prepend-icon="mdi-open-in-new"
           title="Ugrás a somer.hu-ra"
+          class="menu-item"
           href="https://somer.hu"
           target="_blank"
         ></v-list-item>
@@ -65,15 +68,17 @@
         <v-list-item
           prepend-icon="mdi-human-greeting"
           title="Támogatom a Somert"
+          class="menu-item"
           href="https://somer.hu/tamogatom"
           target="_blank"
         ></v-list-item>
 
-        <v-divider></v-divider>
+        <v-divider class="my-1"></v-divider>
 
         <v-list-item
           prepend-icon="mdi-logout"
           title="Kijelentkezés"
+          class="menu-item"
           @click="handleSignOut"
         ></v-list-item>
       </v-list>
@@ -161,32 +166,56 @@ const handleSignOut = async () => {
 
 .user-menu-btn {
   text-transform: none;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: none;
   padding: 8px 16px !important;
   height: auto !important;
+  min-height: 48px !important;
+  border-radius: 28px !important;
+  backdrop-filter: blur(10px);
   
   &:hover {
-    background-color: rgba(255, 255, 255, 0.25) !important;
-    border-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
   
   :deep(.v-btn__content) {
-    gap: 12px;
+    gap: 10px;
     display: flex;
     align-items: center;
   }
   
   .user-avatar {
     margin: 0;
+    border: 2px solid rgba(255, 255, 255, 0.5);
   }
   
   .user-name {
     margin: 0 4px;
+    font-size: 0.95rem;
   }
   
   .chevron-icon {
     margin: 0;
-    opacity: 0.8;
+    opacity: 0.7;
+    font-size: 20px;
+  }
+}
+
+.user-dropdown {
+  padding: 8px 0;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  
+  .email-item {
+    pointer-events: none;
+    background-color: transparent !important;
+  }
+  
+  .menu-item {
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
   }
 }
 </style>

@@ -20,7 +20,17 @@
             <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :alt="formData.displayName"></v-img>
             <v-icon v-else icon="mdi-account-circle" size="80" color="primary"></v-icon>
           </v-avatar>
-          <p class="text-caption text-medium-emphasis">{{ userProfile?.email }}</p>
+          <p class="text-caption text-medium-emphasis mb-1">{{ userProfile?.email }}</p>
+          <div class="d-flex justify-center gap-3 text-caption">
+            <span class="text-medium-emphasis">
+              <v-icon icon="mdi-heart" size="14" class="mr-1"></v-icon>
+              {{ favoriteCount }} kedvenc
+            </span>
+            <span class="text-medium-emphasis">
+              <v-icon icon="mdi-thumb-up" size="14" class="mr-1"></v-icon>
+              {{ triedCount }} kipróbált
+            </span>
+          </div>
         </div>
 
         <v-alert v-if="isRequired" type="warning" variant="tonal" density="compact" class="mb-4">
@@ -140,6 +150,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useAuth } from '@/composables/useAuth'
+import { useFavorites } from '@/composables/useFavorites'
+import { useTriedGames } from '@/composables/useTriedGames'
 
 const props = defineProps<{
   modelValue: boolean
@@ -151,6 +163,11 @@ const emit = defineEmits<{
 }>()
 
 const { user, userProfile, updateUserProfile, signOut } = useAuth()
+const { favoriteGameIds } = useFavorites()
+const { triedGameIds } = useTriedGames()
+
+const favoriteCount = computed(() => favoriteGameIds.value.size)
+const triedCount = computed(() => triedGameIds.value.size)
 
 const form = ref()
 const saving = ref(false)

@@ -58,7 +58,7 @@
 
       <!-- Csoportdinamikai fázis -->
       <v-col cols="6" sm="4" md>
-        <v-tooltip text="Csoportdinamikai fázis" location="top">
+        <v-tooltip text="Csoportdinamikai fázis - Tuckman modell" location="top" :open-delay="3000">
           <template v-slot:activator="{ props }">
             <v-select
               v-bind="props"
