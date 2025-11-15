@@ -72,5 +72,22 @@ service cloud.firestore {
         && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false;     // Csak admin
     }
+    
+    // ═══════════════════════════════════════════
+    // RATINGS COLLECTION
+    // ═══════════════════════════════════════════
+    match /ratings/{ratingId} {
+      allow read: if true;                // Mindenki olvashatja
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.stars >= 1
+        && request.resource.data.stars <= 5;
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.stars >= 1
+        && request.resource.data.stars <= 5;
+      allow delete: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+    }
   }
 }

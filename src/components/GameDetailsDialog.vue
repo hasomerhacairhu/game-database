@@ -51,6 +51,13 @@
           </div>
         </div>
 
+        <!-- Értékelési panel -->
+        <RatingPanel
+          v-if="game"
+          :game-id="game.id || game.name"
+          :game-name="game.name"
+        />
+
         <!-- Játék célja -->
         <div v-if="game.goal" class="mb-4">
           <div class="text-subtitle-1 font-weight-bold mb-1">🎯 Játék célja</div>
@@ -229,6 +236,7 @@ import { useAuth } from '@/composables/useAuth'
 import type { Game } from '@/types/Game'
 import FavoriteButton from './FavoriteButton.vue'
 import TriedGameButton from './TriedGameButton.vue'
+import RatingPanel from './RatingPanel.vue'
 
 const props = defineProps<{
   modelValue: boolean
