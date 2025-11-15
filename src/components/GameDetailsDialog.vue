@@ -83,7 +83,7 @@
             <v-icon size="48" color="white" class="mb-3">mdi-lock</v-icon>
             <div class="text-h6 text-white font-weight-bold mb-2">Jelentkezz be a teljes leírás olvasásához!</div>
             <div class="text-subtitle-1 text-white mb-3" style="opacity: 0.9;">Díjmentesen használható.</div>
-            <v-btn color="white" variant="elevated" prepend-icon="mdi-login" @click="$emit('open-login-dialog')">
+            <v-btn color="white" variant="elevated" prepend-icon="mdi-login" @click.stop="$emit('open-login-dialog')">
               Bejelentkezés
             </v-btn>
           </div>
@@ -239,6 +239,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   'report-inaccuracy': [gameName: string]
   'auth-required': []
+  'open-login-dialog': []
 }>()
 
 const { isAuthenticated } = useAuth()
