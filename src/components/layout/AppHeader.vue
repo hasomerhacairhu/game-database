@@ -6,8 +6,9 @@
     scroll-behavior="elevate"
     class="header-bar"
   >
+    <div class="header-overlay" :class="{ 'header-overlay-scrolled': scrolled }"></div>
     <v-container class="header-content">
-      <div class="d-flex align-center" :style="{ height: scrolled ? '70px' : '120px', transition: 'all 0.4s ease' }">
+      <div class="d-flex align-center" :style="{ height: scrolled ? '70px' : '120px', transition: 'all 1s ease' }">
         <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="logo-link mr-4">
           <v-img
             :src="logoUrl"
@@ -18,24 +19,26 @@
           ></v-img>
         </a>
         
-        <div class="title-container">
+        <div class="title-container" :class="{ 'title-container-scrolled': scrolled }">
           <div :class="scrolled ? 'text-h5' : 'text-h3'" class="main-title">
             JÁTÉKADATBÁZIS
           </div>
-          <div 
-            v-show="!scrolled" 
-            class="subtitle"
-          >
-            <span class="subtitle-grid">
-              <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="grid-item subtitle-link">A Hasomer Hacair nagy játékgyűjteménye</a>
-              <span class="grid-item occupation-cell">
-                <Transition name="flip" mode="out-in">
-                  <span :key="currentOccupation" class="occupation">{{ currentOccupation }}</span>
-                </Transition>
+          <Transition name="subtitle">
+            <div 
+              v-if="!scrolled" 
+              class="subtitle"
+            >
+              <span class="subtitle-grid">
+                <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="grid-item subtitle-link">A Hasomer Hacair nagy játékgyűjteménye</a>
+                <span class="grid-item occupation-cell">
+                  <Transition name="flip" mode="out-in">
+                    <span :key="currentOccupation" class="occupation">{{ currentOccupation }}</span>
+                  </Transition>
+                </span>
+                <span class="grid-item">részére.</span>
               </span>
-              <span class="grid-item">részére.</span>
-            </span>
-          </div>
+            </div>
+          </Transition>
         </div>
 
         <v-spacer></v-spacer>
@@ -45,14 +48,14 @@
             v-if="!isAuthenticated"
             href="https://somer.hu"
             target="_blank"
-            color="white"
-            variant="outlined"
+            color="rgba(255, 255, 255, 0.15)"
+            variant="elevated"
             size="default"
-            class="header-btn"
+            class="glass-btn"
           >
             <v-icon start>mdi-open-in-new</v-icon>
-            <span v-if="!scrolled || $vuetify.display.mdAndUp">Ugrás a somer.hu-ra</span>
-            <span v-else>Somer.hu</span>
+            <span v-if="!scrolled || $vuetify.display.mdAndUp">Somer.hu</span>
+            <span v-else>Somer</span>
           </v-btn>
 
           <UserMenu @show-favorites="$emit('show-favorites')" />
@@ -86,6 +89,7 @@ const occupations = [
   'trénerek',
   'madrihok',
   'pedagógusok',
+  'pszichológusok',
   'animátorok',
   'táborvezetők',
   'közösségszervezők',
@@ -149,19 +153,44 @@ onUnmounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
+  position: relative;
+  z-index: 1;
 }
 
 .header-bar {
   position: sticky;
   top: 0;
   z-index: 1000;
-  transition: all 0.4s ease;
+  background-image: url('https://img.somer.hu/id/15W4slVSSb96GmxJeR7Nj0oq4b1-mm5SR/1200/300');
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(8, 160, 202, 0.7) 0%, rgba(8, 160, 202, 0.3) 100%);
+  transition: background 0.4s ease;
+  pointer-events: none;
+}
+
+.header-overlay-scrolled {
+  background: linear-gradient(135deg, rgba(8, 160, 202, 0.85) 40%, rgba(8, 160, 202, 0.5) 100%);
+  
+  background-position: center;
 }
 
 .title-container {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  justify-content: flex-start;
+  /* min-height: 10px; */
   transition: all 0.4s ease;
 }
 
@@ -173,7 +202,7 @@ onUnmounted(() => {
   text-transform: uppercase;
   letter-spacing: 1px;
   line-height: 1.2;
-  transition: all 0.4s ease;
+  transition: all .5s ease;
 }
 
 .subtitle {
@@ -183,12 +212,21 @@ onUnmounted(() => {
   letter-spacing: 0.3px;
   line-height: 1.3;
   max-width: 600px;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  opacity: 1;
-  transform: translateY(0);
+  height: 1.3rem;
 }
 
-.subtitle.v-leave-active {
+/* Subtitle transition animations */
+.subtitle-enter-active,
+.subtitle-leave-active {
+  transition: all 0.5s ease;
+}
+
+.subtitle-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.subtitle-leave-to {
   opacity: 0;
   transform: translateY(-10px);
 }
@@ -206,7 +244,7 @@ onUnmounted(() => {
 
 .occupation-cell {
   display: grid;
-  transition: width 0.4s ease;
+  transition: width 1s ease;
 }
 
 .occupation {
@@ -248,9 +286,18 @@ onUnmounted(() => {
   gap: 12px;
 }
 
-.header-btn {
+.glass-btn {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white !important;
   transition: all 0.3s ease;
-  min-height: 40px;
+}
+
+.glass-btn:hover {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
 }
 
 .logo-link {

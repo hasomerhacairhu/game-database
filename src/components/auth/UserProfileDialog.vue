@@ -61,14 +61,12 @@
 
           <v-text-field
             v-model="formData.birthDate"
-            label="Születési dátumod"
+            label="Születési dátumod *"
             prepend-inner-icon="mdi-cake-variant"
             variant="outlined"
             density="comfortable"
             type="date"
             :rules="[rules.required]"
-            hint="Formátum: ÉÉÉÉ-HH-NN"
-            persistent-hint
             class="mb-2"
           ></v-text-field>
 
@@ -187,6 +185,8 @@ const occupations = [
   'Madrih',
   'Cserkész',
   'Pedagógus',
+  'Pszichológus',
+  'Szociális munkás',
   'Gyermek- és ifjúsági munkás',
   'Drámapedagógus',
   'Ifjúsági vezető',

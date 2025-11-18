@@ -1,5 +1,5 @@
 <template>
-  <v-footer color="grey-darken-4" class="py-6 footer-dark">
+  <v-footer class="py-6 footer-dark footer-with-bg">
     <v-container class="footer-content">
       <v-row align="start">
         <!-- Bal oszlop: Információk -->
@@ -27,10 +27,10 @@
               Ha hibát találsz, kérlek segítsd a munkánkat és jelezd!
             </div>
             <v-btn
-              color="primary"
-              variant="tonal"
+              color="rgba(8, 160, 202, 0.3)"
+              variant="elevated"
               prepend-icon="mdi-alert-circle-outline"
-              class="footer-btn"
+              class="footer-btn glass-btn"
               block
               @click="handleReportClick"
             >
@@ -44,13 +44,13 @@
             </div>
             <v-btn
               :href="isAuthenticated ? 'https://docs.google.com/spreadsheets/d/18wUOYj8UcEo7C-DAce2P_78kydHMvBi5LZaoBrx3iiQ/export?format=xlsx' : undefined"
-              :target="isAuthenticated ? '_blank' : undefined"
-              color="primary"
-              variant="tonal"
+              target="_blank"
+              color="rgba(8, 160, 202, 0.3)"
+              variant="elevated"
               prepend-icon="mdi-download"
-              class="footer-btn"
+              class="footer-btn glass-btn"
               block
-              @click.prevent="!isAuthenticated && $emit('auth-required')"
+              @click="!isAuthenticated && $emit('auth-required')"
             >
               Adatbázis letöltése (Excel)
             </v-btn>
@@ -68,10 +68,10 @@
           <v-btn
             href="https://somer.hu/tamogatom"
             target="_blank"
-            color="primary"
+            color="rgba(8, 160, 202, 0.3)"
             variant="elevated"
             prepend-icon="mdi-human-greeting"
-            class="footer-btn"
+            class="footer-btn glass-btn"
             block
           >
             Támogatom a Somert
@@ -105,6 +105,20 @@ const handleReportClick = () => {
 .footer-content {
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-with-bg {
+  background-image: 
+    linear-gradient(rgba(33, 33, 33, 0.7) 0%, rgba(33, 33, 33, .95) 50%) ,
+    /* url('https://img.somer.hu/id/1I7Uwu0oF9ku9kz13WuvVbbQ9dwxmOv6w/1200/450'); */
+    /* url('https://img.somer.hu/id/1iVGN04r_9VKX1U7VqxtUJDjSZv_SCa-D/w/1200'); */
+    url('https://img.somer.hu/id/18Vr22m0zn4RCjYWdBL-d0ubW5jRi6SBW/w/1200');
+    /* url('https://img.somer.hu/id/1zK5b9_Uv9Y1PASjKx1xuv4HYMpJSFtPk/w/1200'); */
+    background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .footer-dark {
@@ -112,7 +126,8 @@ const handleReportClick = () => {
 }
 
 .footer-dark :deep(.text-medium-emphasis) {
-  color: #BDBDBD !important;
+  color: #E0E0E0 !important;
+  /* color: #BDBDBD !important; */
   opacity: 1 !important;
 }
 
@@ -129,12 +144,27 @@ a:hover {
   color: #64B5F6 !important;
 }
 
-/* Footer gombok - nincs aláhúzás */
+/* Footer gombok - glassmorphism style */
 .footer-btn {
   text-decoration: none !important;
 }
 
 .footer-btn :deep(a) {
   text-decoration: none !important;
+}
+
+.glass-btn {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(8, 160, 202, 0.3);
+  color: white !important;
+  transition: all 0.3s ease;
+}
+
+.glass-btn:hover {
+  background-color: rgba(8, 160, 202, 0.5) !important;
+  border-color: rgba(8, 160, 202, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(8, 160, 202, 0.3);
 }
 </style>

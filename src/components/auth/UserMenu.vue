@@ -4,11 +4,10 @@
     <v-btn
       v-if="!isAuthenticated"
       variant="elevated"
-      color="white"
-      prepend-icon="mdi-login"
+      color="rgba(255, 255, 255, 0.15)"
       @click="openLoginDialog"
       size="default"
-      class="header-btn"
+      class="glass-btn"
     >
       Bejelentkezés
     </v-btn>
@@ -20,7 +19,7 @@
           v-bind="props"
           variant="elevated"
           color="rgba(255, 255, 255, 0.15)"
-          class="user-menu-btn header-btn"
+          class="user-menu-btn glass-btn"
           size="large"
         >
           <v-avatar size="32" class="user-avatar">
@@ -163,8 +162,18 @@ const handleSignOut = async () => {
 </script>
 
 <style scoped lang="scss">
-.header-btn {
+.glass-btn {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white !important;
   transition: all 0.3s ease;
+}
+
+.glass-btn:hover {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
 }
 
 .user-menu-btn {
