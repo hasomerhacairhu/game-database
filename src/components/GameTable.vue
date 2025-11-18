@@ -185,7 +185,7 @@ import { ref, computed, type DeepReadonly } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useTriedGames } from '@/composables/useTriedGames'
 import type { Game } from '@/types/Game'
-import FavoriteButton from './FavoriteButton.vue'
+import FavoriteButton from './interactions/FavoriteButton.vue'
 
 const props = defineProps<{
   games: readonly Game[] | Game[] | DeepReadonly<Game[]>

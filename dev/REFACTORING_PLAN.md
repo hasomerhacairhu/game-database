@@ -527,23 +527,23 @@ src/
 
 ## 📊 Implementálási Ütemterv
 
-### Sprint 1 (1 hét) - Kritikus
-- [ ] Type safety javítás (any eliminálás)
-- [ ] Error handler utility létrehozása
-- [ ] Validation rules kiemelése
-- [ ] Formatters utility létrehozása
+### Sprint 1 (1 hét) - Kritikus ✅ KÉSZ
+- [x] Type safety javítás (any eliminálás)
+- [x] Error handler utility létrehozása
+- [x] Validation rules kiemelése
+- [x] Formatters utility létrehozása
 
-### Sprint 2 (1 hét) - Fontos
-- [ ] Pinia store telepítése és beállítása
-- [ ] Auth store migrálás
-- [ ] useAsync helper implementálása
-- [ ] CSS változók és mixinek létrehozása
+### Sprint 2 (1 hét) - Fontos ✅ KÉSZ
+- [x] Pinia store telepítése és beállítása
+- [x] Auth store migrálás
+- [x] useAsync helper implementálása
+- [x] CSS változók és mixinek létrehozása
 
-### Sprint 3 (1 hét) - Komponens refaktor
-- [ ] GameDetailsDialog szétbontása
-- [ ] Vertical button stílus egységesítése
-- [ ] Error boundary implementálás
-- [ ] Fájlstruktúra reorganizálás
+### Sprint 3 (1 hét) - Komponens refaktor ✅ KÉSZ
+- [x] GameDetailsDialog szétbontása
+- [x] Vertical button stílus egységesítése
+- [x] Error boundary implementálás
+- [x] Fájlstruktúra reorganizálás
 
 ### Sprint 4 (1 hét) - Optimalizálás
 - [ ] Composable-ök generalizálása (useFirestoreCollection)

@@ -66,7 +66,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import logoSvg from '@/assets/somer-semel-white-with-transparent-bg.svg'
-import UserMenu from './UserMenu.vue'
+import UserMenu from '../auth/UserMenu.vue'
 
 defineEmits<{
   'show-favorites': []

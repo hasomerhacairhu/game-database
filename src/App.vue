@@ -1,10 +1,11 @@
 <template>
   <v-app>
-    <!-- Header -->
-    <AppHeader @show-favorites="showOnlyFavorites" />
+    <ErrorBoundary>
+      <!-- Header -->
+      <AppHeader @show-favorites="showOnlyFavorites" />
 
-    <!-- Main Content -->
-    <v-main class="bg-grey-lighten-4">
+      <!-- Main Content -->
+      <v-main class="bg-grey-lighten-4">
       <!-- Loading Overlay -->
       <v-overlay
         :model-value="loading"
@@ -121,6 +122,7 @@
         </v-btn>
       </template>
     </v-snackbar>
+    </ErrorBoundary>
   </v-app>
 </template>
 
@@ -134,13 +136,14 @@ import { useFavorites } from '@/composables/useFavorites'
 import { useTriedGames } from '@/composables/useTriedGames'
 import type { Game } from '@/types/Game'
 
-import AppHeader from '@/components/AppHeader.vue'
-import AppFooter from '@/components/AppFooter.vue'
-import FilterPanel from '@/components/FilterPanel.vue'
+import ErrorBoundary from '@/components/shared/ErrorBoundary.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
+import FilterPanel from '@/components/filters/FilterPanel.vue'
 import GameTable from '@/components/GameTable.vue'
 import GameDetailsDialog from '@/components/GameDetailsDialog.vue'
-import ReportInaccuracyDialog from '@/components/ReportInaccuracyDialog.vue'
-import LoginDialog from '@/components/LoginDialog.vue'
+import ReportInaccuracyDialog from '@/components/game/ReportInaccuracyDialog.vue'
+import LoginDialog from '@/components/auth/LoginDialog.vue'
 
 // Notification rendszer
 const notification = useNotification()
