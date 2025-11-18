@@ -10,6 +10,10 @@ export interface UserProfile {
   provider: 'google' | 'facebook' | 'github'
   createdAt: Timestamp
   lastLogin: Timestamp
+  occupation?: string
+  occupationCustom?: string
+  institution?: string
+  updatedAt?: Timestamp
 }
 
 export interface UserFavorites {

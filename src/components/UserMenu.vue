@@ -117,20 +117,23 @@ const showMandatoryProfileDialog = ref(false)
 
 // Ha bejelentkezett de nincs kitöltve a profil, kötelező profil dialógus megnyitása
 // Csak akkor fut, ha már betöltődött a profil (loading === false)
-watch([isAuthenticated, isProfileComplete, userProfile, loading], ([auth, complete, profile, isLoading]) => {
-  // Ne mutassuk azonnal, várjunk a betöltésre
-  if (isLoading) {
-    showMandatoryProfileDialog.value = false
-    return
+watch(
+  () => [isAuthenticated.value, isProfileComplete.value, userProfile.value, loading.value],
+  ([auth, complete, profile, isLoading]) => {
+    // Ne mutassuk azonnal, várjunk a betöltésre
+    if (isLoading) {
+      showMandatoryProfileDialog.value = false
+      return
+    }
+    
+    // Ha be van jelentkezve és a profil betöltődött, de nincs születési dátum
+    if (auth && profile !== null && !complete) {
+      showMandatoryProfileDialog.value = true
+    } else {
+      showMandatoryProfileDialog.value = false
+    }
   }
-  
-  // Ha be van jelentkezve és a profil betöltődött, de nincs születési dátum
-  if (auth && profile !== null && !complete) {
-    showMandatoryProfileDialog.value = true
-  } else {
-    showMandatoryProfileDialog.value = false
-  }
-})
+)
 
 const showLoginDialog = ref(false)
 const showProfileDialog = ref(false)

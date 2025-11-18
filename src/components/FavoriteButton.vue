@@ -98,29 +98,24 @@ const handleToggle = async () => {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/styles/mixins' as *;
+@use '@/styles/variables' as *;
+
 /* Animált szív effekt */
 .v-btn--icon {
-  transition: transform 0.2s ease;
-}
-
-.v-btn--icon:hover {
-  transform: scale(1.15);
-}
-
-.v-btn--icon:active {
-  transform: scale(0.95);
-}
-
-.vertical-btn :deep(.v-btn__content) {
-  flex-direction: column;
-  gap: 4px;
+  transition: transform $transition-fast;
+  
+  &:hover {
+    transform: scale(1.15);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 .vertical-btn {
-  height: auto !important;
-  min-height: 64px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  @include vertical-button;
 }
 </style>

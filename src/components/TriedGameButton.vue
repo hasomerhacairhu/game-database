@@ -82,16 +82,10 @@ const handleToggle = async () => {
 }
 </script>
 
-<style scoped>
-.vertical-btn :deep(.v-btn__content) {
-  flex-direction: column;
-  gap: 4px;
-}
+<style scoped lang="scss">
+@use '@/styles/mixins' as *;
 
 .vertical-btn {
-  height: auto !important;
-  min-height: 64px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  @include vertical-button;
 }
 </style>

@@ -1,0 +1,92 @@
+/**
+ * SCSS Variables
+ * Global design tokens for consistent styling
+ */
+
+// Colors
+$primary-color: #1976d2;
+$secondary-color: #424242;
+$success-color: #4caf50;
+$error-color: #f44336;
+$warning-color: #ff9800;
+$info-color: #2196f3;
+
+$text-primary: rgba(0, 0, 0, 0.87);
+$text-secondary: rgba(0, 0, 0, 0.6);
+$text-disabled: rgba(0, 0, 0, 0.38);
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-xxl: 48px;
+
+// Border radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;
+$border-radius-pill: 28px;
+
+// Shadows
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+$shadow-md: 0 3px 6px rgba(0, 0, 0, 0.16);
+$shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19);
+
+// Transitions
+$transition-fast: 150ms ease-in-out;
+$transition-base: 250ms ease-in-out;
+$transition-slow: 350ms ease-in-out;
+
+// Typography
+$font-family-base: 'Roboto', sans-serif;
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-base: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+// Z-index layers
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;
+
+// Component specific variables
+
+// Vertical Button
+$vertical-btn-min-height: 64px;
+$vertical-btn-gap: 4px;
+$vertical-btn-padding: 8px;
+
+// User Menu
+$user-menu-pill-radius: 28px;
+$user-menu-avatar-size: 32px;
+$user-menu-min-height: 48px;
+$user-menu-blur: 10px;
+
+// Dialog
+$dialog-max-width-sm: 450px;
+$dialog-max-width-md: 600px;
+$dialog-max-width-lg: 900px;
+
+// Rating Panel
+$rating-star-size: 32px;
+$rating-star-size-lg: 56px;
+$rating-color: #ff9800;
+
+// Breakpoints (Vuetify compatible)
+$breakpoint-xs: 600px;
+$breakpoint-sm: 960px;
+$breakpoint-md: 1264px;
+$breakpoint-lg: 1904px;
