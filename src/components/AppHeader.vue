@@ -8,13 +8,15 @@
   >
     <v-container class="header-content">
       <div class="d-flex align-center" :style="{ height: scrolled ? '70px' : '120px', transition: 'all 0.4s ease' }">
-        <v-img
-          :src="logoUrl"
-          alt="Somer Logo"
-          :max-width="scrolled ? 40 : 60"
-          class="mr-4"
-          style="transition: all 0.4s ease;"
-        ></v-img>
+        <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="logo-link mr-4">
+          <v-img
+            :src="logoUrl"
+            alt="Somer Logo"
+            :width="scrolled ? 40 : 80"
+            :max-width="scrolled ? 40 : 80"
+            style="transition: all 0.4s ease;"
+          ></v-img>
+        </a>
         
         <div class="title-container">
           <div :class="scrolled ? 'text-h5' : 'text-h3'" class="main-title">
@@ -25,7 +27,7 @@
             class="subtitle"
           >
             <span class="subtitle-grid">
-              <span class="grid-item">A Hasomer Hacair nagy játékgyűjteménye</span>
+              <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="grid-item subtitle-link">A Hasomer Hacair nagy játékgyűjteménye</a>
               <span class="grid-item occupation-cell">
                 <Transition name="flip" mode="out-in">
                   <span :key="currentOccupation" class="occupation">{{ currentOccupation }}</span>
@@ -204,7 +206,7 @@ onUnmounted(() => {
 
 .occupation-cell {
   display: grid;
-  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: width 0.4s ease;
 }
 
 .occupation {
@@ -216,30 +218,30 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
-/* Flip animáció - 3D forgás effekt */
+/* Flip animáció - egyszerűbb fade effekt */
 .flip-enter-active,
 .flip-leave-active {
-  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: all 0.4s ease;
 }
 
 .flip-enter-from {
   opacity: 0;
-  transform: rotateX(90deg) scale(0.8);
+  transform: translateY(-5px);
 }
 
 .flip-enter-to {
   opacity: 1;
-  transform: rotateX(0deg) scale(1);
+  transform: translateY(0);
 }
 
 .flip-leave-from {
   opacity: 1;
-  transform: rotateX(0deg) scale(1);
+  transform: translateY(0);
 }
 
 .flip-leave-to {
   opacity: 0;
-  transform: rotateX(-90deg) scale(0.8);
+  transform: translateY(5px);
 }
 
 .gap-3 {
@@ -249,5 +251,20 @@ onUnmounted(() => {
 .header-btn {
   transition: all 0.3s ease;
   min-height: 40px;
+}
+
+.logo-link {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.subtitle-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.subtitle-link:hover {
+  text-decoration: none;
 }
 </style>
