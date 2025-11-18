@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc, Timestamp, onSnapshot, Unsubscribe } from 'firebas
 import { db } from '@/plugins/firebase'
 import { useAuth } from './useAuth'
 import type { UserFavorites } from '@/types/User'
+import { handleFirebaseError, logError } from '@/utils/errorHandler'
 
 const favorites = ref<string[]>([])
 const loading = ref(false)
@@ -30,7 +31,7 @@ export function useFavorites() {
         favorites.value = []
       }
     } catch (err) {
-      console.error('Kedvencek betöltési hiba:', err)
+      logError('loadFavorites', err)
       favorites.value = []
     } finally {
       loading.value = false
@@ -65,7 +66,7 @@ export function useFavorites() {
         loading.value = false
       },
       (error) => {
-        console.error('Kedvencek real-time hiba:', error)
+        logError('startFavoritesListener', error)
         favorites.value = []
         loading.value = false
       }
@@ -116,10 +117,10 @@ export function useFavorites() {
 
       await setDoc(favDocRef, updatedFavorites)
     } catch (err) {
-      console.error('Kedvenc hozzáadási hiba:', err)
+      logError('addFavorite', err)
       // Rollback hiba esetén
       favorites.value = previousFavorites
-      throw err
+      throw new Error(handleFirebaseError(err))
     }
   }
 
@@ -149,10 +150,10 @@ export function useFavorites() {
 
       await setDoc(favDocRef, updatedFavorites)
     } catch (err) {
-      console.error('Kedvenc eltávolítási hiba:', err)
+      logError('removeFavorite', err)
       // Rollback hiba esetén
       favorites.value = previousFavorites
-      throw err
+      throw new Error(handleFirebaseError(err))
     }
   }
 

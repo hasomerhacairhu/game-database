@@ -3,6 +3,7 @@ import { collection, addDoc, query, where, getDocs, Timestamp, orderBy } from 'f
 import { db } from '@/plugins/firebase'
 import { useAuth } from './useAuth'
 import type { GameReport } from '@/types/User'
+import { handleFirebaseError, logError } from '@/utils/errorHandler'
 
 const reports = ref<GameReport[]>([])
 const loading = ref(false)
@@ -34,8 +35,8 @@ export function useReports() {
 
       return docRef.id
     } catch (err) {
-      console.error('Bejelentés küldési hiba:', err)
-      throw err
+      logError('submitReport', err)
+      throw new Error(handleFirebaseError(err))
     } finally {
       loading.value = false
     }
@@ -70,7 +71,7 @@ export function useReports() {
       reports.value = userReports
       return userReports
     } catch (err) {
-      console.error('Bejelentések lekérési hiba:', err)
+      logError('getUserReports', err)
       reports.value = []
       return []
     } finally {

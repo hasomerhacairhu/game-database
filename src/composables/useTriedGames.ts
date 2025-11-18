@@ -2,6 +2,7 @@ import { ref, computed, watch } from 'vue'
 import { doc, getDoc, setDoc, Timestamp, onSnapshot, Unsubscribe } from 'firebase/firestore'
 import { db } from '@/plugins/firebase'
 import { useAuth } from './useAuth'
+import { handleFirebaseError, logError } from '@/utils/errorHandler'
 
 interface UserTriedGames {
   uid: string
@@ -35,7 +36,7 @@ export function useTriedGames() {
         triedGames.value = []
       }
     } catch (err) {
-      console.error('Kipróbált játékok betöltési hiba:', err)
+      logError('loadTriedGames', err)
       triedGames.value = []
     } finally {
       loading.value = false
@@ -70,7 +71,7 @@ export function useTriedGames() {
         loading.value = false
       },
       (error) => {
-        console.error('Kipróbált játékok real-time hiba:', error)
+        logError('startTriedGamesListener', error)
         triedGames.value = []
         loading.value = false
       }
@@ -121,10 +122,10 @@ export function useTriedGames() {
 
       await setDoc(triedDocRef, updatedTriedGames)
     } catch (err) {
-      console.error('Kipróbált játék hozzáadási hiba:', err)
+      logError('addTriedGame', err)
       // Rollback hiba esetén
       triedGames.value = previousTriedGames
-      throw err
+      throw new Error(handleFirebaseError(err))
     }
   }
 
@@ -154,10 +155,10 @@ export function useTriedGames() {
 
       await setDoc(triedDocRef, updatedTriedGames)
     } catch (err) {
-      console.error('Kipróbált játék eltávolítási hiba:', err)
+      logError('removeTriedGame', err)
       // Rollback hiba esetén
       triedGames.value = previousTriedGames
-      throw err
+      throw new Error(handleFirebaseError(err))
     }
   }
 

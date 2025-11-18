@@ -142,6 +142,7 @@ import { useAuth } from '@/composables/useAuth'
 import { useRatings } from '@/composables/useRatings'
 import { useNotification } from '@/composables/useNotification'
 import { useTriedGames } from '@/composables/useTriedGames'
+import { handleFirebaseError } from '@/utils/errorHandler'
 
 interface Props {
   gameId: string
@@ -167,7 +168,7 @@ const {
   stopRatingsListener
 } = useRatings()
 
-const { showSuccess, showWarning, showAuthRequired } = useNotification()
+const { showSuccess, showWarning, showAuthRequired, showError } = useNotification()
 
 // Dialog state
 const dialogOpen = ref(false)
@@ -252,8 +253,8 @@ const handleRatingClick = async (event: MouseEvent) => {
               await deleteRating(userRating.value.id!)
               showSuccess('Értékelés törölve!')
               await new Promise(resolve => setTimeout(resolve, 500))
-            } catch (err: any) {
-              showError(err.message || 'Hiba történt a törlés során')
+            } catch (err) {
+              showError(handleFirebaseError(err))
             } finally {
               isDeleting.value = false
             }
@@ -292,8 +293,8 @@ const handleStarClick = async (stars: string | number) => {
         showSuccess('Értékelés törölve!')
         // Wait a bit longer to ensure the rating is cleared before allowing new clicks
         await new Promise(resolve => setTimeout(resolve, 500))
-      } catch (err: any) {
-        showError(err.message || 'Hiba történt a törlés során')
+      } catch (err) {
+        showError(handleFirebaseError(err))
       } finally {
         isDeleting.value = false
       }
@@ -353,9 +354,9 @@ const handleSubmit = async () => {
       showSuccess('Értékelés mentve!')
     }
     closeDialog()
-  } catch (err: any) {
-    error.value = err.message || 'Hiba történt a mentés során'
-    showError(error.value || 'Hiba történt')
+  } catch (err) {
+    error.value = handleFirebaseError(err)
+    showError(error.value)
   } finally {
     saving.value = false
   }
@@ -376,9 +377,9 @@ const handleDelete = async () => {
     await deleteRating(userRating.value.id!)
     showSuccess('Értékelés törölve!')
     closeDialog()
-  } catch (err: any) {
-    error.value = err.message || 'Hiba történt a törlés során'
-    showError(error.value || 'Hiba történt')
+  } catch (err) {
+    error.value = handleFirebaseError(err)
+    showError(error.value)
   } finally {
     deleting.value = false
   }

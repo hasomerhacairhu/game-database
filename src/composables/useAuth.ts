@@ -9,6 +9,7 @@ import {
 import { doc, setDoc, getDoc, Timestamp, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '@/plugins/firebase'
 import type { UserProfile } from '@/types/User'
+import { handleFirebaseError, logError } from '@/utils/errorHandler'
 
 const user = ref<User | null>(null)
 const userProfile = ref<UserProfile | null>(null)
@@ -44,9 +45,9 @@ const loadUserProfile = async (uid: string) => {
     if (userDoc.exists()) {
       userProfile.value = userDoc.data() as UserProfile
     }
-  } catch (err: any) {
+  } catch (err) {
     // Ha nincs jogosultság vagy nem létezik a user doc, csak logoljuk, ne dobjunk errort
-    console.warn('User profil nem tölthető be (lehet nincs még létrehozva):', err.message)
+    logError('loadUserProfile', err)
     error.value = null // Ne legyen látható hiba
     userProfile.value = null
   }
@@ -109,9 +110,9 @@ export function useAuth() {
       }
       
       return result.user
-    } catch (err: any) {
-      error.value = err.message
-      console.error('Bejelentkezési hiba:', err)
+    } catch (err) {
+      error.value = handleFirebaseError(err)
+      logError('signInWithGoogle', err)
       throw err
     }
   }
@@ -126,9 +127,9 @@ export function useAuth() {
       
       // Oldal frissítése, hogy a lockolt tartalom is töltődjön
       window.location.reload()
-    } catch (err: any) {
-      error.value = err.message
-      console.error('Kijelentkezési hiba:', err)
+    } catch (err) {
+      error.value = handleFirebaseError(err)
+      logError('signOut', err)
       throw err
     }
   }

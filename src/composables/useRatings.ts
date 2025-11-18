@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/plugins/firebase'
 import { useAuth } from './useAuth'
+import { handleFirebaseError, logError } from '@/utils/errorHandler'
 
 export interface GameRating {
   id?: string
@@ -84,7 +85,7 @@ export function useRatings(gameId?: string) {
         loading.value = false
       },
       (error) => {
-        console.error('Értékelések real-time hiba:', error)
+        logError('startRatingsListener', error)
         gameRatings.value = []
         userRating.value = null
         loading.value = false
@@ -127,8 +128,8 @@ export function useRatings(gameId?: string) {
       
       await addDoc(ratingsRef, data)
     } catch (error) {
-      console.error('Értékelés hozzáadási hiba:', error)
-      throw error
+      logError('addRating', error)
+      throw new Error(handleFirebaseError(error))
     }
   }
 
@@ -154,8 +155,8 @@ export function useRatings(gameId?: string) {
       
       await updateDoc(ratingRef, updateData)
     } catch (error) {
-      console.error('Értékelés frissítési hiba:', error)
-      throw error
+      logError('updateRating', error)
+      throw new Error(handleFirebaseError(error))
     }
   }
 
@@ -169,8 +170,8 @@ export function useRatings(gameId?: string) {
       const ratingRef = doc(db, 'ratings', ratingId)
       await deleteDoc(ratingRef)
     } catch (error) {
-      console.error('Értékelés törlési hiba:', error)
-      throw error
+      logError('deleteRating', error)
+      throw new Error(handleFirebaseError(error))
     }
   }
 
@@ -198,7 +199,7 @@ export function useRatings(gameId?: string) {
         ) || null
       }
     } catch (error) {
-      console.error('Értékelések betöltési hiba:', error)
+      logError('loadGameRatings', error)
       gameRatings.value = []
       userRating.value = null
     } finally {
