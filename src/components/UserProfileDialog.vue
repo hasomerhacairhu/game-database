@@ -22,14 +22,14 @@
           </v-avatar>
           <p class="text-caption text-medium-emphasis mb-1">{{ userProfile?.email }}</p>
           <div class="d-flex justify-center gap-3 text-caption">
-            <span class="text-medium-emphasis">
-              <v-icon icon="mdi-heart" size="14" class="mr-1"></v-icon>
+            <v-chip v-if="favoriteCount > 0" size="small" variant="tonal" color="primary" class="mr-2">
+              <v-icon icon="mdi-heart" size="14" start></v-icon>
               {{ favoriteCount }} kedvenc
-            </span>
-            <span class="text-medium-emphasis">
-              <v-icon icon="mdi-thumb-up" size="14" class="mr-1"></v-icon>
+            </v-chip>
+            <v-chip v-if="triedCount > 0" size="small" variant="tonal" color="primary">
+              <v-icon icon="mdi-thumb-up" size="14" start></v-icon>
               {{ triedCount }} kipróbált
-            </span>
+            </v-chip>
           </div>
         </div>
 
@@ -163,11 +163,11 @@ const emit = defineEmits<{
 }>()
 
 const { user, userProfile, updateUserProfile, signOut } = useAuth()
-const { favoriteGameIds } = useFavorites()
-const { triedGameIds } = useTriedGames()
+const { favorites } = useFavorites()
+const { triedGames } = useTriedGames()
 
-const favoriteCount = computed(() => favoriteGameIds.value.size)
-const triedCount = computed(() => triedGameIds.value.size)
+const favoriteCount = computed(() => favorites.value.length)
+const triedCount = computed(() => triedGames.value.length)
 
 const form = ref()
 const saving = ref(false)
