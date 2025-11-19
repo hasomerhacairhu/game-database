@@ -1,8 +1,8 @@
 <template>
   <v-container fluid class="pa-0">
-    <!-- 1. sor: Szöveges keresés (1/3) + Funkció (2/3) -->
+    <!-- 1. sor: Szöveges keresés + Funkció -->
     <v-row dense>
-      <v-col cols="12" md="4">
+      <v-col cols="12" sm="6" md="4">
         <v-text-field
           v-model="advancedSearchText"
           label="Szöveges keresés"
@@ -15,7 +15,7 @@
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" md="8">
+      <v-col cols="12" sm="6" md="8">
         <v-select
           v-model="selectedFunctions"
           :items="GAME_FUNCTIONS"
@@ -38,7 +38,7 @@
     <!-- 2. sor: 5 legördülő + törlés gomb -->
     <v-row dense class="mt-2">
       <!-- Tér -->
-      <v-col cols="6" sm="4" md>
+      <v-col cols="12" sm="6" md="4" lg>
         <v-select
           v-model="selectedSpaces"
           :items="LOCATION_OPTIONS"
@@ -57,7 +57,7 @@
       </v-col>
 
       <!-- Csoportdinamikai fázis -->
-      <v-col cols="6" sm="4" md>
+      <v-col cols="12" sm="6" md="4" lg>
         <v-tooltip text="Csoportdinamikai fázis - Tuckman modell" location="top" :open-delay="3000">
           <template v-slot:activator="{ props }">
             <v-select
@@ -81,7 +81,7 @@
       </v-col>
 
       <!-- Korosztály -->
-      <v-col cols="6" sm="4" md>
+      <v-col cols="12" sm="6" md="4" lg>
         <v-select
           v-model="selectedAgeGroups"
           :items="AGE_OPTIONS"
@@ -100,7 +100,7 @@
       </v-col>
 
       <!-- Létszám -->
-      <v-col cols="6" sm="4" md>
+      <v-col cols="12" sm="6" md="4" lg>
         <v-select
           v-model="selectedGroupSizes"
           :items="GROUP_SIZE_OPTIONS"
@@ -119,7 +119,7 @@
       </v-col>
 
       <!-- Időtartam -->
-      <v-col cols="6" sm="4" md>
+      <v-col cols="12" sm="6" md="4" lg>
         <v-select
           v-model="selectedDurations"
           :items="LENGTH_OPTIONS"
@@ -138,7 +138,7 @@
       </v-col>
 
       <!-- Kedvencek szűrő gomb -->
-      <v-col cols="6" sm="4" md="auto">
+      <v-col cols="6" sm="6" md="auto">
         <v-btn
           @click="toggleFavorites"
           :color="showFavoritesOnly ? 'somer-orange-light' : 'primary'"
@@ -153,7 +153,7 @@
       </v-col>
 
       <!-- Szűrő törlése gomb -->
-      <v-col cols="6" sm="4" md="auto">
+      <v-col cols="6" sm="6" md="auto">
         <v-btn
           @click="clearFilters"
           color="primary"

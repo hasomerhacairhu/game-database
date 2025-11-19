@@ -25,10 +25,10 @@
           </div>
           <Transition name="subtitle">
             <div 
-              v-if="!scrolled && !isMobile" 
+              v-if="!scrolled" 
               class="subtitle"
             >
-              <span class="subtitle-grid">
+              <span v-if="!isMobile" class="subtitle-grid">
                 <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="grid-item subtitle-link">A Hasomer Hacair nagy játékgyűjteménye</a>
                 <span class="grid-item occupation-cell">
                   <Transition name="flip" mode="out-in">
@@ -36,6 +36,14 @@
                   </Transition>
                 </span>
                 <span class="grid-item">részére.</span>
+              </span>
+              <span v-else class="subtitle-mobile">
+                <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="subtitle-link">Hasomer játékgyűjtemény</a>
+                <span class="occupation-cell">
+                  <Transition name="flip" mode="out-in">
+                    <span :key="currentOccupation" class="occupation">{{ currentOccupation }}</span>
+                  </Transition>
+                </span>
               </span>
             </div>
           </Transition>
@@ -45,17 +53,17 @@
 
         <div class="d-flex align-center gap-3">
           <v-btn
-            v-if="!isAuthenticated"
+            v-if="!isAuthenticated && !isMobile"
             href="https://somer.hu"
             target="_blank"
             color="rgba(255, 255, 255, 0.15)"
             variant="elevated"
-            :size="isMobile ? 'small' : 'default'"
+            size="default"
             class="glass-btn"
           >
-            <v-icon :start="!isMobile">mdi-open-in-new</v-icon>
-            <span v-if="!isMobile && (!scrolled || lgAndUp)">Somer.hu</span>
-            <span v-else-if="!isMobile">Somer</span>
+            <v-icon start>mdi-open-in-new</v-icon>
+            <span v-if="!scrolled || lgAndUp">Somer.hu</span>
+            <span v-else>Somer</span>
           </v-btn>
 
           <UserMenu @show-favorites="$emit('show-favorites')" />
@@ -272,6 +280,7 @@ onUnmounted(() => {
   transition: all .5s ease;
 }
 
+
 .subtitle {
   color: rgba(255, 255, 255, 0.9);
   font-family: 'Myriad Pro Regular', sans-serif !important;
@@ -280,6 +289,16 @@ onUnmounted(() => {
   line-height: 1.3;
   max-width: 600px;
   height: 1.3rem;
+}
+
+.subtitle-mobile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Myriad Pro Regular', sans-serif !important;
 }
 
 /* Subtitle transition animations */

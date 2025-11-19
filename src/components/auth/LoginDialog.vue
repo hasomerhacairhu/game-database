@@ -1,13 +1,31 @@
 <template>
-  <v-dialog v-model="dialogOpen" max-width="500">
+  <v-dialog 
+    v-model="dialogOpen" 
+    :max-width="dialogMaxWidth"
+    :fullscreen="isMobile"
+  >
     <v-card>
-      <v-card-title class="bg-primary text-white d-flex align-center">
+      <!-- Mobile: Toolbar -->
+      <v-toolbar
+        v-if="isMobile"
+        color="primary"
+        dark
+        density="comfortable"
+      >
+        <v-btn icon @click="closeDialog">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-toolbar-title class="text-subtitle-1">Bejelentkezés</v-toolbar-title>
+      </v-toolbar>
+      
+      <!-- Desktop: Card title -->
+      <v-card-title v-else class="bg-primary text-white d-flex align-center">
         <span>Bejelentkezés</span>
         <v-spacer></v-spacer>
         <v-btn icon="mdi-close" variant="text" @click="closeDialog" size="small" color="white"></v-btn>
       </v-card-title>
 
-      <v-card-text class="pt-6">
+      <v-card-text :class="isMobile ? 'pa-3 pt-4' : 'pt-6'">
         <div class="d-flex align-center mb-5">
           <v-icon icon="mdi-account-circle" size="64" color="primary" class="mr-4"></v-icon>
           <div>
@@ -78,6 +96,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useDisplay } from 'vuetify'
 import { useAuth } from '@/composables/useAuth'
 
 const props = defineProps<{
@@ -87,6 +106,16 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
+
+const { xs, sm, md } = useDisplay()
+const isMobile = computed(() => xs.value || sm.value)
+
+const dialogMaxWidth = computed(() => {
+  if (xs.value) return '100vw'
+  if (sm.value) return '90vw'
+  if (md.value) return 500
+  return 500
+})
 
 const { signInWithGoogle, error: authError } = useAuth()
 

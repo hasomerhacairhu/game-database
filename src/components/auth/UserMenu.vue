@@ -6,10 +6,11 @@
       variant="elevated"
       color="rgba(255, 255, 255, 0.15)"
       @click="openLoginDialog"
-      size="default"
+      :size="isMobile ? 'small' : 'default'"
       class="glass-btn"
     >
-      Bejelentkezés
+      <v-icon :start="!isMobile">mdi-login</v-icon>
+      <span v-if="!isMobile">Bejelentkezés</span>
     </v-btn>
 
     <!-- User menü, ha be van jelentkezve -->
@@ -20,13 +21,13 @@
           variant="elevated"
           color="rgba(255, 255, 255, 0.15)"
           class="user-menu-btn glass-btn"
-          size="large"
+          :size="isMobile ? 'default' : 'large'"
         >
-          <v-avatar size="32" class="user-avatar">
+          <v-avatar :size="isMobile ? 28 : 32" class="user-avatar">
             <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :alt="userProfile.displayName"></v-img>
             <v-icon v-else icon="mdi-account-circle"></v-icon>
           </v-avatar>
-          <span class="text-white font-weight-medium user-name">{{ displayName }}</span>
+          <span v-if="!isMobile" class="text-white font-weight-medium user-name">{{ displayName }}</span>
           <v-icon icon="mdi-chevron-down" class="chevron-icon" color="white"></v-icon>
         </v-btn>
       </template>
@@ -102,6 +103,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 import { useAuth } from '@/composables/useAuth'
 import LoginDialog from './LoginDialog.vue'
 import UserProfileDialog from './UserProfileDialog.vue'
@@ -109,6 +111,9 @@ import UserProfileDialog from './UserProfileDialog.vue'
 defineEmits<{
   'show-favorites': []
 }>()
+
+const { xs, sm } = useDisplay()
+const isMobile = computed(() => xs.value || sm.value)
 
 const { user, userProfile, isAuthenticated, isProfileComplete, loading, signOut } = useAuth()
 
@@ -185,6 +190,12 @@ const handleSignOut = async () => {
   border-radius: 28px !important;
   backdrop-filter: blur(10px);
   
+  @media (max-width: 600px) {
+    padding: 6px 10px !important;
+    min-width: 48px !important;
+    border-radius: 24px !important;
+  }
+  
   &:hover {
     background-color: rgba(255, 255, 255, 0.3) !important;
     transform: translateY(-1px);
@@ -195,6 +206,10 @@ const handleSignOut = async () => {
     gap: 10px;
     display: flex;
     align-items: center;
+    
+    @media (max-width: 600px) {
+      gap: 6px;
+    }
   }
   
   .user-avatar {
