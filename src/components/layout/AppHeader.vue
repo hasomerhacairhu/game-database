@@ -2,30 +2,30 @@
   <v-app-bar 
     color="primary" 
     elevation="2" 
-    :height="scrolled ? 70 : 120"
+    :height="headerHeight"
     scroll-behavior="elevate"
     class="header-bar"
   >
     <div class="header-overlay" :class="{ 'header-overlay-scrolled': scrolled }"></div>
     <v-container class="header-content">
-      <div class="d-flex align-center" :style="{ height: scrolled ? '70px' : '120px', transition: 'all 1s ease' }">
+      <div class="d-flex align-center" :style="{ height: headerHeight + 'px', transition: 'all 0.4s ease' }">
         <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="logo-link mr-4">
           <v-img
             :src="logoUrl"
             alt="Somer Logo"
-            :width="scrolled ? 40 : 80"
-            :max-width="scrolled ? 40 : 80"
+            :width="logoSize"
+            :max-width="logoSize"
             style="transition: all 0.4s ease;"
           ></v-img>
         </a>
         
         <div class="title-container" :class="{ 'title-container-scrolled': scrolled }">
-          <div :class="scrolled ? 'text-h5' : 'text-h3'" class="main-title">
+          <div :class="titleClasses">
             JÁTÉKADATBÁZIS
           </div>
           <Transition name="subtitle">
             <div 
-              v-if="!scrolled" 
+              v-if="!scrolled && !isMobile" 
               class="subtitle"
             >
               <span class="subtitle-grid">
@@ -50,12 +50,12 @@
             target="_blank"
             color="rgba(255, 255, 255, 0.15)"
             variant="elevated"
-            size="default"
+            :size="isMobile ? 'small' : 'default'"
             class="glass-btn"
           >
-            <v-icon start>mdi-open-in-new</v-icon>
-            <span v-if="!scrolled || $vuetify.display.mdAndUp">Somer.hu</span>
-            <span v-else>Somer</span>
+            <v-icon :start="!isMobile">mdi-open-in-new</v-icon>
+            <span v-if="!isMobile && (!scrolled || lgAndUp)">Somer.hu</span>
+            <span v-else-if="!isMobile">Somer</span>
           </v-btn>
 
           <UserMenu @show-favorites="$emit('show-favorites')" />
@@ -66,7 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useDisplay } from 'vuetify'
 import { useAuth } from '@/composables/useAuth'
 import logoSvg from '@/assets/somer-semel-white-with-transparent-bg.svg'
 import UserMenu from '../auth/UserMenu.vue'
@@ -76,8 +77,50 @@ defineEmits<{
 }>()
 
 const { isAuthenticated } = useAuth()
+const { xs, sm, md, lgAndUp } = useDisplay()
 const logoUrl = logoSvg
 const scrolled = ref(false)
+
+// Responsive computed properties
+const isMobile = computed(() => xs.value || sm.value)
+
+const headerHeight = computed(() => {
+  if (scrolled.value) {
+    if (isMobile.value) return 56
+    if (md.value) return 60
+    return 70
+  }
+  if (isMobile.value) return 80
+  if (md.value) return 100
+  return 120
+})
+
+const logoSize = computed(() => {
+  if (scrolled.value) {
+    if (isMobile.value) return 30
+    if (md.value) return 40
+    return 60
+  }
+  if (isMobile.value) return 40
+  if (md.value) return 60
+  return 80
+})
+
+const titleClasses = computed(() => {
+  const classes = ['main-title']
+  
+  if (scrolled.value) {
+    if (isMobile.value) classes.push('text-subtitle-1')
+    else if (md.value) classes.push('text-h6')
+    else classes.push('text-h5')
+  } else {
+    if (isMobile.value) classes.push('text-h6')
+    else if (md.value) classes.push('text-h5')
+    else classes.push('text-h3')
+  }
+  
+  return classes
+})
 
 // Foglalkozások listája (random sorrendben váltakoznak)
 const occupations = [
@@ -155,6 +198,10 @@ onUnmounted(() => {
   padding: 0 16px;
   position: relative;
   z-index: 1;
+  
+  @media (max-width: 600px) {
+    padding: 0 8px;
+  }
 }
 
 .header-bar {
@@ -190,8 +237,28 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  /* min-height: 10px; */
+  min-height: 80px;
   transition: all 0.4s ease;
+  
+  @media (max-width: 960px) {
+    min-height: 60px;
+  }
+  
+  @media (max-width: 600px) {
+    min-height: 50px;
+  }
+}
+
+.title-container-scrolled {
+  min-height: 40px;
+  
+  @media (max-width: 960px) {
+    min-height: 30px;
+  }
+  
+  @media (max-width: 600px) {
+    min-height: 24px;
+  }
 }
 
 .main-title {
@@ -292,6 +359,12 @@ onUnmounted(() => {
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white !important;
   transition: all 0.3s ease;
+  
+  @media (max-width: 600px) {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    padding: 0 12px !important;
+  }
 }
 
 .glass-btn:hover {

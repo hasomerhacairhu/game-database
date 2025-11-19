@@ -1,6 +1,8 @@
 <template>
   <v-card>
+    <!-- Desktop/Tablet: Data Table -->
     <v-data-table
+      v-if="!isMobile"
       :headers="headers"
       :items="enrichedGames"
       v-model:page="page"
@@ -177,11 +179,138 @@
         </v-alert>
       </template>
     </v-data-table>
+    
+    <!-- Mobile: Card List -->
+    <div v-else class="game-list-mobile">
+      <!-- Mobile Header -->
+      <v-toolbar flat density="compact" class="px-2">
+        <v-toolbar-title class="text-body-2">
+          <strong>{{ games.length }}</strong> játék
+        </v-toolbar-title>
+      </v-toolbar>
+      
+      <!-- Game Cards -->
+      <div v-if="paginatedGames.length > 0" class="pa-2">
+        <v-card
+          v-for="game in paginatedGames"
+          :key="game.id || game.name"
+          class="game-card-mobile mb-3"
+          :class="{ 'tried-game-card': game._isTried }"
+          @click="handleRowClick(game as Game)"
+        >
+          <v-card-title class="d-flex align-center py-2 px-3">
+            <FavoriteButton
+              :game-id="game.id || game.name"
+              :game-name="game.name"
+              size="small"
+            />
+            <span class="ml-2 text-body-1 font-weight-medium">{{ game.name }}</span>
+          </v-card-title>
+          
+          <v-card-text class="pt-0 px-3 pb-2">
+            <div v-if="game.goal" class="text-caption text-medium-emphasis mb-2">
+              {{ truncateText(game.goal, 120) }}
+            </div>
+            
+            <div v-if="game.location && game.location.length > 0" class="mb-2">
+              <v-chip-group>
+                <v-chip
+                  v-for="loc in game.location.slice(0, 2)"
+                  :key="loc"
+                  size="small"
+                  color="somer-green-light"
+                  variant="flat"
+                >
+                  {{ shortLocation(loc) }}
+                </v-chip>
+                <v-chip
+                  v-if="game.location.length > 2"
+                  size="small"
+                  variant="text"
+                >
+                  +{{ game.location.length - 2 }}
+                </v-chip>
+              </v-chip-group>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-2">
+              <div v-if="game.groupPhase && game.groupPhase.length > 0">
+                <v-chip
+                  v-for="phase in game.groupPhase.slice(0, 2)"
+                  :key="phase"
+                  size="small"
+                  color="somer-cyan-light"
+                  variant="flat"
+                  class="mr-1"
+                >
+                  {{ phase }}
+                </v-chip>
+              </div>
+              
+              <div v-if="game.age && game.age.length > 0">
+                <v-chip
+                  v-for="ageGroup in game.age.slice(0, 2)"
+                  :key="ageGroup"
+                  size="small"
+                  color="somer-blue-light"
+                  variant="flat"
+                  class="mr-1"
+                >
+                  {{ ageGroup }}
+                </v-chip>
+              </div>
+            </div>
+          </v-card-text>
+          
+          <v-card-actions class="px-3 py-2">
+            <v-spacer></v-spacer>
+            <v-btn
+              size="small"
+              variant="text"
+              color="primary"
+            >
+              Részletek
+              <v-icon end size="small">mdi-chevron-right</v-icon>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </div>
+      
+      <!-- No data -->
+      <v-alert v-else type="info" variant="tonal" class="ma-4">
+        Nincs találat a megadott szűrési feltételekkel.
+      </v-alert>
+      
+      <!-- Mobile Pagination -->
+      <div class="mobile-pagination pa-3">
+        <v-pagination
+          v-model="page"
+          :length="pageCount"
+          :total-visible="3"
+          density="compact"
+          :disabled="!isAuthenticated"
+        />
+        
+        <div class="d-flex justify-center align-center mt-3 gap-2">
+          <span class="text-caption text-medium-emphasis">Sorok/oldal:</span>
+          <v-select
+            v-model="itemsPerPage"
+            :items="itemsPerPageOptions"
+            density="compact"
+            variant="outlined"
+            hide-details
+            style="max-width: 80px;"
+            :disabled="!isAuthenticated"
+          />
+        </div>
+      </div>
+    </div>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, type DeepReadonly } from 'vue'
+import { useDisplay } from 'vuetify'
 import { useAuth } from '@/composables/useAuth'
 import { useTriedGames } from '@/composables/useTriedGames'
 import type { Game } from '@/types/Game'
@@ -198,6 +327,9 @@ const emit = defineEmits<{
 
 const { isAuthenticated } = useAuth()
 const { triedGames } = useTriedGames()
+const { xs, sm } = useDisplay()
+
+const isMobile = computed(() => xs.value || sm.value)
 
 // Enriched games - hozzáadja a tried flag-et minden játékhoz
 const enrichedGames = computed(() => {
@@ -224,6 +356,13 @@ const itemsPerPageOptions = [
 
 const pageCount = computed(() => {
   return Math.ceil(props.games.length / itemsPerPage.value)
+})
+
+// Mobile pagination
+const paginatedGames = computed(() => {
+  const start = (page.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return enrichedGames.value.slice(start, end)
 })
 
 const headers = [
@@ -307,5 +446,36 @@ const handleRowClick = (item: Game) => {
 
 .pointer-events-none {
   pointer-events: none;
+}
+
+/* Mobile Card List Styles */
+.game-list-mobile {
+  background-color: transparent;
+}
+
+.game-card-mobile {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+  
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.tried-game-card {
+  border-left: 4px solid #66BB6A !important;
+}
+
+.mobile-pagination {
+  background-color: rgba(0, 0, 0, 0.02);
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.gap-2 {
+  gap: 8px;
 }
 </style>

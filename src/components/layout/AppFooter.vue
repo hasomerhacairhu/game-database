@@ -111,10 +111,11 @@ const handleReportClick = () => {
 
 .footer-with-bg {
   background-image: 
-    linear-gradient(rgba(33, 33, 33, 0.7) 0%, rgba(33, 33, 33, .95) 50%) ,
+    linear-gradient(rgba(33, 33, 33, 0.5) 0%, rgba(33, 33, 33, .8) 50%) ,
     /* url('https://img.somer.hu/id/1I7Uwu0oF9ku9kz13WuvVbbQ9dwxmOv6w/1200/450'); */
     /* url('https://img.somer.hu/id/1iVGN04r_9VKX1U7VqxtUJDjSZv_SCa-D/w/1200'); */
-    url('https://img.somer.hu/id/18Vr22m0zn4RCjYWdBL-d0ubW5jRi6SBW/w/1200');
+    /* url('https://img.somer.hu/id/18Vr22m0zn4RCjYWdBL-d0ubW5jRi6SBW/w/1200'); */
+    url('https://img.somer.hu/id/1apfEHUzKXgy5uIIuDVUCblZpv1MESa35/w/1200');
     /* url('https://img.somer.hu/id/1zK5b9_Uv9Y1PASjKx1xuv4HYMpJSFtPk/w/1200'); */
     background-size: cover;
   background-position: center;

@@ -1,7 +1,33 @@
 <template>
-  <v-dialog v-if="dialogOpen" v-model="dialogOpen" max-width="500" :persistent="isRequired">
+  <v-dialog 
+    v-if="dialogOpen" 
+    v-model="dialogOpen" 
+    :max-width="dialogMaxWidth"
+    :fullscreen="isMobile"
+    :persistent="isRequired"
+  >
     <v-card>
-      <v-card-title class="bg-primary text-white d-flex align-center">
+      <!-- Mobile: Toolbar -->
+      <v-toolbar
+        v-if="isMobile"
+        color="primary"
+        dark
+        density="comfortable"
+      >
+        <v-btn 
+          v-if="!isRequired" 
+          icon 
+          @click="closeDialog"
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-toolbar-title class="text-subtitle-1">
+          {{ isRequired ? 'Profil kitöltése' : 'Profilom' }}
+        </v-toolbar-title>
+      </v-toolbar>
+      
+      <!-- Desktop: Card title -->
+      <v-card-title v-else class="bg-primary text-white d-flex align-center">
         <span>{{ isRequired ? 'Profil kitöltése (kötelező)' : 'Profilom' }}</span>
         <v-spacer></v-spacer>
         <v-btn 
@@ -14,7 +40,7 @@
         ></v-btn>
       </v-card-title>
 
-      <v-card-text class="pt-6">
+      <v-card-text :class="isMobile ? 'pa-3 pt-4' : 'pt-6'">
         <div class="text-center mb-6">
           <v-avatar size="80" class="mb-2">
             <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :alt="formData.displayName"></v-img>
@@ -147,6 +173,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 import { useAuth } from '@/composables/useAuth'
 import { useFavorites } from '@/composables/useFavorites'
 import { useTriedGames } from '@/composables/useTriedGames'
@@ -155,6 +182,16 @@ const props = defineProps<{
   modelValue: boolean
   isRequired?: boolean // Ha true, kötelező kitölteni és nem lehet bezárni
 }>()
+
+const { xs, sm, md } = useDisplay()
+const isMobile = computed(() => xs.value || sm.value)
+
+const dialogMaxWidth = computed(() => {
+  if (xs.value) return '100vw'
+  if (sm.value) return '90vw'
+  if (md.value) return 500
+  return 500
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]

@@ -1,7 +1,26 @@
 <template>
-  <v-dialog v-model="dialogOpen" max-width="800" scrollable>
+  <v-dialog 
+    v-model="dialogOpen" 
+    :max-width="dialogMaxWidth"
+    :fullscreen="isMobile"
+    scrollable
+  >
     <v-card v-if="game">
-      <v-card-title class="text-h5 bg-primary text-white d-flex align-center">
+      <!-- Mobile: Toolbar style header -->
+      <v-toolbar
+        v-if="isMobile"
+        color="primary"
+        dark
+        density="comfortable"
+      >
+        <v-btn icon @click="closeDialog">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-toolbar-title class="text-subtitle-1">{{ game.name }}</v-toolbar-title>
+      </v-toolbar>
+      
+      <!-- Desktop: Card title -->
+      <v-card-title v-else class="text-h5 bg-primary text-white d-flex align-center">
         <span>Játék adatlap</span>
         <v-spacer></v-spacer>
         
@@ -22,7 +41,7 @@
 
       <v-divider></v-divider>
 
-      <v-card-text class="pt-4">
+      <v-card-text :class="isMobile ? 'pa-3' : 'pt-4'">
         <!-- Két oszlopos layout: Cím+Cél | Gombok+Értékelés -->
         <v-row class="mb-4">
           <!-- Bal oldali oszlop: Cím és Cél -->
@@ -61,6 +80,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useDisplay } from 'vuetify'
 import type { Game } from '@/types/Game'
 import GameDetailHeader from './game/GameDetailHeader.vue'
 import GameDetailActions from './game/GameDetailActions.vue'
@@ -71,6 +91,16 @@ const props = defineProps<{
   modelValue: boolean
   game: Game | null
 }>()
+
+const { xs, sm, md } = useDisplay()
+const isMobile = computed(() => xs.value || sm.value)
+
+const dialogMaxWidth = computed(() => {
+  if (xs.value) return '100vw'
+  if (sm.value) return '90vw'
+  if (md.value) return 700
+  return 800
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
