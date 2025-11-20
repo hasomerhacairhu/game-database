@@ -4,9 +4,9 @@
     elevation="2" 
     :height="dynamicHeaderHeight"
     scroll-behavior="elevate"
-      :class="['header-bar', { 'is-scrolled': scrolled }]"
+      :class="['header-bar', { 'is-scrolled': scrolled, 'second-slide-bg': !shouldAnimate }]"
   >
-    <div class="header-overlay" :class="{ 'header-overlay-scrolled': scrolled }"></div>
+    <div class="header-overlay" :class="{ 'header-overlay-scrolled': scrolled }" :style="overlayStyle"></div>
     <v-container class="header-content">
       <div class="d-flex align-center" :style="{ height: dynamicHeaderHeight + 'px', transition: 'all 0.2s ease' }">
         <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="logo-link mr-4">
@@ -19,8 +19,8 @@
           ></v-img>
         </a>
 
-        <!-- Slide pair: both slides stay in DOM and are translated by class to avoid transition flicker -->
-        <div class="title-container" :class="{ 'is-scrolled': scrolled }">
+        <!-- Animated slides for md and up; for <md show only the second (small) slide statically -->
+        <div v-if="shouldAnimate" class="title-container" :class="{ 'is-scrolled': scrolled }">
           <div class="header-slide header-slide-big">
             <div :class="titleClasses">JÁTÉKADATBÁZIS</div>
             <div class="subtitle">
@@ -39,6 +39,11 @@
             <div :class="['main-title', 'text-h5']">JÁTÉKADATBÁZIS</div>
           </div>
         </div>
+        <div v-else class="title-container-simple">
+          <div class="header-slide header-slide-small">
+            <div class="main-title text-h5">JÁTÉKADATBÁZIS</div>
+          </div>
+        </div>
 
         <v-spacer></v-spacer>
 
@@ -53,7 +58,7 @@
             class="glass-btn"
           >
             <v-icon start>mdi-open-in-new</v-icon>
-            <span v-if="!scrolled || lgAndUp">Somer.hu</span>
+            <span v-if="!scrolled || shouldAnimate">Somer.hu</span>
             <span v-else>Somer</span>
           </v-btn>
 
@@ -65,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useAuth } from '@/composables/useAuth'
 import logoSvg from '@/assets/somer-semel-white-with-transparent-bg.svg'
@@ -83,17 +88,20 @@ const scrolled = ref(false)
 // Responsive computed properties
 const isMobile = computed(() => xs.value || sm.value)
 
+// Animate header for md (>=960px) and up
+const shouldAnimate = computed(() => md.value || lgAndUp.value)
+
 
 // base header/logo sizes
 const headerHeight = computed(() => {
   if (isMobile.value) return 80
-  if (md.value) return 100
+  // keep largest header size for md and up so the big slide doesn't shrink when window narrows
   return 120
 })
 
 const logoSize = computed(() => {
   if (isMobile.value) return 40
-  if (md.value) return 60
+  // keep largest logo size for md and up
   return 80
 })
 
@@ -104,22 +112,41 @@ const scrollProgress = ref(0)
 const minScale = 0.66
 const dynamicHeaderHeight = computed(() => {
   const base = headerHeight.value
+  // Only apply dynamic shrink when animations are enabled
+  if (!shouldAnimate.value) return base
   return Math.round(base * (1 - scrollProgress.value * (1 - minScale)))
 })
 
 const dynamicLogoWidth = computed(() => {
   const base = logoSize.value
+  if (!shouldAnimate.value) return base
   return Math.round(base * (1 - scrollProgress.value * (1 - minScale)))
 })
 
 
 const titleClasses = computed(() => {
   const classes = ['main-title']
-  // Restore larger title on the big slide: mobile kept small, md gets larger, lg+ gets the largest
+  // Keep largest title on md and up; only use smaller size on mobile
   if (isMobile.value) classes.push('text-h6')
-  else if (md.value) classes.push('text-h4')
   else classes.push('text-h2')
   return classes
+})
+
+// Overlay style follows scroll progress so the gradient/opacity transitions with the header height
+const overlayStyle = computed(() => {
+  // If animations disabled, use the second-slide (scrolled) style statically
+  if (!shouldAnimate.value) {
+    return {
+      background: 'linear-gradient(135deg, rgba(8, 160, 202, 0.85) 40%, rgba(8, 160, 202, 0.5) 100%)'
+    }
+  }
+
+  const startAlpha = (0.7 + scrollProgress.value * 0.15).toFixed(3)
+  const endAlpha = (0.3 + scrollProgress.value * 0.2).toFixed(3)
+  return {
+    background: `linear-gradient(135deg, rgba(8, 160, 202, ${startAlpha}) 0%, rgba(8, 160, 202, ${endAlpha}) 100%)`,
+    transition: 'background 200ms ease'
+  }
 })
 
 // Foglalkozások listája (random sorrendben váltakoznak)
@@ -154,6 +181,7 @@ const getRandomOccupation = () => {
 // lastScrollY removed
 
 const handleScroll = () => {
+  if (!shouldAnimate.value) return
   const currentScrollY = window.scrollY
   // compute smooth scroll progress (0..1) over first 60px
   const progress = Math.max(0, Math.min(1, currentScrollY / 60))
@@ -164,19 +192,34 @@ const handleScroll = () => {
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-  
+  // add listener only when animations are enabled initially
+  if (shouldAnimate.value) window.addEventListener('scroll', handleScroll)
+
+  // watch for breakpoint changes and add/remove listener
+  const stop = watch(shouldAnimate, (val: boolean) => {
+    if (val) window.addEventListener('scroll', handleScroll)
+    else {
+      window.removeEventListener('scroll', handleScroll)
+      scrolled.value = false
+      scrollProgress.value = 0
+    }
+  })
+
+  // initialize scroll state so the correct slide is visible on load
+  if (shouldAnimate.value) {
+    handleScroll()
+  }
+
   // 5 másodpercenként váltson foglalkozást
   occupationInterval = window.setInterval(() => {
     currentOccupation.value = getRandomOccupation()
   }, 5000)
-})
 
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-  if (occupationInterval) {
-    clearInterval(occupationInterval)
-  }
+  onUnmounted(() => {
+    stop()
+    if (shouldAnimate.value) window.removeEventListener('scroll', handleScroll)
+    if (occupationInterval) clearInterval(occupationInterval)
+  })
 })
 </script>
 
@@ -227,8 +270,10 @@ onUnmounted(() => {
   z-index: 1;
 }
 .title-container.is-scrolled .header-slide-big {
-  transform: translateY(-100%);
-  opacity: 0.6;
+  /* move a bit further to avoid subpixel/rounding showing a thin strip */
+  transform: translateY(calc(-100% - 2px));
+  opacity: 0;
+  pointer-events: none;
 }
 .title-container.is-scrolled .header-slide-small {
   transform: translateY(0);
@@ -267,7 +312,7 @@ onUnmounted(() => {
   right: 0;
   bottom: 0;
   background: linear-gradient(135deg, rgba(8, 160, 202, 0.7) 0%, rgba(8, 160, 202, 0.3) 100%);
-  transition: background 0.4s ease;
+  transition: background 200ms ease, opacity 200ms ease;
   pointer-events: none;
 }
 
