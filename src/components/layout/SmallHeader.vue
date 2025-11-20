@@ -31,7 +31,7 @@
             <span>Somer</span>
           </v-btn>
 
-          <UserMenu @show-favorites="$emit('show-favorites')" />
+          <UserMenu :show-name="showUserName" @show-favorites="$emit('show-favorites')" />
         </div>
       </div>
     </v-container>
@@ -39,12 +39,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useDisplay } from 'vuetify'
 import { useAuth } from '@/composables/useAuth'
 import logoSvg from '@/assets/somer-semel-white-with-transparent-bg.svg'
 import UserMenu from '../auth/UserMenu.vue'
 
-const { isAuthenticated } = useAuth()
+const { sm } = useDisplay()
+const { user, isAuthenticated } = useAuth()
 const logoUrl = logoSvg
+
+const showUserName = computed(() => !!(sm.value && user.value && user.value.displayName))
 
 defineEmits<{
   'show-favorites': []
@@ -87,5 +92,11 @@ defineEmits<{
   font-style: normal !important;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+.user-name {
+  color: white;
+  margin-left: 8px;
+  font-weight: 600;
 }
 </style>

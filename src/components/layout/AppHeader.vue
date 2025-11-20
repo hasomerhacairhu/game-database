@@ -57,7 +57,7 @@
             <span v-else>Somer</span>
           </v-btn>
 
-          <UserMenu @show-favorites="$emit('show-favorites')" />
+          <UserMenu :show-name="true" @show-favorites="$emit('show-favorites')" />
         </div>
       </div>
     </v-container>

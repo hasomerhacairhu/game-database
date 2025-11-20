@@ -27,7 +27,7 @@
             <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :alt="userProfile.displayName"></v-img>
             <v-icon v-else icon="mdi-account-circle"></v-icon>
           </v-avatar>
-          <span v-if="!isMobile" class="text-white font-weight-medium user-name">{{ displayName }}</span>
+          <span v-if="showNameComputed" class="text-white font-weight-medium user-name">{{ displayName }}</span>
           <v-icon icon="mdi-chevron-down" class="chevron-icon" color="white"></v-icon>
         </v-btn>
       </template>
@@ -112,8 +112,17 @@ defineEmits<{
   'show-favorites': []
 }>()
 
+// optional prop to force showing the user name regardless of built-in mobile detection
+const props = defineProps<{ showName?: boolean }>()
+
 const { xs, sm } = useDisplay()
 const isMobile = computed(() => xs.value || sm.value)
+
+// Prefer explicit prop; fall back to hiding only on the smallest breakpoint (xs)
+const showNameComputed = computed(() => {
+  if (typeof props.showName === 'boolean') return props.showName
+  return !xs.value
+})
 
 const { user, userProfile, isAuthenticated, isProfileComplete, loading, signOut } = useAuth()
 
