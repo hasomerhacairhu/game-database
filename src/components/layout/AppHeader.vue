@@ -122,41 +122,36 @@ const titleClasses = computed(() => {
   return classes
 })
 
-// (Removed overlayStyle computed; overlay uses CSS classes only)
-
-// occupation rotation moved to composable
+// occupation rotation from composable
 const { currentOccupation } = useOccupationRotation()
 
-// legacy variable removed; keep for potential future use
-// lastScrollY removed
-
+// Scroll handler: updates scrollProgress and scrolled flag
 const handleScroll = () => {
   if (!showHeader.value) return
-  const currentScrollY = window.scrollY
-  // compute smooth scroll progress (0..1) over first 60px
+  const currentScrollY = window.scrollY || 0
   const progress = Math.max(0, Math.min(1, currentScrollY / 60))
   scrollProgress.value = progress
-
-  // Set scrolled directly from current scroll position so the slide toggles reliably
-  scrolled.value = currentScrollY > 50
+  const newScrolled = currentScrollY > 50
+  if (newScrolled !== scrolled.value) {
+    // debug visibility toggles
+    // eslint-disable-next-line no-console
+    console.debug('[AppHeader] scrolled ->', newScrolled, 'scrollY:', currentScrollY)
+  }
+  scrolled.value = newScrolled
 }
 
 onMounted(() => {
-  // initialize listener if header is visible on mount
   if (showHeader.value) {
     window.addEventListener('scroll', handleScroll)
     handleScroll()
   }
 })
 
-// watch for breakpoint changes and add/remove listener centrally
 const stopWatch = watch(showHeader, (val: boolean) => {
   if (val) {
-    // header became visible
     window.addEventListener('scroll', handleScroll)
     handleScroll()
   } else {
-    // header hidden under breakpoint
     window.removeEventListener('scroll', handleScroll)
     scrolled.value = false
     scrollProgress.value = 0
@@ -165,9 +160,11 @@ const stopWatch = watch(showHeader, (val: boolean) => {
 
 onUnmounted(() => {
   stopWatch()
-  // ensure listener removed
   window.removeEventListener('scroll', handleScroll)
 })
+
+// (Removed overlayStyle computed; overlay uses CSS classes only)
+
 </script>
 
 <style scoped>
@@ -272,28 +269,7 @@ onUnmounted(() => {
 
 
 
-.header-parallax-enter-active {
-  transition: transform 0.6s cubic-bezier(0.77,0,0.175,1), opacity 0.5s ease;
-}
-.header-parallax-leave-active {
-  transition: transform 0.6s cubic-bezier(0.77,0,0.175,1), opacity 0.5s ease;
-}
-.header-parallax-enter-from {
-  transform: translateY(60px);
-  opacity: 0;
-}
-.header-parallax-leave-to {
-  transform: translateY(-60px);
-  opacity: 0;
-}
-.header-parallax-leave-from {
-  transform: translateY(0);
-  opacity: 1;
-}
-.header-parallax-enter-to {
-  transform: translateY(0);
-  opacity: 1;
-}
+/* removed legacy header-parallax rules */
 
 .main-title {
   color: white;
@@ -306,7 +282,6 @@ onUnmounted(() => {
   transition: all .5s ease;
 }
 
-
 .subtitle {
   color: rgba(255, 255, 255, 0.9);
   font-family: 'Myriad Pro Regular', sans-serif !important;
@@ -317,35 +292,6 @@ onUnmounted(() => {
   height: auto;
   min-height: 1.3rem;
   overflow: visible;
-}
-
-
-.subtitle-mobile {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5em;
-  font-size: 0.92rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-family: 'Myriad Pro Regular', sans-serif !important;
-  margin-top: 2px;
-  margin-bottom: 2px;
-}
-
-/* Subtitle transition animations */
-.subtitle-enter-active,
-.subtitle-leave-active {
-  transition: all 0.5s ease;
-}
-
-.subtitle-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.subtitle-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
 }
 
 .subtitle-grid {
