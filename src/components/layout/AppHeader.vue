@@ -62,6 +62,7 @@
       </div>
     </v-container>
   </v-app-bar>
+  <SmallHeader v-else @show-favorites="$emit('show-favorites')" />
 </template>
 
 <script setup lang="ts">
@@ -70,6 +71,7 @@ import { useDisplay } from 'vuetify'
 import { useAuth } from '@/composables/useAuth'
 import logoSvg from '@/assets/somer-semel-white-with-transparent-bg.svg'
 import UserMenu from '../auth/UserMenu.vue'
+import SmallHeader from './SmallHeader.vue'
 import { useOccupationRotation } from '@/composables/useOccupationRotation'
 
 defineEmits<{
