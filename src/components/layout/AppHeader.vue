@@ -19,19 +19,24 @@
           ></v-img>
         </a>
 
-        <!-- Desktop parallax header animation -->
-        <div class="title-container">
-          <div :class="titleClasses">JÁTÉKADATBÁZIS</div>
-          <div class="subtitle">
-            <span class="subtitle-grid">
-              <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="grid-item subtitle-link">A Hasomer Hacair nagy játékgyűjteménye</a>
-              <span class="grid-item occupation-cell">
-                <Transition name="flip" mode="out-in">
-                  <span :key="currentOccupation" class="occupation">{{ currentOccupation }}</span>
-                </Transition>
+        <!-- Slide pair: both slides stay in DOM and are translated by class to avoid transition flicker -->
+        <div class="title-container" :class="{ 'is-scrolled': scrolled }">
+          <div class="header-slide header-slide-big">
+            <div :class="['main-title', 'text-h3']">JÁTÉKADATBÁZIS</div>
+            <div class="subtitle">
+              <span class="subtitle-grid">
+                <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="grid-item subtitle-link">A Hasomer Hacair nagy játékgyűjteménye</a>
+                <span class="grid-item occupation-cell">
+                  <Transition name="flip" mode="out-in">
+                    <span :key="currentOccupation" class="occupation">{{ currentOccupation }}</span>
+                  </Transition>
+                </span>
+                <span class="grid-item">részére.</span>
               </span>
-              <span class="grid-item">részére.</span>
-            </span>
+            </div>
+          </div>
+          <div class="header-slide header-slide-small">
+            <div :class="['main-title', 'text-h6']">JÁTÉKADATBÁZIS</div>
           </div>
         </div>
 
@@ -171,6 +176,59 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+
+/* Slide-up header animation */
+.title-container {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 1 auto;
+  height: 100%;
+}
+
+.header-slide {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  padding: 0 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Faster slide-up using element height (100%) and partial fade 50%->100% */
+.title-container .header-slide {
+  transition: transform 160ms cubic-bezier(0.4,0,0.2,1), opacity 140ms linear;
+  backface-visibility: hidden;
+}
+.title-container .header-slide-big {
+  transform: translateY(0);
+  opacity: 1;
+  z-index: 2;
+}
+.title-container .header-slide-small {
+  transform: translateY(100%);
+  opacity: 0.6;
+  z-index: 1;
+}
+.title-container.is-scrolled .header-slide-big {
+  transform: translateY(-100%);
+  opacity: 0.6;
+}
+.title-container.is-scrolled .header-slide-small {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
