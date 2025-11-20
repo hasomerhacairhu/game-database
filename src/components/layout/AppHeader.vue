@@ -1,14 +1,15 @@
 <template>
-    <v-app-bar 
-    color="primary" 
-    elevation="2" 
+  <v-app-bar
+    v-if="showHeader"
+    color="primary"
+    elevation="2"
     :height="dynamicHeaderHeight"
     scroll-behavior="elevate"
-      :class="['header-bar', { 'is-scrolled': scrolled, 'second-slide-bg': !shouldAnimate }]"
+    :class="['header-bar', { 'is-scrolled': scrolled }]"
   >
-    <div class="header-overlay" :class="{ 'header-overlay-scrolled': scrolled }" :style="overlayStyle"></div>
+    <div class="header-overlay" :class="{ 'header-overlay-scrolled': scrolled }"></div>
     <v-container class="header-content">
-      <div class="d-flex align-center" :style="{ height: dynamicHeaderHeight + 'px', transition: 'all 0.2s ease' }">
+      <div class="d-flex align-center" :style="{ height: dynamicHeaderHeight + 'px', transition: 'height 200ms cubic-bezier(0.4,0,0.2,1)' }">
         <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="logo-link mr-4">
           <v-img
             :src="logoUrl"
@@ -19,8 +20,7 @@
           ></v-img>
         </a>
 
-        <!-- Animated slides for md and up; for <md show only the second (small) slide statically -->
-        <div v-if="shouldAnimate" class="title-container" :class="{ 'is-scrolled': scrolled }">
+        <div class="title-container" :class="{ 'is-scrolled': scrolled }">
           <div class="header-slide header-slide-big">
             <div :class="titleClasses">JÁTÉKADATBÁZIS</div>
             <div class="subtitle">
@@ -39,17 +39,12 @@
             <div :class="['main-title', 'text-h5']">JÁTÉKADATBÁZIS</div>
           </div>
         </div>
-        <div v-else class="title-container-simple">
-          <div class="header-slide header-slide-small">
-            <div class="main-title text-h5">JÁTÉKADATBÁZIS</div>
-          </div>
-        </div>
 
         <v-spacer></v-spacer>
 
         <div class="d-flex align-center gap-3">
           <v-btn
-            v-if="!isAuthenticated && !isMobile"
+            v-if="!isAuthenticated"
             href="https://somer.hu"
             target="_blank"
             color="rgba(255, 255, 255, 0.15)"
@@ -58,7 +53,7 @@
             class="glass-btn"
           >
             <v-icon start>mdi-open-in-new</v-icon>
-            <span v-if="!scrolled || shouldAnimate">Somer.hu</span>
+            <span v-if="!scrolled">Somer.hu</span>
             <span v-else>Somer</span>
           </v-btn>
 
@@ -81,27 +76,23 @@ defineEmits<{
 }>()
 
 const { isAuthenticated } = useAuth()
-const { xs, sm, md, lgAndUp } = useDisplay()
+const { md, lgAndUp } = useDisplay()
 const logoUrl = logoSvg
 const scrolled = ref(false)
 
-// Responsive computed properties
-const isMobile = computed(() => xs.value || sm.value)
-
-// Animate header for md (>=960px) and up
-const shouldAnimate = computed(() => md.value || lgAndUp.value)
+// Show header only on md (>=960px) and up
+const showHeader = computed(() => md.value || lgAndUp.value)
 
 
 // base header/logo sizes
 const headerHeight = computed(() => {
-  if (isMobile.value) return 80
-  // keep largest header size for md and up so the big slide doesn't shrink when window narrows
+  // small baseline when header is not shown (under md)
+  if (!showHeader.value) return 80
   return 120
 })
 
 const logoSize = computed(() => {
-  if (isMobile.value) return 40
-  // keep largest logo size for md and up
+  if (!showHeader.value) return 40
   return 80
 })
 
@@ -112,42 +103,25 @@ const scrollProgress = ref(0)
 const minScale = 0.66
 const dynamicHeaderHeight = computed(() => {
   const base = headerHeight.value
-  // Only apply dynamic shrink when animations are enabled
-  if (!shouldAnimate.value) return base
+  if (!showHeader.value) return base
   return Math.round(base * (1 - scrollProgress.value * (1 - minScale)))
 })
 
 const dynamicLogoWidth = computed(() => {
   const base = logoSize.value
-  if (!shouldAnimate.value) return base
+  if (!showHeader.value) return base
   return Math.round(base * (1 - scrollProgress.value * (1 - minScale)))
 })
 
 
 const titleClasses = computed(() => {
   const classes = ['main-title']
-  // Keep largest title on md and up; only use smaller size on mobile
-  if (isMobile.value) classes.push('text-h6')
+  if (!showHeader.value) classes.push('text-h6')
   else classes.push('text-h2')
   return classes
 })
 
-// Overlay style follows scroll progress so the gradient/opacity transitions with the header height
-const overlayStyle = computed(() => {
-  // If animations disabled, use the second-slide (scrolled) style statically
-  if (!shouldAnimate.value) {
-    return {
-      background: 'linear-gradient(135deg, rgba(8, 160, 202, 0.85) 40%, rgba(8, 160, 202, 0.5) 100%)'
-    }
-  }
-
-  const startAlpha = (0.7 + scrollProgress.value * 0.15).toFixed(3)
-  const endAlpha = (0.3 + scrollProgress.value * 0.2).toFixed(3)
-  return {
-    background: `linear-gradient(135deg, rgba(8, 160, 202, ${startAlpha}) 0%, rgba(8, 160, 202, ${endAlpha}) 100%)`,
-    transition: 'background 200ms ease'
-  }
-})
+// (Removed overlayStyle computed; overlay uses CSS classes only)
 
 // Foglalkozások listája (random sorrendben váltakoznak)
 const occupations = [
@@ -181,7 +155,7 @@ const getRandomOccupation = () => {
 // lastScrollY removed
 
 const handleScroll = () => {
-  if (!shouldAnimate.value) return
+  if (!showHeader.value) return
   const currentScrollY = window.scrollY
   // compute smooth scroll progress (0..1) over first 60px
   const progress = Math.max(0, Math.min(1, currentScrollY / 60))
@@ -192,11 +166,11 @@ const handleScroll = () => {
 }
 
 onMounted(() => {
-  // add listener only when animations are enabled initially
-  if (shouldAnimate.value) window.addEventListener('scroll', handleScroll)
+  // add listener only when header is shown initially
+  if (showHeader.value) window.addEventListener('scroll', handleScroll)
 
   // watch for breakpoint changes and add/remove listener
-  const stop = watch(shouldAnimate, (val: boolean) => {
+  const stop = watch(showHeader, (val: boolean) => {
     if (val) window.addEventListener('scroll', handleScroll)
     else {
       window.removeEventListener('scroll', handleScroll)
@@ -206,7 +180,7 @@ onMounted(() => {
   })
 
   // initialize scroll state so the correct slide is visible on load
-  if (shouldAnimate.value) {
+  if (showHeader.value) {
     handleScroll()
   }
 
@@ -217,7 +191,7 @@ onMounted(() => {
 
   onUnmounted(() => {
     stop()
-    if (shouldAnimate.value) window.removeEventListener('scroll', handleScroll)
+    if (showHeader.value) window.removeEventListener('scroll', handleScroll)
     if (occupationInterval) clearInterval(occupationInterval)
   })
 })
