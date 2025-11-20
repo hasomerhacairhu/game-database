@@ -18,35 +18,21 @@
             style="transition: all 0.4s ease;"
           ></v-img>
         </a>
-        
-        <div class="title-container" :class="{ 'title-container-scrolled': scrolled }">
-          <div :class="titleClasses">
-            JÁTÉKADATBÁZIS
+
+        <!-- Desktop parallax header animation -->
+        <div class="title-container">
+          <div :class="titleClasses">JÁTÉKADATBÁZIS</div>
+          <div class="subtitle">
+            <span class="subtitle-grid">
+              <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="grid-item subtitle-link">A Hasomer Hacair nagy játékgyűjteménye</a>
+              <span class="grid-item occupation-cell">
+                <Transition name="flip" mode="out-in">
+                  <span :key="currentOccupation" class="occupation">{{ currentOccupation }}</span>
+                </Transition>
+              </span>
+              <span class="grid-item">részére.</span>
+            </span>
           </div>
-          <Transition name="subtitle">
-            <div 
-              v-if="!scrolled" 
-              class="subtitle"
-            >
-              <span v-if="!isMobile" class="subtitle-grid">
-                <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="grid-item subtitle-link">A Hasomer Hacair nagy játékgyűjteménye</a>
-                <span class="grid-item occupation-cell">
-                  <Transition name="flip" mode="out-in">
-                    <span :key="currentOccupation" class="occupation">{{ currentOccupation }}</span>
-                  </Transition>
-                </span>
-                <span class="grid-item">részére.</span>
-              </span>
-              <span v-else class="subtitle-mobile">
-                <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="subtitle-link">Hasomer játékgyűjtemény</a>
-                <span class="occupation-cell">
-                  <Transition name="flip" mode="out-in">
-                    <span :key="currentOccupation" class="occupation">{{ currentOccupation }}</span>
-                  </Transition>
-                </span>
-              </span>
-            </div>
-          </Transition>
         </div>
 
         <v-spacer></v-spacer>
@@ -92,41 +78,26 @@ const scrolled = ref(false)
 // Responsive computed properties
 const isMobile = computed(() => xs.value || sm.value)
 
+
 const headerHeight = computed(() => {
-  if (scrolled.value) {
-    if (isMobile.value) return 56
-    if (md.value) return 60
-    return 70
-  }
   if (isMobile.value) return 80
   if (md.value) return 100
   return 120
 })
 
+
 const logoSize = computed(() => {
-  if (scrolled.value) {
-    if (isMobile.value) return 30
-    if (md.value) return 40
-    return 60
-  }
   if (isMobile.value) return 40
   if (md.value) return 60
   return 80
 })
 
+
 const titleClasses = computed(() => {
   const classes = ['main-title']
-  
-  if (scrolled.value) {
-    if (isMobile.value) classes.push('text-subtitle-1')
-    else if (md.value) classes.push('text-h6')
-    else classes.push('text-h5')
-  } else {
-    if (isMobile.value) classes.push('text-h6')
-    else if (md.value) classes.push('text-h5')
-    else classes.push('text-h3')
-  }
-  
+  if (isMobile.value) classes.push('text-h6')
+  else if (md.value) classes.push('text-h5')
+  else classes.push('text-h3')
   return classes
 })
 
@@ -240,33 +211,30 @@ onUnmounted(() => {
   background-position: center;
 }
 
-.title-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  min-height: 80px;
-  transition: all 0.4s ease;
-  
-  @media (max-width: 960px) {
-    min-height: 60px;
-  }
-  
-  @media (max-width: 600px) {
-    min-height: 50px;
-  }
-}
 
-.title-container-scrolled {
-  min-height: 40px;
-  
-  @media (max-width: 960px) {
-    min-height: 30px;
-  }
-  
-  @media (max-width: 600px) {
-    min-height: 24px;
-  }
+
+
+.header-parallax-enter-active {
+  transition: transform 0.6s cubic-bezier(0.77,0,0.175,1), opacity 0.5s ease;
+}
+.header-parallax-leave-active {
+  transition: transform 0.6s cubic-bezier(0.77,0,0.175,1), opacity 0.5s ease;
+}
+.header-parallax-enter-from {
+  transform: translateY(60px);
+  opacity: 0;
+}
+.header-parallax-leave-to {
+  transform: translateY(-60px);
+  opacity: 0;
+}
+.header-parallax-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+}
+.header-parallax-enter-to {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 .main-title {
@@ -291,6 +259,7 @@ onUnmounted(() => {
   height: 1.3rem;
 }
 
+
 .subtitle-mobile {
   display: flex;
   flex-direction: row;
@@ -299,6 +268,8 @@ onUnmounted(() => {
   font-size: 0.92rem;
   color: rgba(255, 255, 255, 0.9);
   font-family: 'Myriad Pro Regular', sans-serif !important;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 /* Subtitle transition animations */
