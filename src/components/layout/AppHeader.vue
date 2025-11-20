@@ -70,6 +70,7 @@ import { useDisplay } from 'vuetify'
 import { useAuth } from '@/composables/useAuth'
 import logoSvg from '@/assets/somer-semel-white-with-transparent-bg.svg'
 import UserMenu from '../auth/UserMenu.vue'
+import { useOccupationRotation } from '@/composables/useOccupationRotation'
 
 defineEmits<{
   'show-favorites': []
@@ -123,33 +124,8 @@ const titleClasses = computed(() => {
 
 // (Removed overlayStyle computed; overlay uses CSS classes only)
 
-// Foglalkozások listája (random sorrendben váltakoznak)
-const occupations = [
-  'ifjúsági vezetők',
-  'tanárok',
-  'drámainstruktorok',
-  'cserkészek',
-  'coachok',
-  'trénerek',
-  'madrihok',
-  'pedagógusok',
-  'pszichológusok',
-  'animátorok',
-  'táborvezetők',
-  'közösségszervezők',
-  'edzők',
-  'színjátszók'
-]
-
-const currentOccupation = ref(occupations[0])
-let occupationInterval: number | null = null
-
-// Random foglalkozás választása (nem lehet ugyanaz, mint az előző)
-const getRandomOccupation = () => {
-  const availableOccupations = occupations.filter(occ => occ !== currentOccupation.value)
-  const randomIndex = Math.floor(Math.random() * availableOccupations.length)
-  return availableOccupations[randomIndex]
-}
+// occupation rotation moved to composable
+const { currentOccupation } = useOccupationRotation()
 
 // legacy variable removed; keep for potential future use
 // lastScrollY removed
@@ -166,34 +142,31 @@ const handleScroll = () => {
 }
 
 onMounted(() => {
-  // add listener only when header is shown initially
-  if (showHeader.value) window.addEventListener('scroll', handleScroll)
-
-  // watch for breakpoint changes and add/remove listener
-  const stop = watch(showHeader, (val: boolean) => {
-    if (val) window.addEventListener('scroll', handleScroll)
-    else {
-      window.removeEventListener('scroll', handleScroll)
-      scrolled.value = false
-      scrollProgress.value = 0
-    }
-  })
-
-  // initialize scroll state so the correct slide is visible on load
+  // initialize listener if header is visible on mount
   if (showHeader.value) {
+    window.addEventListener('scroll', handleScroll)
     handleScroll()
   }
+})
 
-  // 5 másodpercenként váltson foglalkozást
-  occupationInterval = window.setInterval(() => {
-    currentOccupation.value = getRandomOccupation()
-  }, 5000)
+// watch for breakpoint changes and add/remove listener centrally
+const stopWatch = watch(showHeader, (val: boolean) => {
+  if (val) {
+    // header became visible
+    window.addEventListener('scroll', handleScroll)
+    handleScroll()
+  } else {
+    // header hidden under breakpoint
+    window.removeEventListener('scroll', handleScroll)
+    scrolled.value = false
+    scrollProgress.value = 0
+  }
+})
 
-  onUnmounted(() => {
-    stop()
-    if (showHeader.value) window.removeEventListener('scroll', handleScroll)
-    if (occupationInterval) clearInterval(occupationInterval)
-  })
+onUnmounted(() => {
+  stopWatch()
+  // ensure listener removed
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
