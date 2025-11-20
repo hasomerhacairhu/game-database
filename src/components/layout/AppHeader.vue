@@ -1,28 +1,28 @@
 <template>
-  <v-app-bar 
+    <v-app-bar 
     color="primary" 
     elevation="2" 
-    :height="headerHeight"
+    :height="dynamicHeaderHeight"
     scroll-behavior="elevate"
-    class="header-bar"
+      :class="['header-bar', { 'is-scrolled': scrolled }]"
   >
     <div class="header-overlay" :class="{ 'header-overlay-scrolled': scrolled }"></div>
     <v-container class="header-content">
-      <div class="d-flex align-center" :style="{ height: headerHeight + 'px', transition: 'all 0.4s ease' }">
+      <div class="d-flex align-center" :style="{ height: dynamicHeaderHeight + 'px', transition: 'all 0.2s ease' }">
         <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="logo-link mr-4">
           <v-img
             :src="logoUrl"
             alt="Somer Logo"
             :width="logoSize"
             :max-width="logoSize"
-            style="transition: all 0.4s ease;"
+            :style="{ width: dynamicLogoWidth + 'px', transition: 'width 160ms cubic-bezier(0.4,0,0.2,1)' }"
           ></v-img>
         </a>
 
         <!-- Slide pair: both slides stay in DOM and are translated by class to avoid transition flicker -->
         <div class="title-container" :class="{ 'is-scrolled': scrolled }">
           <div class="header-slide header-slide-big">
-            <div :class="['main-title', 'text-h3']">JÁTÉKADATBÁZIS</div>
+            <div :class="titleClasses">JÁTÉKADATBÁZIS</div>
             <div class="subtitle">
               <span class="subtitle-grid">
                 <a href="https://somer.hu" target="_blank" rel="noopener noreferrer" class="grid-item subtitle-link">A Hasomer Hacair nagy játékgyűjteménye</a>
@@ -36,7 +36,7 @@
             </div>
           </div>
           <div class="header-slide header-slide-small">
-            <div :class="['main-title', 'text-h6']">JÁTÉKADATBÁZIS</div>
+            <div :class="['main-title', 'text-h5']">JÁTÉKADATBÁZIS</div>
           </div>
         </div>
 
@@ -84,12 +84,12 @@ const scrolled = ref(false)
 const isMobile = computed(() => xs.value || sm.value)
 
 
+// base header/logo sizes
 const headerHeight = computed(() => {
   if (isMobile.value) return 80
   if (md.value) return 100
   return 120
 })
-
 
 const logoSize = computed(() => {
   if (isMobile.value) return 40
@@ -97,12 +97,28 @@ const logoSize = computed(() => {
   return 80
 })
 
+// scroll progress [0..1] where 0 = top, 1 = fully scrolled (used for smooth dynamic shrink)
+const scrollProgress = ref(0)
+
+// dynamic header height (px) and logo width (px) driven by scrollProgress
+const minScale = 0.66
+const dynamicHeaderHeight = computed(() => {
+  const base = headerHeight.value
+  return Math.round(base * (1 - scrollProgress.value * (1 - minScale)))
+})
+
+const dynamicLogoWidth = computed(() => {
+  const base = logoSize.value
+  return Math.round(base * (1 - scrollProgress.value * (1 - minScale)))
+})
+
 
 const titleClasses = computed(() => {
   const classes = ['main-title']
+  // Restore larger title on the big slide: mobile kept small, md gets larger, lg+ gets the largest
   if (isMobile.value) classes.push('text-h6')
-  else if (md.value) classes.push('text-h5')
-  else classes.push('text-h3')
+  else if (md.value) classes.push('text-h4')
+  else classes.push('text-h2')
   return classes
 })
 
@@ -134,28 +150,17 @@ const getRandomOccupation = () => {
   return availableOccupations[randomIndex]
 }
 
-let lastScrollY = 0
+// legacy variable removed; keep for potential future use
+// lastScrollY removed
 
 const handleScroll = () => {
   const currentScrollY = window.scrollY
-  
-  // Ha lefelé görgettünk (scrollY > 50), állítsuk be scrolled = true
-  if (currentScrollY > 50) {
-    scrolled.value = true
-    lastScrollY = currentScrollY
-  }
-  // Csak akkor álljon vissza false-ra, ha:
-  // 1. ScrollY <= 50 (az oldal tetején vagyunk)
-  // 2. És az előző scrollY is <= 50 volt (nem ugrott vissza 0-ra dialóg miatt)
-  else if (currentScrollY <= 50 && lastScrollY <= 50) {
-    scrolled.value = false
-  }
-  
-  // Ha a scrollY jelentősen csökkent (több mint 100px), valószínűleg dialog nyílt meg
-  // Ilyenkor ne frissítsük a lastScrollY-t
-  if (Math.abs(currentScrollY - lastScrollY) < 100 || currentScrollY > lastScrollY) {
-    lastScrollY = currentScrollY
-  }
+  // compute smooth scroll progress (0..1) over first 60px
+  const progress = Math.max(0, Math.min(1, currentScrollY / 60))
+  scrollProgress.value = progress
+
+  // Set scrolled directly from current scroll position so the slide toggles reliably
+  scrolled.value = currentScrollY > 50
 }
 
 onMounted(() => {
@@ -180,12 +185,14 @@ onUnmounted(() => {
 /* Slide-up header animation */
 .title-container {
   position: relative;
+  /* keep header clipped to avoid scrollbars; allow subtitle to wrap instead */
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  flex: 1 1 auto;
+  flex: 2 1 auto;
   height: 100%;
+  will-change: transform;
 }
 
 .header-slide {
@@ -232,7 +239,7 @@ onUnmounted(() => {
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 12px;
   position: relative;
   z-index: 1;
   
@@ -250,6 +257,7 @@ onUnmounted(() => {
   background-position: bottom;
   background-repeat: no-repeat;
   overflow: hidden;
+  transition: height 200ms cubic-bezier(0.4,0,0.2,1), padding 200ms ease;
 }
 
 .header-overlay {
@@ -313,8 +321,10 @@ onUnmounted(() => {
   font-size: 0.95rem;
   letter-spacing: 0.3px;
   line-height: 1.3;
-  max-width: 600px;
-  height: 1.3rem;
+  max-width: none;
+  height: auto;
+  min-height: 1.3rem;
+  overflow: visible;
 }
 
 
@@ -347,10 +357,11 @@ onUnmounted(() => {
 }
 
 .subtitle-grid {
-  display: inline-grid;
-  grid-template-columns: auto auto auto;
+  display: inline-flex;
+  flex-wrap: wrap;
   gap: 0.25em;
   align-items: baseline;
+  white-space: normal;
 }
 
 .grid-item {
@@ -358,8 +369,9 @@ onUnmounted(() => {
 }
 
 .occupation-cell {
-  display: grid;
-  transition: width 1s ease;
+  display: inline-grid;
+  transition: width 0.3s ease;
+  min-width: 0;
 }
 
 .occupation {
