@@ -148,13 +148,21 @@ export function useGameData() {
   const filterGames = (filters: Partial<GameFilterState>): Game[] => {
     let filtered = games.value
 
+    // Helper: normalize otherNames (always a plain string) to a searchable lowercase string
+    const otherNamesToSearchable = (game: Game): string => {
+      const raw: any = (game as any).otherNames
+      if (!raw) return ''
+      return String(raw).trim().toLowerCase()
+    }
+
     // Simple search (name, goal, rules)
     if (filters.simpleSearch) {
       const searchLower = filters.simpleSearch.toLowerCase()
       filtered = filtered.filter(game =>
         game.name.toLowerCase().includes(searchLower) ||
         game.goal?.toLowerCase().includes(searchLower) ||
-        game.rules?.toLowerCase().includes(searchLower)
+        game.rules?.toLowerCase().includes(searchLower) ||
+        otherNamesToSearchable(game).includes(searchLower)
       )
     }
 
@@ -166,7 +174,8 @@ export function useGameData() {
         game.goal?.toLowerCase().includes(searchLower) ||
         game.rules?.toLowerCase().includes(searchLower) ||
         game.materials?.toLowerCase().includes(searchLower) ||
-        game.sourceName?.toLowerCase().includes(searchLower)
+        game.sourceName?.toLowerCase().includes(searchLower) ||
+        otherNamesToSearchable(game).includes(searchLower)
       )
     }
 
