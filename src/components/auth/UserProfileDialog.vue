@@ -43,7 +43,7 @@
       <v-card-text :class="isMobile ? 'pa-3 pt-4' : 'pt-6'">
         <div class="text-center mb-6">
           <v-avatar size="80" class="mb-2">
-            <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :alt="formData.displayName"></v-img>
+            <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :key="userProfile?.photoURL" :alt="formData.displayName"></v-img>
             <v-icon v-else icon="mdi-account-circle" size="80" color="primary"></v-icon>
           </v-avatar>
           <p class="text-caption text-medium-emphasis mb-1">{{ userProfile?.email }}</p>

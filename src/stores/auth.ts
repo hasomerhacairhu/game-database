@@ -77,6 +77,16 @@ export const useAuthStore = defineStore('auth', () => {
       
       if (userDoc.exists()) {
         userProfile.value = userDoc.data() as UserProfile
+
+        // Prefetch avatar to avoid stale-cache issues after re-login
+        try {
+          const url = userProfile.value?.photoURL
+          if (url) {
+            void fetch(url, { cache: 'reload', mode: 'cors' })
+          }
+        } catch (e) {
+          console.debug('avatar prefetch failed', e)
+        }
       }
     } catch (err) {
       // If no permission or user doc doesn't exist, just log it
@@ -126,6 +136,16 @@ export const useAuthStore = defineStore('auth', () => {
           console.error('Profile was not saved to Firestore!')
           userProfile.value = newProfile
         }
+
+        // Prefetch avatar after sign-up
+        try {
+          const url = userProfile.value?.photoURL
+          if (url) {
+            void fetch(url, { cache: 'reload', mode: 'cors' })
+          }
+        } catch (e) {
+          console.debug('avatar prefetch failed', e)
+        }
       } else {
         // Update existing profile (lastLogin)
         const profile = userDoc.data() as UserProfile
@@ -134,6 +154,16 @@ export const useAuthStore = defineStore('auth', () => {
           lastLogin: Timestamp.now()
         })
         userProfile.value = profile
+
+        // Prefetch avatar after login
+        try {
+          const url = userProfile.value?.photoURL
+          if (url) {
+            void fetch(url, { cache: 'reload', mode: 'cors' })
+          }
+        } catch (e) {
+          console.debug('avatar prefetch failed', e)
+        }
       }
       
       return result.user

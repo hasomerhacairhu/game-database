@@ -24,7 +24,7 @@
           :size="isMobile ? 'default' : 'large'"
         >
           <v-avatar :size="isMobile ? 28 : 32" class="user-avatar">
-            <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :alt="userProfile.displayName"></v-img>
+            <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :key="userProfile?.photoURL" :alt="userProfile.displayName"></v-img>
             <v-icon v-else icon="mdi-account-circle"></v-icon>
           </v-avatar>
           <span v-if="showNameComputed" class="text-white font-weight-medium user-name">{{ displayName }}</span>
