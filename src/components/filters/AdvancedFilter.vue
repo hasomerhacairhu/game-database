@@ -2,7 +2,7 @@
   <v-container fluid class="pa-0">
     <!-- 1. sor: Szöveges keresés + Funkció -->
     <v-row dense>
-      <v-col cols="12" sm="6" md="4">
+      <v-col cols="12" sm="12" md="4" lg="4">
         <v-text-field
           v-model="advancedSearchText"
           label="Szöveges keresés"
@@ -15,7 +15,7 @@
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" sm="6" md="8">
+      <v-col cols="12" sm="6" md="8" lg="8">
         <v-select
           v-model="selectedFunctions"
           :items="GAME_FUNCTIONS"
@@ -33,10 +33,7 @@
           </template>
         </v-select>
       </v-col>
-    </v-row>
 
-    <!-- 2. sor: 5 legördülő + törlés gomb -->
-    <v-row dense class="mt-2">
       <!-- Tér -->
       <v-col cols="12" sm="6" md="4" lg>
         <v-select
@@ -138,7 +135,7 @@
       </v-col>
 
       <!-- Kedvencek szűrő gomb -->
-      <v-col cols="6" sm="6" md="auto">
+      <v-col cols="12" sm="6" md="2" lg="2">
         <v-btn
           @click="toggleFavorites"
           :color="showFavoritesOnly ? 'somer-orange-light' : 'primary'"
@@ -153,7 +150,7 @@
       </v-col>
 
       <!-- Szűrő törlése gomb -->
-      <v-col cols="6" sm="6" md="auto">
+      <v-col cols="12" sm="6" md="2" lg="2">
         <v-btn
           @click="clearFilters"
           color="primary"
