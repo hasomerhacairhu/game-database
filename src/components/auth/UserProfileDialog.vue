@@ -43,7 +43,7 @@
       <v-card-text :class="isMobile ? 'pa-3 pt-4' : 'pt-6'">
         <div class="text-center mb-6">
           <v-avatar size="80" class="mb-2">
-            <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :key="userProfile?.photoURL" :alt="formData.displayName"></v-img>
+            <v-img v-if="avatarSrc" :src="avatarSrc" :key="avatarSrc" :alt="formData.displayName"></v-img>
             <v-icon v-else icon="mdi-account-circle" size="80" color="primary"></v-icon>
           </v-avatar>
           <p class="text-caption text-medium-emphasis mb-1">{{ userProfile?.email }}</p>
@@ -197,7 +197,23 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
 
-const { user, userProfile, updateUserProfile, signOut } = useAuth()
+const { user, userProfile, updateUserProfile, signOut, getCachedAvatar, fetchAndCacheAvatar } = useAuth()
+
+const avatarSrc = computed(() => {
+  const cachedFromProfile = (userProfile.value as any)?._cachedPhotoURL
+  const cachedFromStore = getCachedAvatar ? getCachedAvatar(user.value?.uid || (userProfile.value as any)?.uid || '') : null
+  return cachedFromProfile || cachedFromStore || null
+})
+
+watch(userProfile, (profile) => {
+  if (!profile) return
+  const hasCached = (profile as any)?._cachedPhotoURL || (getCachedAvatar ? getCachedAvatar(profile.uid) : null)
+  if (!hasCached && profile.photoURL && fetchAndCacheAvatar) {
+    fetchAndCacheAvatar(profile.uid, profile.photoURL).then((cached) => {
+      if (cached) (userProfile.value as any)._cachedPhotoURL = cached
+    }).catch(() => {})
+  }
+}, { immediate: true })
 const { favorites } = useFavorites()
 const { triedGames } = useTriedGames()
 

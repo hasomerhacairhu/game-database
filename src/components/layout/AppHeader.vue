@@ -130,6 +130,9 @@ const { currentOccupation } = useOccupationRotation()
 // Scroll handler: updates scrollProgress and scrolled flag
 const handleScroll = () => {
   if (!showHeader.value) return
+  // If a modal/overlay is open (Vuetify adds active overlay), ignore scroll updates
+  // This prevents the header from resetting when dialogs open and the page scroll is locked.
+  if (typeof document !== 'undefined' && document.querySelector('.v-overlay--active')) return
   const currentScrollY = window.scrollY || 0
   const progress = Math.max(0, Math.min(1, currentScrollY / 60))
   scrollProgress.value = progress

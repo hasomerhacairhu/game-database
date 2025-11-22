@@ -24,7 +24,7 @@
           :size="isMobile ? 'default' : 'large'"
         >
           <v-avatar :size="isMobile ? 28 : 32" class="user-avatar">
-            <v-img v-if="userProfile?.photoURL" :src="userProfile.photoURL" :key="userProfile?.photoURL" :alt="userProfile.displayName"></v-img>
+            <v-img v-if="avatarSrc" :src="avatarSrc" :key="avatarSrc" :alt="userProfile?.displayName"></v-img>
             <v-icon v-else icon="mdi-account-circle"></v-icon>
           </v-avatar>
           <span v-if="showNameComputed" class="text-white font-weight-medium user-name">{{ displayName }}</span>
@@ -124,7 +124,25 @@ const showNameComputed = computed(() => {
   return !xs.value
 })
 
-const { user, userProfile, isAuthenticated, isProfileComplete, loading, signOut } = useAuth()
+const { user, userProfile, isAuthenticated, isProfileComplete, loading, signOut, getCachedAvatar, fetchAndCacheAvatar } = useAuth()
+
+const avatarSrc = computed(() => {
+  const cachedFromProfile = (userProfile.value as any)?._cachedPhotoURL
+  const cachedFromStore = getCachedAvatar ? getCachedAvatar(user.value?.uid || (userProfile.value as any)?.uid || '') : null
+  return cachedFromProfile || cachedFromStore || null
+})
+
+// If profile exists and we don't have a cached avatar, fetch it in background (best-effort)
+watch(userProfile, (profile) => {
+  if (!profile) return
+  const hasCached = (profile as any)?._cachedPhotoURL || (getCachedAvatar ? getCachedAvatar(profile.uid) : null)
+  if (!hasCached && profile.photoURL && fetchAndCacheAvatar) {
+    // fire-and-forget; update profile when available
+    fetchAndCacheAvatar(profile.uid, profile.photoURL).then((cached) => {
+      if (cached) (userProfile.value as any)._cachedPhotoURL = cached
+    }).catch(() => {})
+  }
+}, { immediate: true })
 
 const showMandatoryProfileDialog = ref(false)
 
