@@ -4,7 +4,7 @@
  */
 
 import { storeToRefs } from 'pinia'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/authStore'
 
 export function useAuth() {
   const authStore = useAuthStore()
@@ -26,5 +26,9 @@ export function useAuth() {
     signOut: authStore.signOut,
     updateUserProfile: authStore.updateUserProfile,
     loadUserProfile: authStore.loadUserProfile
+    ,
+    // Avatar helpers
+    getCachedAvatar: authStore.getCachedAvatar,
+    fetchAndCacheAvatar: authStore.fetchAndCacheAvatar
   }
 }

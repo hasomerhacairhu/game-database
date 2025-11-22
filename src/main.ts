@@ -11,7 +11,7 @@ app.use(pinia)
 app.use(vuetify)
 
 // Initialize auth listener immediately after Pinia setup
-import { useAuthStore } from './stores/auth'
+import { useAuthStore } from './stores/authStore'
 const authStore = useAuthStore()
 authStore.initAuthListener()
 

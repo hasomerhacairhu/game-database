@@ -132,6 +132,8 @@ const avatarSrc = computed(() => {
   return cachedFromProfile || cachedFromStore || null
 })
 
+const showMandatoryProfileDialog = ref(false)
+
 // If profile exists and we don't have a cached avatar, fetch it in background (best-effort)
 watch(userProfile, (profile) => {
   if (!profile) return
@@ -144,8 +146,6 @@ watch(userProfile, (profile) => {
   }
 }, { immediate: true })
 
-const showMandatoryProfileDialog = ref(false)
-
 // Ha bejelentkezett de nincs kitöltve a profil, kötelező profil dialógus megnyitása
 // Csak akkor fut, ha már betöltődött a profil (loading === false)
 watch(
@@ -153,15 +153,21 @@ watch(
   ([auth, complete, profile, isLoading]) => {
     // Ne mutassuk azonnal, várjunk a betöltésre
     if (isLoading) {
-      showMandatoryProfileDialog.value = false
+      if (typeof showMandatoryProfileDialog !== 'undefined') {
+        showMandatoryProfileDialog.value = false
+      }
       return
     }
     
     // Ha be van jelentkezve és a profil betöltődött, de nincs születési dátum
     if (auth && profile !== null && !complete) {
-      showMandatoryProfileDialog.value = true
+      if (typeof showMandatoryProfileDialog !== 'undefined') {
+        showMandatoryProfileDialog.value = true
+      }
     } else {
-      showMandatoryProfileDialog.value = false
+      if (typeof showMandatoryProfileDialog !== 'undefined') {
+        showMandatoryProfileDialog.value = false
+      }
     }
   }
 )
