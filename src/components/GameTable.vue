@@ -372,7 +372,7 @@ const headers = [
   { title: 'Tér', key: 'space', align: 'start' as const, sortable: false, width: '10%' },
   { title: 'Csoport', key: 'groupPhase', align: 'start' as const, sortable: false, width: '10%' },
   { title: 'Kor', key: 'ageGroup', align: 'start' as const, sortable: false, width: '10%' },
-  { title: 'Fő', key: 'groupSize', align: 'start' as const, sortable: false, width: '10%' },
+  { title: 'Létszám', key: 'groupSize', align: 'start' as const, sortable: false, width: '10%' },
   { title: 'Idő', key: 'duration', align: 'start' as const, sortable: false, width: '10%' }
 ]
 
