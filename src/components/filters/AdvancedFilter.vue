@@ -15,7 +15,7 @@
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" sm="6" md="8" lg="8">
+      <v-col cols="12" sm="6" md="8" lg="6">
         <v-select
           v-model="selectedFunctions"
           :items="GAME_FUNCTIONS"
@@ -35,7 +35,7 @@
       </v-col>
 
       <!-- Tér -->
-      <v-col cols="12" sm="6" md="4" lg>
+      <v-col cols="12" sm="6" md="4"  lg="2">
         <v-select
           v-model="selectedSpaces"
           :items="LOCATION_OPTIONS"
@@ -54,7 +54,7 @@
       </v-col>
 
       <!-- Csoportdinamikai fázis -->
-      <v-col cols="12" sm="6" md="4" lg>
+      <v-col cols="12" sm="6" md="4"  lg="2">
         <v-tooltip text="Csoportdinamikai fázis - Tuckman modell" location="top" :open-delay="3000">
           <template v-slot:activator="{ props }">
             <v-select
@@ -78,7 +78,7 @@
       </v-col>
 
       <!-- Korosztály -->
-      <v-col cols="12" sm="6" md="4" lg>
+      <v-col cols="12" sm="6" md="4"  lg="2">
         <v-select
           v-model="selectedAgeGroups"
           :items="AGE_OPTIONS"
@@ -97,7 +97,7 @@
       </v-col>
 
       <!-- Létszám -->
-      <v-col cols="12" sm="6" md="4" lg>
+      <v-col cols="12" sm="6" md="4" lg="2">
         <v-select
           v-model="selectedGroupSizes"
           :items="GROUP_SIZE_OPTIONS"
@@ -116,7 +116,7 @@
       </v-col>
 
       <!-- Időtartam -->
-      <v-col cols="12" sm="6" md="4" lg>
+      <v-col cols="12" sm="6" md="4"  lg="2">
         <v-select
           v-model="selectedDurations"
           :items="LENGTH_OPTIONS"
