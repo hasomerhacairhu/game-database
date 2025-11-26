@@ -184,6 +184,7 @@ onUnmounted(() => {
   justify-content: center;
   flex: 2 1 auto;
   height: 100%;
+  width: 100%;
   will-change: transform;
 }
 
