@@ -158,8 +158,39 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       error.value = null
       const provider = new GoogleAuthProvider()
+      // Request account selection and birthday access from Google People API
       provider.setCustomParameters({ prompt: 'select_account' })
+      // Birthday requires the People API scope
+      provider.addScope('https://www.googleapis.com/auth/user.birthday.read')
       const result = await signInWithPopup(auth, provider)
+      // Try to extract OAuth access token to call People API for birthdays
+      let fetchedBirthDate: string | null = null
+      try {
+        const credential = (GoogleAuthProvider as any).credentialFromResult(result)
+        const accessToken = credential?.accessToken
+        if (accessToken) {
+          const resp = await fetch('https://people.googleapis.com/v1/people/me?personFields=birthdays', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+          })
+          if (resp.ok) {
+            const json = await resp.json()
+            const birthdays = json?.birthdays
+            if (Array.isArray(birthdays)) {
+              const hit = birthdays.find((b: any) => b?.date && b.date.year && b.date.month && b.date.day)
+              if (hit && hit.date) {
+                const y = hit.date.year
+                const m = String(hit.date.month).padStart(2, '0')
+                const d = String(hit.date.day).padStart(2, '0')
+                fetchedBirthDate = `${y}-${m}-${d}`
+              }
+            }
+          } else {
+            logError('auth:peopleApi', new Error(`people API failed ${resp.status}`))
+          }
+        }
+      } catch (e) {
+        logError('auth:peopleApi', e)
+      }
       const userDocRef = doc(db, 'users', result.user.uid)
       const userDoc = await getDoc(userDocRef)
       if (!userDoc.exists()) {
@@ -168,7 +199,7 @@ export const useAuthStore = defineStore('auth', () => {
           email: result.user.email || '',
           displayName: result.user.displayName || '',
           phoneNumber: result.user.phoneNumber || '',
-          birthDate: '',
+          birthDate: fetchedBirthDate || '',
           photoURL: result.user.photoURL || '',
           provider: 'google',
           createdAt: Timestamp.now(),
@@ -179,7 +210,18 @@ export const useAuthStore = defineStore('auth', () => {
         userProfile.value = savedDoc.exists() ? (savedDoc.data() as UserProfile) : newProfile
       } else {
         const profile = userDoc.data() as UserProfile
-        await setDoc(userDocRef, { ...profile, lastLogin: Timestamp.now() })
+        // If existing profile lacks birthDate but we fetched one from Google, update it
+        if ((!profile.birthDate || String(profile.birthDate).trim() === '') && fetchedBirthDate) {
+          try {
+            await updateDoc(userDocRef, { birthDate: fetchedBirthDate, lastLogin: Timestamp.now(), updatedAt: serverTimestamp() })
+            profile.birthDate = fetchedBirthDate
+          } catch (e) {
+            logError('auth:updateBirthDate', e)
+          }
+        } else {
+          // update lastLogin only
+          await setDoc(userDocRef, { ...profile, lastLogin: Timestamp.now() })
+        }
         userProfile.value = profile
       }
       return result.user
