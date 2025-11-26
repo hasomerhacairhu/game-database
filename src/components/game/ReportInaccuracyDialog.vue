@@ -116,7 +116,7 @@ const emit = defineEmits<{
 }>()
 
 const { user, userProfile, isAuthenticated } = useAuth()
-const { submitReport: submitReportToFirestore, loading: reportLoading } = useReports()
+const { loading: reportLoading } = useReports()
 
 const dialogOpen = computed({
   get: () => props.modelValue,
