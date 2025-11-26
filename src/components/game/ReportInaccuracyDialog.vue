@@ -103,6 +103,7 @@
 import { computed, ref, watch } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useReports } from '@/composables/useReports'
+const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL
 
 const props = defineProps<{
   modelValue: boolean
@@ -171,13 +172,32 @@ const submitReport = async () => {
     errorMessage.value = ''
     successMessage.value = ''
 
-    // Ha be van jelentkezve, Firestore-ba mentjük
+    // Ha be van jelentkezve, n8n webhookra küldjük
     if (isAuthenticated.value) {
-      await submitReportToFirestore(gameName.value, inaccuracyDescription.value)
+      if (!N8N_WEBHOOK_URL) {
+        throw new Error('A bejelentés URL nincs beállítva!')
+      }
+      // Adatok összegyűjtése
+      const payload = {
+        userId: user.value?.uid || '',
+        userName: senderName.value,
+        userEmail: userProfile.value?.email || user.value?.email || '',
+        gameName: gameName.value,
+        description: inaccuracyDescription.value
+      }
+      // POST request n8n webhookra
+      const response = await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      if (!response.ok) {
+        throw new Error('A bejelentés küldése sikertelen!')
+      }
       successMessage.value = 'Bejelentésed sikeresen elküldtük! Köszönjük a visszajelzésed.'
       emit('report-submitted')
-      
-      // Bezárás 2 másodperc után
       setTimeout(() => {
         closeDialog()
       }, 2000)
@@ -189,7 +209,6 @@ const submitReport = async () => {
         `Játék neve: ${gameName.value}\n\n` +
         `Pontatlanság leírása:\n${inaccuracyDescription.value}`
       )
-      
       const mailtoLink = `mailto:${reportEmail}?subject=${subject}&body=${body}`
       window.location.href = mailtoLink
       closeDialog()
