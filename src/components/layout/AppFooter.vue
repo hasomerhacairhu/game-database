@@ -43,14 +43,12 @@
               Ha szeretnél te is dolgozni az adattal, töltsd le az adatbázist Excel formátumban:
             </div>
             <v-btn
-              :href="isAuthenticated ? 'https://docs.google.com/spreadsheets/d/18wUOYj8UcEo7C-DAce2P_78kydHMvBi5LZaoBrx3iiQ/export?format=xlsx' : undefined"
-              target="_blank"
-              color="rgba(8, 160, 202, 0.3)"
-              variant="elevated"
-              prepend-icon="mdi-download"
-              class="footer-btn glass-btn"
-              block
-              @click="!isAuthenticated && $emit('auth-required')"
+                color="rgba(8, 160, 202, 0.3)"
+                variant="elevated"
+                prepend-icon="mdi-download"
+                class="footer-btn glass-btn"
+                block
+                @click="handleDownloadClick"
             >
               Adatbázis letöltése (Excel)
             </v-btn>
@@ -83,7 +81,11 @@
 </template>
 
 <script setup lang="ts">
+
 import { useAuth } from '@/composables/useAuth'
+import { useGameData } from '@/composables/useGameData'
+import { exportArrayAsCSV } from '@/utils/csvExport'
+
 
 const emit = defineEmits<{
   'auth-required': []
@@ -91,6 +93,7 @@ const emit = defineEmits<{
 }>()
 
 const { isAuthenticated } = useAuth()
+const { games } = useGameData()
 
 const handleReportClick = () => {
   if (!isAuthenticated.value) {
@@ -98,6 +101,20 @@ const handleReportClick = () => {
   } else {
     emit('report-inaccuracy')
   }
+}
+
+
+  function handleDownloadClick() {
+    if (!isAuthenticated.value) {
+      emit('auth-required')
+      return
+    }
+  const today = new Date()
+  const yyyy = today.getFullYear()
+  const mm = String(today.getMonth() + 1).padStart(2, '0')
+  const dd = String(today.getDate()).padStart(2, '0')
+  const filename = `jatekadatbazis.hu-${yyyy}-${mm}-${dd}.csv`
+  exportArrayAsCSV(Array.from(games.value), filename)
 }
 </script>
 
