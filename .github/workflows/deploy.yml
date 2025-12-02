@@ -6,6 +6,10 @@ on:
       - master
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+  deployments: write
+          gitHubToken: ${{ github.token }}
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -44,4 +48,3 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: game-database
           directory: dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
