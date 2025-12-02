@@ -3,8 +3,8 @@ name: Deploy to Cloudflare Pages
 on:
   push:
     branches:
-      - main
-  pull_request: {}
+      - master
+  workflow_dispatch: {}
 
 jobs:
   build-and-deploy:
@@ -22,6 +22,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Safety: ensure this runs only for the canonical branch
+        run: |
+          echo "Running on $GITHUB_REF (event: $GITHUB_EVENT_NAME)"
+          if [ "$GITHUB_REF" != "refs/heads/master" ]; then
+            echo "This workflow is configured to deploy only from the 'master' branch. Exiting.";
+            exit 78;
+          fi
 
       - name: Debug: list Cloudflare Pages projects
         env:
