@@ -126,7 +126,7 @@ const dialogOpen = computed({
 const formRef = ref()
 const formValid = ref(false)
 const senderName = ref('')
-const gameName = ref(props.gameName)
+const gameName = ref(props.gameName || 'Általános bejelentés')
 const inaccuracyDescription = ref('')
 const reportEmail = 'titkar@somer.hu'
 const successMessage = ref('')
@@ -139,7 +139,7 @@ const rules = {
 
 // Játék név frissítése amikor prop változik
 watch(() => props.gameName, (newName) => {
-  gameName.value = newName
+  gameName.value = newName || 'Általános bejelentés'
 })
 
 // User név automatikus kitöltése ha be van jelentkezve
