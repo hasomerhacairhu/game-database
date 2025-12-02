@@ -250,7 +250,7 @@ const handleRatingClick = async (event: MouseEvent) => {
           if (confirm('Biztosan törlöd az értékelésedet?')) {
             isDeleting.value = true
             try {
-              await deleteRating(userRating.value.id!)
+              await deleteRating(userRating.value.id!, props.gameId)
               showSuccess('Értékelés törölve!')
               await new Promise(resolve => setTimeout(resolve, 500))
             } catch (err) {
@@ -289,7 +289,7 @@ const handleStarClick = async (stars: string | number) => {
     if (confirm('Biztosan törlöd az értékelésedet?')) {
       isDeleting.value = true
       try {
-        await deleteRating(userRating.value.id!)
+        await deleteRating(userRating.value.id!, props.gameId)
         showSuccess('Értékelés törölve!')
         // Wait a bit longer to ensure the rating is cleared before allowing new clicks
         await new Promise(resolve => setTimeout(resolve, 500))
@@ -338,6 +338,7 @@ const handleSubmit = async () => {
     if (userRating.value) {
       // Update existing rating
       await updateRating(userRating.value.id!, {
+        gameId: props.gameId,
         stars: selectedStars.value,
         comment: comment.value.trim() || undefined
       })
@@ -374,7 +375,7 @@ const handleDelete = async () => {
   error.value = null
 
   try {
-    await deleteRating(userRating.value.id!)
+    await deleteRating(userRating.value.id!, props.gameId)
     showSuccess('Értékelés törölve!')
     closeDialog()
   } catch (err) {

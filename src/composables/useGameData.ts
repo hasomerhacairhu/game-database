@@ -112,6 +112,17 @@ export function useGameData() {
         ...doc.data()
       } as Game))
       
+      // Debug: Check first game for rating fields
+      if (fetchedGames.length > 0) {
+        console.log('🔍 First game sample:', {
+          name: fetchedGames[0].name,
+          averageRating: fetchedGames[0].averageRating,
+          ratingCount: fetchedGames[0].ratingCount,
+          hasAverageRating: 'averageRating' in fetchedGames[0],
+          hasRatingCount: 'ratingCount' in fetchedGames[0]
+        })
+      }
+      
       // Randomize order
       games.value = shuffleArray(fetchedGames)
       lastFetch.value = Date.now()
@@ -257,6 +268,26 @@ export function useGameData() {
     return Math.floor((Date.now() - lastFetch.value) / 60000)
   })
 
+  /**
+   * Update a game's rating in memory (for reactive updates)
+   */
+  const updateGameRating = (gameId: string, averageRating: number | null, ratingCount: number) => {
+    const gameIndex = games.value.findIndex(g => g.id === gameId || g.UUID === gameId)
+    if (gameIndex !== -1) {
+      // Create a new object to trigger reactivity
+      games.value[gameIndex] = {
+        ...games.value[gameIndex],
+        averageRating: averageRating === null ? undefined : averageRating,
+        ratingCount
+      }
+      // Also update cache
+      saveToCache(games.value)
+      console.log(`🔄 Updated game ${gameId} in memory: avg ${averageRating}, count ${ratingCount}`)
+    } else {
+      console.warn(`⚠️ Game ${gameId} not found in memory`)
+    }
+  }
+
   // Return public API
   return {
     // State (readonly to prevent external mutation)
@@ -272,6 +303,7 @@ export function useGameData() {
     // Methods
     fetchGames,
     filterGames,
-    clearCache
+    clearCache,
+    updateGameRating
   }
 }

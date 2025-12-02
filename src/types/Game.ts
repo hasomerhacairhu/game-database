@@ -29,6 +29,10 @@ export interface Game {
   length: string[]                      // ["3-10p", "11-20p", "21-30p", "30+p"]
   gameFunction: string[]                // Kategóriák (1-3 db, pl. "Ismerkedős gyakorlatok")
   
+  // Értékelések (denormalizált aggregált adatok)
+  averageRating?: number                // Átlag értékelés (1-5 csillag) vagy null ha nincs még
+  ratingCount?: number                  // Értékelések száma
+  
   // Metadata
   status?: Record<string, any>          // Status objektum (lehet üres)
   updateTime?: string                   // ISO 8601 timestamp

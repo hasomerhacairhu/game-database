@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/plugins/firebase'
 import { useAuth } from './useAuth'
+import { useGameData } from './useGameData'
 import { handleFirebaseError, logError } from '@/utils/errorHandler'
 
 export interface GameRating {
@@ -37,6 +38,7 @@ let unsubscribe: Unsubscribe | null = null
 
 export function useRatings(gameId?: string) {
   const { user } = useAuth()
+  const { updateGameRating } = useGameData()
 
   // Átlagértékelés számítása
   const averageRating = computed(() => {
@@ -103,6 +105,51 @@ export function useRatings(gameId?: string) {
     userRating.value = null
   }
 
+  // Helper: Update game document with new rating stats
+  const updateGameRatingStats = async (targetGameId: string) => {
+    try {
+      // Query ratings collection for this game
+      const ratingsRef = collection(db, 'ratings')
+      const q = query(ratingsRef, where('gameId', '==', targetGameId))
+      const snapshot = await getDocs(q)
+      
+      let averageRating: number | null = null
+      let ratingCount = 0
+      
+      if (snapshot.empty) {
+        // No ratings, set to null/0
+        const gameRef = doc(db, 'games', targetGameId)
+        await updateDoc(gameRef, {
+          averageRating: null,
+          ratingCount: 0
+        })
+        console.log(`✅ Updated game ${targetGameId}: no ratings`)
+      } else {
+        // Calculate average
+        const ratings = snapshot.docs.map(doc => doc.data().stars as number)
+        const sum = ratings.reduce((acc, rating) => acc + rating, 0)
+        const average = sum / ratings.length
+        averageRating = Number(average.toFixed(2))
+        ratingCount = ratings.length
+        
+        // Update game document
+        const gameRef = doc(db, 'games', targetGameId)
+        await updateDoc(gameRef, {
+          averageRating,
+          ratingCount
+        })
+        console.log(`✅ Updated game ${targetGameId}: avg ${averageRating}, count ${ratingCount}`)
+      }
+      
+      // Update in-memory cache for reactive UI
+      updateGameRating(targetGameId, averageRating, ratingCount)
+    } catch (error) {
+      logError('updateGameRatingStats', error)
+      console.error('❌ Failed to update game rating stats:', error)
+      // Don't throw - this is a background update
+    }
+  }
+
   // Értékelés hozzáadása
   const addRating = async (rating: Omit<GameRating, 'id' | 'createdAt'>) => {
     if (!user.value) {
@@ -127,6 +174,9 @@ export function useRatings(gameId?: string) {
       }
       
       await addDoc(ratingsRef, data)
+      
+      // Update game stats in background
+      await updateGameRatingStats(rating.gameId)
     } catch (error) {
       logError('addRating', error)
       throw new Error(handleFirebaseError(error))
@@ -154,6 +204,11 @@ export function useRatings(gameId?: string) {
       }
       
       await updateDoc(ratingRef, updateData)
+      
+      // Update game stats in background if gameId available
+      if (data.gameId) {
+        await updateGameRatingStats(data.gameId)
+      }
     } catch (error) {
       logError('updateRating', error)
       throw new Error(handleFirebaseError(error))
@@ -161,7 +216,7 @@ export function useRatings(gameId?: string) {
   }
 
   // Értékelés törlése
-  const deleteRating = async (ratingId: string) => {
+  const deleteRating = async (ratingId: string, targetGameId?: string) => {
     if (!user.value) {
       throw new Error('Nincs bejelentkezett felhasználó')
     }
@@ -169,6 +224,11 @@ export function useRatings(gameId?: string) {
     try {
       const ratingRef = doc(db, 'ratings', ratingId)
       await deleteDoc(ratingRef)
+      
+      // Update game stats in background if gameId available
+      if (targetGameId) {
+        await updateGameRatingStats(targetGameId)
+      }
     } catch (error) {
       logError('deleteRating', error)
       throw new Error(handleFirebaseError(error))

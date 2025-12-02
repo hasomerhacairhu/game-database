@@ -60,6 +60,11 @@
           <td>
             <span class="font-weight-medium">{{ item.name }}</span>
           </td>
+          <td class="text-center">
+            <span v-if="item.averageRating && item.ratingCount > 0" class="rating-display">
+              {{ item.averageRating.toFixed(1) }}
+            </span>
+          </td>
           <td>
             {{ truncateText(item.goal, 80) }}
           </td>
@@ -368,6 +373,7 @@ const paginatedGames = computed(() => {
 const headers = [
   { title: '', key: 'favorite', align: 'center' as const, sortable: false, width: 'auto' },
   { title: 'Játék neve', key: 'name', align: 'start' as const, sortable: true, width: '15%' },
+  { title: '★', key: 'averageRating', align: 'center' as const, sortable: true, width: '5%' },
   { title: 'Cél', key: 'goal', align: 'start' as const, sortable: true, width: '25%' },
   { title: 'Tér', key: 'space', align: 'start' as const, sortable: false, width: '10%' },
   { title: 'Csoport', key: 'groupPhase', align: 'start' as const, sortable: false, width: '10%' },

@@ -16,7 +16,11 @@ service cloud.firestore {
     // ═══════════════════════════════════════════
     match /games/{gameId} {
       allow read: if true;                // Mindenki olvashatja
-      allow write: if false;              // Csak admin (n8n sync)
+      allow create, delete: if false;     // Csak admin (n8n sync)
+      
+      // Allow updating ONLY averageRating and ratingCount fields (for rating aggregation)
+      allow update: if isAuthenticated()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['averageRating', 'ratingCount']);
       
       // Ratings subcollection (later implementation)
       match /ratings/{ratingId} {
