@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - vue-standalon
   pull_request:
 
 jobs:
@@ -23,6 +22,17 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Debug: list Cloudflare Pages projects
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          echo "Listing Pages projects for account $CF_ACCOUNT_ID"
+          curl -s -X GET "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects" \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            | sed -n '1,200p'
 
       - name: Build project
         run: npm run build
